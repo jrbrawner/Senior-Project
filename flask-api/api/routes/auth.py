@@ -64,14 +64,16 @@ def login(type):
             return log_in.login_patient(request)
 
         if type == 'physician':
-            return(log_in.login_phy)
+            return log_in.login_physician(request)
 
         
 @login_manager.user_loader
 def load_user(id):
     """Check if user is logged-in on every page load."""
+    
     if id is not None:
         return Patient.query.get(id)
+        
     return None
 
 @login_manager.unauthorized_handler

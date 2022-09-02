@@ -2,6 +2,7 @@ from ..WebHelpers import WebHelpers
 from flask_login import current_user, login_user
 import logging
 from ...models.Patients import Patient
+from ...models.Physicians import Physician
 
 
 class Login:
@@ -40,15 +41,16 @@ class Login:
         #next_page = request.form['next_page']
 
         # Validate login attempt
-        Physician = Physician.query.filter_by(email=email).first()
+        physician = Physician.query.filter_by(email=email).first()
 
-        if Physician and Physician.check_password(password=password):
+        if physician and physician.check_password(password=password):
             #Patient exists and password matches password in db
 
-            login_user(Physician)
-            Physician.set_last_login()
+            login_user(physician)
+            physician.set_last_login()
+            logging.debug(f'{physician.name} logged in.')
 
-            return WebHelpers.EasyResponse(Physician.name + ' logged in.' , 405)
+            return WebHelpers.EasyResponse(physician.name + ' logged in.' , 405)
             
         #Patient exists but password does not match password in db
         return WebHelpers.EasyResponse('Invalid Physician email/password combination.', 405)
