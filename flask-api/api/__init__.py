@@ -37,11 +37,13 @@ def create_app():
 
     with app.app_context():
         
-        
+        #import blueprints
+        from .routes.auth import auth_bp
         from .routes.app import app_bp
         
         # Register Blueprints
         app.register_blueprint(app_bp)
+        app.register_blueprint(auth_bp)
         
         # Create Database Models
         db.create_all()

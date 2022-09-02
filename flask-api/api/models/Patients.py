@@ -7,6 +7,7 @@ from flask import current_app as app
 from .Messages import Message
 from .Notifications import Notification
 import json
+from ..models.Physicians import Physician
 
 class Patient(UserMixin, db.Model):
     """Patient account model."""
@@ -20,14 +21,15 @@ class Patient(UserMixin, db.Model):
     created_on = db.Column(db.DateTime, index=False, unique=False,nullable=True)
     last_login = db.Column(db.DateTime, index=False, unique=False,nullable=True)
     profile_pic = db.Column(db.String(), index=False, unique=False, nullable=True)
+    #physician = db.Column(db.Integer, db.ForeignKey('Physician.id'), nullable=True)
     
-    messages_sent = db.relationship('Message',
-                                    foreign_keys='Message.sender_id',
-                                    backref='author', lazy='dynamic')
+    #messages_sent = db.relationship('Message',
+    #                                foreign_keys='Message.sender_id',
+    #                                backref='author', lazy='dynamic')
 
-    messages_received = db.relationship('Message',
-                                        foreign_keys='Message.recipient_id',
-                                        backref='recipient', lazy='dynamic')
+    #messages_received = db.relationship('Message',
+    #                                    foreign_keys='Message.recipient_id',
+    #                                    backref='recipient', lazy='dynamic')
 
     last_message_read_time = db.Column(db.DateTime)
 

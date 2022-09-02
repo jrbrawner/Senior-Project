@@ -1,14 +1,16 @@
 from .. import db
 from datetime import datetime
 from flask import current_app as app
+from .Physicians import Physician
 
 class Message(db.Model):
-    """Model for messages between physicians/employees and patients."""
-    
+    """Model for messages between physicians and patients."""
     __tablename__ = 'Message'
+    
+
     id = db.Column(db.Integer, primary_key=True)
-    sender_id = db.Column(db.Integer, db.ForeignKey('Users.id'))
-    recipient_id = db.Column(db.Integer, db.ForeignKey('Users.id'))
+    #sender_id = db.Column(db.Integer, db.ForeignKey('Patient.id'))
+    #recipient_id = db.Column(db.Integer, db.ForeignKey('Physician.id'))
     body = db.Column(db.String())
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
