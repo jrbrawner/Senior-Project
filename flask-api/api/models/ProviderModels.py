@@ -9,6 +9,16 @@ class Provider(db.Model):
     name = db.Column(db.String(128), index=True)
     offices = db.relationship('Office', backref='provider', lazy = True)
 
+    def serialize(self):
+
+        data = {
+            'id': self.id,
+            'name': self.name,
+            'offices': 'temp'
+        }
+
+        return data
+
 class Office(db.Model):
     """Model for offices. """
     
