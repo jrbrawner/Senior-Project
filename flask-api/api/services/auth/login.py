@@ -3,7 +3,7 @@ from flask_login import current_user, login_user
 import logging
 from ...models.Patients import Patient
 from ...models.Physicians import Physician
-
+from flask import session
 
 class Login:
 
@@ -21,9 +21,9 @@ class Login:
 
         if patient and patient.check_password(password=password):
             #Patient exists and password matches password in db
-    
             login_user(patient)
             patient.set_last_login()
+            session['login_type'] = 'patient'
             logging.debug(f'{patient.name} logged in.')
 
             return WebHelpers.EasyResponse(patient.name + ' logged in.' , 405)
@@ -48,6 +48,7 @@ class Login:
 
             login_user(physician)
             physician.set_last_login()
+            session['login_type'] = 'physician'
             logging.debug(f'{physician.name} logged in.')
 
             return WebHelpers.EasyResponse(physician.name + ' logged in.' , 405)

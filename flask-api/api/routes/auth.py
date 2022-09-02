@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, render_template, flash, request, session, url_for, send_from_directory, Response, jsonify
+from flask import Blueprint, redirect, render_template, flash, request, session, url_for, send_from_directory, Response, jsonify, session
 from flask_login import login_required, logout_user, login_user, current_user
 from ..models.Patients import db, Patient
 from flask import current_app as app
@@ -71,9 +71,14 @@ def login(type):
 def load_user(id):
     """Check if user is logged-in on every page load."""
     
-    if id is not None:
-        return Patient.query.get(id)
-        
+    login_type = session.get('login_type')
+    if login_type == 'patient':
+        if id is not None:
+            return Patient.query.get(id)
+    elif login_type == 'physician':
+            return Physician.query.get(id)
+    else:
+        return None
     return None
 
 @login_manager.unauthorized_handler
@@ -97,8 +102,9 @@ def logout():
 def troubleshoot():
 
     data = {
-        'current_user.id': current_user.id,
-        'current_user.name': current_user.name
+        'testing': current_user.name,
+        'testing1': current_user.id
+
     }
 
     return data

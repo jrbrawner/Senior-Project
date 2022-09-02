@@ -3,6 +3,7 @@ from ...models.Patients import db, Patient
 from ...models.Physicians import Physician
 import logging
 from flask_login import login_user
+from flask import session
 
 class SignUp:
 
@@ -29,6 +30,7 @@ class SignUp:
             db.session.commit()  # Create new Patient
             logging.debug(f'New patient {patient.id} created {patient.name}')
             login_user(patient)  # Log in as newly created Patient
+            session['login_type'] = 'patient'
             
             return WebHelpers.EasyResponse(f'New patient {patient.name} created.' , 201)
 
@@ -56,6 +58,7 @@ class SignUp:
             db.session.commit()  # Create new Patient
             logging.debug(f'New physician {physician.id} created {physician.name}')
             login_user(physician)  # Log in as newly created Physician
+            session['login_type'] = 'physician'
             
             return WebHelpers.EasyResponse(f'New patient {physician.name} created.' , 201)
 
