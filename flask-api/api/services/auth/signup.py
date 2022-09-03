@@ -41,6 +41,9 @@ class SignUp:
         name = request.form['name']
         email = request.form['email']
         password = request.form['password']
+        office_id = request.form['office_id']
+        provider_id = request.form['provider_id']
+        
 
         #see if patient exists
         existing_physician = Physician.query.filter_by(email=email).first()
@@ -49,7 +52,9 @@ class SignUp:
         if existing_physician is None:
             physician = Physician(
                 name= name,
-                email= email
+                email= email,
+                office_id=office_id,
+                provider_id=provider_id
             )
 
             physician.set_password(password)
@@ -60,7 +65,7 @@ class SignUp:
             login_user(physician)  # Log in as newly created Physician
             session['login_type'] = 'physician'
             
-            return WebHelpers.EasyResponse(f'New patient {physician.name} created.' , 201)
+            return WebHelpers.EasyResponse(f'New physician {physician.name} created.' , 201)
 
         return WebHelpers.EasyResponse('Physician with that email already exists. ', 400)
 

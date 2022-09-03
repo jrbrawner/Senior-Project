@@ -21,7 +21,7 @@ class Patient(UserMixin, db.Model):
     created_on = db.Column(db.DateTime, index=False, unique=False,nullable=True)
     last_login = db.Column(db.DateTime, index=False, unique=False,nullable=True)
     profile_pic = db.Column(db.String(), index=False, unique=False, nullable=True)
-    #physician = db.Column(db.Integer, db.ForeignKey('Physician.id'), nullable=True)
+    physician = db.Column(db.Integer, db.ForeignKey('Physician.id'), nullable=True)
     
     #messages_sent = db.relationship('Message',
     #                                foreign_keys='Message.sender_id',

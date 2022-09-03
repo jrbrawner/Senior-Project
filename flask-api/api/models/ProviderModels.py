@@ -32,7 +32,7 @@ class Office(db.Model):
     state = db.Column(db.String(16), index=True)
     zip_code = db.Column(db.String(16), index=True)
     provider_id = db.Column(db.Integer, db.ForeignKey('Provider.id'), nullable=True)
-    #physicians = db.relationship('Physician.id', backref='physicians', lazy=True)
+    physicians = db.relationship('Physician', backref='physicians', lazy=True)
 
     def serialize(self):
 
