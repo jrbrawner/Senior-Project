@@ -12,6 +12,7 @@ class SignUp:
         name = request.form['name']
         email = request.form['email']
         password = request.form['password']
+        physician_id = request.form['physician_id']
 
         #see if patient exists
         existing_patient = Patient.query.filter_by(email=email).first()
@@ -20,8 +21,8 @@ class SignUp:
         if existing_patient is None:
             patient = Patient(
                 name= name,
-                email= email
-                #physician = None
+                email= email,
+                physician = physician_id
             )
 
             patient.set_password(password)
