@@ -7,7 +7,7 @@ class Provider(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), index=True)
-    offices = db.relationship('Office', backref='provider', lazy = True)
+    offices = db.relationship('Office', backref='offices', lazy = True)
 
     def serialize(self):
 
@@ -30,5 +30,20 @@ class Office(db.Model):
     address = db.Column(db.String(128), index=True)
     city = db.Column(db.String(32), index=True)
     state = db.Column(db.String(16), index=True)
+    zip_code = db.Column(db.String(16), index=True)
     provider_id = db.Column(db.Integer, db.ForeignKey('Provider.id'), nullable=True)
     #physicians = db.relationship('Physician.id', backref='physicians', lazy=True)
+
+    def serialize(self):
+
+        data = {
+            'id': self.id,
+            'name': self.name,
+            'phone_number': self.phone_number,
+            'address': self.address,
+            'city': self.city,
+            'state': self.state,
+            'provider_id': self.provider_id
+        }
+
+        return data
