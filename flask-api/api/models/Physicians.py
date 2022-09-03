@@ -13,10 +13,9 @@ class Physician(UserMixin, db.Model):
     name = db.Column(db.String(64), index=True)
     email = db.Column(db.String(40), unique=True, nullable=False)
     password = db.Column(db.String(200), primary_key=False, unique=False, nullable=False)
-
-    #provider_id = db.Column(db.Integer, db.ForeignKey('Provider.id'), nullable=False)
-    #office_id = db.Column(db.Integer, db.ForeignKey('Office.id'), nullable=False)
-    #patients = db.relationship('Patient.id', backref='patients', lazy=True)
+    provider_id = db.Column(db.Integer, db.ForeignKey('Provider.id'), nullable=False)
+    office_id = db.Column(db.Integer, db.ForeignKey('Office.id'), nullable=False)
+    patients = db.relationship('Patient', backref='patients', lazy=True)
 
     def set_password(self, password):
         """Create hashed password."""
