@@ -104,7 +104,6 @@ def troubleshoot():
     data = {
         'testing': current_user.name,
         'testing1': current_user.id
-
     }
 
     return data

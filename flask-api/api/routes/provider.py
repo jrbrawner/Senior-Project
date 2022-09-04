@@ -7,26 +7,23 @@ from flask import current_app as app, jsonify
 from ..models.ProviderModels import Provider, db
 from ..services.WebHelpers import WebHelpers
 import logging
+from flask_cors import cross_origin
 
 provider_bp = Blueprint('provider_bp', __name__)
 
 @provider_bp.route('/api/provider', methods = ['GET'])
 @login_required
+@cross_origin()
 def get_providers():
     """
     GET: Returns all providers.
     """
 
     if request.method == 'GET':
-        data = {}
+        
         providers = Provider.query.all()
-        counter = 1
-
-        for i in providers:
-            data[f'provider{counter}'] = i.serialize()
-            counter += 1
-
-        resp = jsonify(data)
+        
+        resp = jsonify([x.serialize() for x in providers])
         resp.status_code = 200
 
         return resp
@@ -34,6 +31,7 @@ def get_providers():
 
 @provider_bp.route('/api/provider/<int:id>', methods = ['GET'])
 @login_required
+@cross_origin()
 def get_provider(id):
     """
     GET: Returns provider with specified id.
