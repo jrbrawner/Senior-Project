@@ -20,14 +20,9 @@ def get_providers():
     """
 
     if request.method == 'GET':
-        data = {}
+        
         providers = Provider.query.all()
-        counter = 1
-
-        #for i in providers:
-        #    data[f'provider{counter}'] = i.serialize()
-        #    counter += 1
-
+        
         resp = jsonify([x.serialize() for x in providers])
         resp.status_code = 200
 

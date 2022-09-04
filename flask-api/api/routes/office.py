@@ -19,15 +19,10 @@ def get_offices():
     """
 
     if request.method == 'GET':
-        data = {}
+        
         offices = Office.query.all()
-        counter = 1
-
-        for i in offices:
-            data[f'office{counter}'] = i.serialize()
-            counter += 1
-
-        resp = jsonify(data)
+    
+        resp = jsonify([x.serialize() for x in offices])
         resp.status_code = 200
 
         return resp
