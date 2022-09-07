@@ -9,8 +9,8 @@ class Message(db.Model):
     
 
     id = db.Column(db.Integer, primary_key=True)
-    #sender_id = db.Column(db.Integer, db.ForeignKey('Patient.id'))
-    #recipient_id = db.Column(db.Integer, db.ForeignKey('Physician.id'))
+    sender_id = db.Column(db.Integer, db.ForeignKey('Patient.id'))
+    recipient_id = db.Column(db.Integer, db.ForeignKey('Physician.id'))
     body = db.Column(db.String())
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 

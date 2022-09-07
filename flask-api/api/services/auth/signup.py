@@ -62,7 +62,7 @@ class SignUp:
             physician.set_creation_date()
             db.session.add(physician)
             db.session.commit()  # Create new Patient
-            logging.debug(f'New physician {physician.id} created {physician.name}')
+            logging.debug(f'New physician {physician.name} created id ({physician.id}).')
             login_user(physician)  # Log in as newly created Physician
             session['login_type'] = 'physician'
             
