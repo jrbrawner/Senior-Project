@@ -8,6 +8,7 @@ from ..models.Messages import Message, db
 from ..services.WebHelpers import WebHelpers
 import logging
 from flask_cors import cross_origin
+from twilio.twiml.messaging_response import MessagingResponse
 
 message_bp = Blueprint('message', __name__)
 
@@ -51,12 +52,20 @@ def get_message(id):
 
 @message_bp.route('/api/message/', methods = ['POST'])
 @login_required
+@cross_origin
 def create_message():
     """
     POST: Creates new message.
 
     To-Do: Implement receiving a message from Twilio.
     """
+
+    #Start TwiML response
+    resp = MessagingResponse()
+
+    resp.message("Message received.")
+
+    return str(resp)
 
 @message_bp.route('/api/message/<int:id>', methods=['DELETE'])
 def delete_message(id):
