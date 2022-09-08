@@ -14,12 +14,7 @@ def create_app():
     app = Flask(__name__, instance_relative_config=False)
 
     # Application Configuration
-    app.config.from_object('config.Config')
-    app.config['UPLOADS'] = UPLOADS
-    app.config['MESSAGES_PER_PAGE'] = 10
-
-    #authentication
-    app.config['LOGIN_DISABLED'] = True
+    app.config.from_object('config.DevelopmentConfig')
 
     # Initialize Plugins
     db.init_app(app)
@@ -42,13 +37,14 @@ def create_app():
         from .routes.app import app_bp
         from .routes.provider import provider_bp
         from .routes.office import office_bp
+        from .routes.user import user_bp
         
         # Register Blueprints
         app.register_blueprint(app_bp)
         app.register_blueprint(auth_bp)
         app.register_blueprint(provider_bp)
         app.register_blueprint(office_bp)
-        
+        app.register_blueprint(user_bp)
         # Create Database Models
         db.create_all()
 
@@ -57,3 +53,13 @@ def create_app():
             pass
 
         return app
+
+
+def create_test_app():
+    app = Flask(__name__)
+    app.config['TESTING'] = True
+    app.config["SQLALCHEMY_DATABASE_URI"] = "xxxxxxtestdatabasexxx"
+    # Dynamically bind SQLAlchemy to application
+    db.init_app(app)
+    app.app_context().push() # this does the binding
+    return app
