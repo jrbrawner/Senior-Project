@@ -6,6 +6,7 @@ import json
 from flask import current_app as app, jsonify
 from ..models.Messages import Message, db, PNumbertoUser
 from ..services.WebHelpers import WebHelpers
+from ..services.twilio.SignUpHelpers import TwilioSignUpHelpers
 import logging
 from flask_cors import cross_origin
 from twilio.twiml.messaging_response import MessagingResponse
@@ -65,51 +66,28 @@ def create_message():
 
     if request.method == 'POST':
 
-        phone_number = request.form['phone_number']
-        body = request.form['body']
-        phone_number_user = PNumbertoUser.query.get(phone_number)
+            #get phone number and msg from twixml
+            phone_number = request.form['phone_number']
+            body = request.form['body']
 
-        if phone_number_user is None:
-            logging.warning(f'New phone number {phone_number} recognized.')
-            pnumbertouser = PNumbertoUser(
-                phone_number=phone_number
-            )
-            db.session.add(pnumbertouser)
-            db.session.commit()
-            return WebHelpers.EasyResponse(f'Thanks for choosing to be with us! Please fill out this form to complete your registration.', 201)
-        else:
-            if phone_number_user is not None and phone_number_user.user_id is None:
-                """
-                Basic xample form to have user send in, seperate fields with '.' in message:
-                Name.Email.
-                """
-                msg_array = body.split('.')
-            
-                name = msg_array[0]
-                email = msg_array[1]
+            #logic for handling signup of new users
 
-                new_patient = Patient(
-                    name=name,
-                    email=email,
-                    phone_number=phone_number_user.phone_number
-                )
-                db.session.add(new_patient)
-                new_patient.set_creation_date()
-                db.session.commit()
-                phone_number_user.user_id = new_patient.id
-                db.session.commit()
-
-                logging.warning(f'New patient registered. Name - {new_patient.name} Phone Number - {phone_number_user.phone_number}. ')
-                return WebHelpers.EasyResponse(f'Thanks {new_patient.name}! You will be notified when your physician accepts your registration.', 201)
-                
+            #see if user has signed up and been accepted
+            if TwilioSignUpHelpers.CheckIfAccepted(phone_number) == True:
+                return f'Your physician has received your message.'
+            #if new, prepare db table for new account registration
+            elif TwilioSignUpHelpers.CheckForNewUser(phone_number) == True:
+                status_msg = TwilioSignUpHelpers.InitiateUserSignUp(phone_number)
+                return WebHelpers.EasyResponse(status_msg, 201)
+            #see if user has signed up but not accepted,
+            elif TwilioSignUpHelpers.CheckIfRegistered(phone_number) == True:
+                return f'Your physician is in the process of accepting your registration.'
+                #user has signed up but account not made yet, initiate signup form
+            else:
+                status_msg = TwilioSignUpHelpers.CreateNewUser(phone_number=phone_number, msg=body)
+                return WebHelpers.EasyResponse(status_msg, 201)
 
 
-
-        #db.session.add(message)
-        #db.session.commit()
-        #logging.debug(f'New provider {provider.name} created.')
-
-        #return WebHelpers.EasyResponse(f'New provider {provider.name} created.', 201)
 
 @message_bp.route('/api/message/<int:id>', methods=['DELETE'])
 def delete_message(id):

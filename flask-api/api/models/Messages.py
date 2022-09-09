@@ -29,3 +29,4 @@ class PNumbertoUser(db.Model):
     __tablename__ = 'PNumbertoUser'
     phone_number = db.Column(db.String(16), nullable=False, index=True, primary_key=True)
     user_id = db.Column(db.ForeignKey('Patient.id'))
+    physician_id = db.Column(db.ForeignKey('Physician.id'))
