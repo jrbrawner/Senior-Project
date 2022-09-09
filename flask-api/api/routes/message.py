@@ -4,7 +4,7 @@ from flask_login import logout_user, login_required
 from sqlalchemy import create_engine, MetaData
 import json
 from flask import current_app as app, jsonify
-from ..models.Messages import Message, db
+from ..models.Messages import Message, db, PNumbertoUser
 from ..services.WebHelpers import WebHelpers
 import logging
 from flask_cors import cross_origin
@@ -60,12 +60,25 @@ def create_message():
     To-Do: Implement receiving a message from Twilio.
     """
 
-    #Start TwiML response
-    resp = MessagingResponse()
+    if request.method == 'GET':
+        return WebHelpers.EasyResponse(f'Use GET method to create message.', 405)
 
-    resp.message("Message received.")
+    if request.method == 'POST':
 
-    return str(resp)
+        phone_number = request.form['phone_number']
+        body = request.form['body']
+
+        if 
+        
+        message = Message(
+            
+        )
+
+        db.session.add(message)
+        db.session.commit()
+        logging.debug(f'New provider {provider.name} created.')
+
+        return WebHelpers.EasyResponse(f'New provider {provider.name} created.', 201)
 
 @message_bp.route('/api/message/<int:id>', methods=['DELETE'])
 def delete_message(id):
