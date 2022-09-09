@@ -4,10 +4,13 @@ from flask_login import logout_user, login_required
 from sqlalchemy import create_engine, MetaData
 import json
 from flask import current_app as app, jsonify
-from ..models.Messages import Message, db
+from ..models.Messages import Message, db, PNumbertoUser
 from ..services.WebHelpers import WebHelpers
+from ..services.twilio.SignUpHelpers import TwilioSignUpHelpers
 import logging
 from flask_cors import cross_origin
+from twilio.twiml.messaging_response import MessagingResponse
+from ..models.Patients import Patient
 
 message_bp = Blueprint('message', __name__)
 
@@ -50,13 +53,41 @@ def get_message(id):
     
 
 @message_bp.route('/api/message/', methods = ['POST'])
-@login_required
+@cross_origin()
 def create_message():
     """
     POST: Creates new message.
 
     To-Do: Implement receiving a message from Twilio.
     """
+
+    if request.method == 'GET':
+        return WebHelpers.EasyResponse(f'Use GET method to create message.', 405)
+
+    if request.method == 'POST':
+
+            #get phone number and msg from twixml
+            phone_number = request.form['phone_number']
+            body = request.form['body']
+
+            #logic for handling signup of new users
+
+            #see if user has signed up and been accepted
+            if TwilioSignUpHelpers.CheckIfAccepted(phone_number) == True:
+                return f'Your physician has received your message.'
+            #if new, prepare db table for new account registration
+            elif TwilioSignUpHelpers.CheckForNewUser(phone_number) == True:
+                status_msg = TwilioSignUpHelpers.InitiateUserSignUp(phone_number)
+                return WebHelpers.EasyResponse(status_msg, 201)
+            #see if user has signed up but not accepted,
+            elif TwilioSignUpHelpers.CheckIfRegistered(phone_number) == True:
+                return f'Your physician is in the process of accepting your registration.'
+                #user has signed up but account not made yet, initiate signup form
+            else:
+                status_msg = TwilioSignUpHelpers.CreateNewUser(phone_number=phone_number, msg=body)
+                return WebHelpers.EasyResponse(status_msg, 201)
+
+
 
 @message_bp.route('/api/message/<int:id>', methods=['DELETE'])
 def delete_message(id):

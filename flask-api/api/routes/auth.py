@@ -23,9 +23,11 @@ def signup(type):
 
     """
     Sign-Up Form:
+
     name = Patientname associated with new account.
     email = Patient email associated with new account.
     password = Password associated with new account.
+    
     """
     if request.method == 'GET':
 
@@ -46,13 +48,15 @@ def signup(type):
 @auth_bp.route('/api/login/<string:type>', methods=['GET', 'POST'])
 def login(type):
     """
-    Log-in page for registered Patients.
+    Log-in page for registered Patients & Physicians.
     GET requests serve Log-in page.
-    POST requests validate and redirect Patient to dashboard.
+
+    POST requests validate and redirect Physicians to dashboard.
     Login Form
+
     email = email associated with existing account
     password = password associated with existing account
-    next_page (not implemented yet) = page Patient was trying to access before they were prompted to login
+    
     """
 
     if request.method == 'GET':
@@ -103,7 +107,8 @@ def troubleshoot():
 
     data = {
         'testing': current_user.name,
-        'testing1': current_user.id
+        'testing1': current_user.id,
+        'login_type': session['login_type']
     }
 
     return data

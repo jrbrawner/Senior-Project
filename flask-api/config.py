@@ -3,12 +3,12 @@ import os
 from os import environ, path
 from dotenv import load_dotenv
 
+
 basedir = path.abspath(path.dirname(__file__))
-load_dotenv(path.join(basedir, '.env'))
 
-
-class Config:
+class DevConfig:
     """Set Flask configuration from environment variables."""
+    load_dotenv(path.join(basedir, '.env'))
 
     FLASK_APP = 'wsgi.py'
     FLASK_ENV = environ.get('FLASK_ENV')
@@ -28,3 +28,20 @@ class Config:
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir + '/api/' 'development.db')
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    #Flask-Login
+    LOGIN_DISABLED = True
+
+    #Configure application settings
+    UPLOADS = environ.get('UPLOADS')
+    MESSAGES_PER_PAGE = environ.get('MESSAGES_PER_PAGE')
+
+class TestConfig:
+    
+    TESTING = True
+    WTF_CSRF_ENABLED = False
+    SECRET_KEY = os.environ.get('SECRET_KEY', '12345')
+    SQLALCHEMY_DATABASE_URI = 'sqlite://'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_BINDS = False
+    DEBUG = True

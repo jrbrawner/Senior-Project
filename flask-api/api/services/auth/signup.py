@@ -9,33 +9,37 @@ class SignUp:
 
     def signup_patient(request):
         """ Handles logic for creating a new patient."""
-        name = request.form['name']
-        email = request.form['email']
-        password = request.form['password']
-        physician_id = request.form['physician_id']
+        if session['login_type'] == 'physician':
+            name = request.form['name']
+            email = request.form['email']
+            password = request.form['password']
+            physician_id = request.form['physician_id']
 
-        #see if patient exists
-        existing_patient = Patient.query.filter_by(email=email).first()
-        
-        #make sure patient doesnt already exist
-        if existing_patient is None:
-            patient = Patient(
-                name= name,
-                email= email,
-                physician = physician_id
-            )
-
-            patient.set_password(password)
-            patient.set_creation_date()
-            db.session.add(patient)
-            db.session.commit()  # Create new Patient
-            logging.debug(f'New patient {patient.id} created {patient.name}')
-            login_user(patient)  # Log in as newly created Patient
-            session['login_type'] = 'patient'
+            #see if patient exists
+            existing_patient = Patient.query.filter_by(email=email).first()
             
-            return WebHelpers.EasyResponse(f'New patient {patient.name} created.' , 201)
+            #make sure patient doesnt already exist
+            if existing_patient is None:
+                patient = Patient(
+                    name= name,
+                    email= email,
+                    physician = physician_id
+                )
 
-        return WebHelpers.EasyResponse('Patient with that email already exists. ', 400)
+                patient.set_password(password)
+                patient.set_creation_date()
+                db.session.add(patient)
+                db.session.commit()  # Create new Patient
+                logging.debug(f'New patient {patient.id} created {patient.name}')
+                login_user(patient)  # Log in as newly created Patient
+                session['login_type'] = 'patient'
+                
+                return WebHelpers.EasyResponse(f'New patient {patient.name} created.' , 201)
+
+            return WebHelpers.EasyResponse('Patient with that email already exists. ', 400)
+
+        else:
+            return WebHelpers.EasyResponse('You are not authorized to use this page.', 403)
 
     def signup_physician(request):
         """ Handles logic for creating a new physician. """
