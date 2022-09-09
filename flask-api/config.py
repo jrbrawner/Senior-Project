@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 basedir = path.abspath(path.dirname(__file__))
 
-class DevelopmentConfig:
+class DevConfig:
     """Set Flask configuration from environment variables."""
     load_dotenv(path.join(basedir, '.env'))
 
@@ -35,3 +35,13 @@ class DevelopmentConfig:
     #Configure application settings
     UPLOADS = environ.get('UPLOADS')
     MESSAGES_PER_PAGE = environ.get('MESSAGES_PER_PAGE')
+
+class TestConfig:
+    
+    TESTING = True
+    WTF_CSRF_ENABLED = False
+    SECRET_KEY = os.environ.get('SECRET_KEY', '12345')
+    SQLALCHEMY_DATABASE_URI = 'sqlite://'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_BINDS = False
+    DEBUG = True

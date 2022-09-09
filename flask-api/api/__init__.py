@@ -1,4 +1,5 @@
 """Initialize app."""
+from distutils.command.config import config
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -9,13 +10,19 @@ UPLOADS = 'api/uploads'
 db = SQLAlchemy()
 login_manager = LoginManager()
 
-def create_app():
+def create_app(config):
     """Construct the core app object."""
-    app = Flask(__name__, instance_relative_config=False)
+    app = Flask(__name__)
 
     # Application Configuration
-    app.config.from_object('config.DevelopmentConfig')
-
+    if config == 'dev':
+        app.config.from_object('config.DevConfig')
+    if config == 'test':
+        app.config.from_object('config.TestConfig')
+    else:
+        #change to prod for deployment
+        app.config.from_object('config.DevConfig')
+    
     # Initialize Plugins
     db.init_app(app)
     login_manager.init_app(app)
@@ -38,6 +45,7 @@ def create_app():
         from .routes.provider import provider_bp
         from .routes.office import office_bp
         from .routes.user import user_bp
+        from .routes.message import message_bp
         
         # Register Blueprints
         app.register_blueprint(app_bp)
@@ -45,6 +53,7 @@ def create_app():
         app.register_blueprint(provider_bp)
         app.register_blueprint(office_bp)
         app.register_blueprint(user_bp)
+        app.register_blueprint(message_bp)
         # Create Database Models
         db.create_all()
 

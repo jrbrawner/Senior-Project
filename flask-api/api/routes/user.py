@@ -27,6 +27,7 @@ def get_users():
             
             resp = jsonify([x.serialize() for x in users])
             resp.status_code = 200
+            logging.info(f'{current_user} accessed all users.')
 
             return resp
     else:
@@ -40,65 +41,75 @@ def get_user(id):
     """
     GET: Returns user with specified id.
     """
+    if session['login_type'] == 'physician':
+        if request.method == 'GET':
 
-    if request.method == 'GET':
+            user = Patient.query.get(id)
 
-        user = Patient.query.get(id)
+            if user is None:
+                return WebHelpers.EasyResponse('User with that id does not exist.', 404)
 
-        if user is None:
-            return WebHelpers.EasyResponse('User with that id does not exist.', 404)
+            resp = jsonify(user.serialize())
+            resp.status_code = 200
+            logging.info(f'{current_user} accessed patient with id of {id}.')
 
-        resp = jsonify(user.serialize())
-        resp.status_code = 200
+            return resp
+    else:
+        return WebHelpers.EasyResponse('You are not authorized to view this page.', 403)
 
-        return resp
     
 
 @user_bp.route('/api/user/<int:id>', methods = ['PUT'])
 @login_required
+@cross_origin()
 def update_user(id):
     """
     PUT: Deletes user with specified id, then creates user with specified data from form.
 
     """
+    if session['login_type'] == 'physician':
 
-    user = Patient.query.filter_by(id = id).first()
-    user_name = user.name
+        user = Patient.query.filter_by(id=id).first()
+        old_name = user.name
+    
+        if request.method == 'PUT':
+            if user:
 
-    if request.method == 'PUT':
-        if user:
+                name = request.form['name']
+                
+                user.name = str(name)
+                
+                logging.warning(f'{current_user} updated patient with id {user.id} name from {old_name} to {user.name}.')
+                return WebHelpers.EasyResponse(f'Name updated.', 200)
 
-            db.session.delete(user)
-            db.session.commit()
+                #return redirect(f'api/user/{id}')
 
-            name = request.form['name']
-            
-            user = user(id=id, name=name)
-
-            db.session.add(user)
-            db.session.commit()
-            logging.info(f'user {user.id} updated.')
-            return WebHelpers.EasyResponse(f'{user_name} updated.', 200)
-
-            #return redirect(f'api/user/{id}')
-
-        return WebHelpers.EasyResponse(f'user with that id does not exist.', 404)
+            return WebHelpers.EasyResponse(f'user with that id does not exist.', 404)
+    else:
+        return WebHelpers.EasyResponse('You are not authorized to view this page.', 403)
     
 @user_bp.route('/api/user/<int:id>', methods=['DELETE'])
 def delete_user(id):
 
-    user = Patient.query.filter_by(id = id).first()
+    if session['login_type'] == 'physician':
 
-    if request.method == 'DELETE':
-        if user:
+        user = Patient.query.filter_by(id = id).first()
+        user_name = user.name
+        user_id = user.id
 
-            db.session.delete(user)
-            db.session.commit()
-            
-            logging.info(f'{user.name} deleted.')
-            return WebHelpers.EasyResponse(f'{user.name} deleted.', 200)
+        if request.method == 'DELETE':
+            if user:
 
-        return WebHelpers.EasyResponse(f'user with that id does not exist.', 404)
+                db.session.delete(user)
+                db.session.commit()
+                
+                logging.warning(f'{current_user.name} deleted patient with id {user_id} and name of {user_name}.')
+
+                return WebHelpers.EasyResponse(f'{user.name} deleted.', 200)
+
+            return WebHelpers.EasyResponse(f'user with that id does not exist.', 404)
+    else:
+        return WebHelpers.EasyResponse('You are not authorized to view this page.', 403)
     
  
 

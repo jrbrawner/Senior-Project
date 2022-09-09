@@ -7,11 +7,10 @@ class Message(db.Model):
     """Model for messages between physicians and patients."""
     __tablename__ = 'Message'
     
-
     id = db.Column(db.Integer, primary_key=True)
-    sender_id = db.Column(db.Integer, db.ForeignKey('Patient.id'))
-    recipient_id = db.Column(db.Integer, db.ForeignKey('Physician.id'))
-    body = db.Column(db.String())
+    sender_id = db.Column(db.Integer, db.ForeignKey('Patient.id'), nullable=True)
+    recipient_id = db.Column(db.Integer, db.ForeignKey('Physician.id'), nullable=True)
+    body = db.Column(db.String(), nullable=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):
@@ -25,3 +24,8 @@ class Message(db.Model):
             'body': self.body,
             'timestamp': self.timestamp
         }
+
+class PNumbertoUser(db.Model):
+    __tablename__ = 'PNumbertoUser'
+    phone_number = db.Column(db.String(16), nullable=False, index=True, primary_key=True)
+    user_id = db.Column(db.ForeignKey('Patient.id'))

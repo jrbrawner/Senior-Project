@@ -9,6 +9,7 @@ from ..services.WebHelpers import WebHelpers
 import logging
 from flask_cors import cross_origin
 from twilio.twiml.messaging_response import MessagingResponse
+from ..models.Patients import Patient
 
 message_bp = Blueprint('message', __name__)
 
@@ -51,8 +52,7 @@ def get_message(id):
     
 
 @message_bp.route('/api/message/', methods = ['POST'])
-@login_required
-@cross_origin
+@cross_origin()
 def create_message():
     """
     POST: Creates new message.
@@ -67,18 +67,49 @@ def create_message():
 
         phone_number = request.form['phone_number']
         body = request.form['body']
+        phone_number_user = PNumbertoUser.query.get(phone_number)
 
-        if 
-        
-        message = Message(
+        if phone_number_user is None:
+            logging.warning(f'New phone number {phone_number} recognized.')
+            pnumbertouser = PNumbertoUser(
+                phone_number=phone_number
+            )
+            db.session.add(pnumbertouser)
+            db.session.commit()
+            return WebHelpers.EasyResponse(f'Thanks for choosing to be with us! Please fill out this form to complete your registration.', 201)
+        else:
+            if phone_number_user is not None and phone_number_user.user_id is None:
+                """
+                Basic xample form to have user send in, seperate fields with '.' in message:
+                Name.Email.
+                """
+                msg_array = body.split('.')
             
-        )
+                name = msg_array[0]
+                email = msg_array[1]
 
-        db.session.add(message)
-        db.session.commit()
-        logging.debug(f'New provider {provider.name} created.')
+                new_patient = Patient(
+                    name=name,
+                    email=email,
+                    phone_number=phone_number_user.phone_number
+                )
+                db.session.add(new_patient)
+                new_patient.set_creation_date()
+                db.session.commit()
+                phone_number_user.user_id = new_patient.id
+                db.session.commit()
 
-        return WebHelpers.EasyResponse(f'New provider {provider.name} created.', 201)
+                logging.warning(f'New patient registered. Name - {new_patient.name} Phone Number - {phone_number_user.phone_number}. ')
+                return WebHelpers.EasyResponse(f'Thanks {new_patient.name}! You will be notified when your physician accepts your registration.', 201)
+                
+
+
+
+        #db.session.add(message)
+        #db.session.commit()
+        #logging.debug(f'New provider {provider.name} created.')
+
+        #return WebHelpers.EasyResponse(f'New provider {provider.name} created.', 201)
 
 @message_bp.route('/api/message/<int:id>', methods=['DELETE'])
 def delete_message(id):
