@@ -8,8 +8,10 @@ class Message(db.Model):
     __tablename__ = 'Message'
     
     id = db.Column(db.Integer, primary_key=True)
-    sender_id = db.Column(db.Integer, db.ForeignKey('Patient.id'), nullable=True)
-    recipient_id = db.Column(db.Integer, db.ForeignKey('Physician.id'), nullable=True)
+    patient_sender_id = db.Column(db.Integer, db.ForeignKey('Patient.id'), nullable=True)
+    physician_recipient_id = db.Column(db.Integer, db.ForeignKey('Physician.id'), nullable=True)
+    physician_sender_id = db.Column(db.Integer, db.ForeignKey('Physician.id'), nullable=True)
+    patient_recipient_id = db.Column(db.Integer, db.ForeignKey('Patient.id'), nullable=True)
     body = db.Column(db.String(), nullable=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
@@ -19,8 +21,8 @@ class Message(db.Model):
     def serialize(self):
         return {
             'id': self.id,
-            'sender_id': self.sender_id,
-            'recipient_id': self.recipient_id,
+            'patient_sender_id': self.patient_sender_id,
+            'physician_recipient_id': self.physician_recipient_id,
             'body': self.body,
             'timestamp': self.timestamp
         }

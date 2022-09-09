@@ -7,6 +7,7 @@ from flask import current_app as app, jsonify
 from ..models.Messages import Message, db, PNumbertoUser
 from ..services.WebHelpers import WebHelpers
 from ..services.twilio.SignUpHelpers import TwilioSignUpHelpers
+from ..services.twilio.MessageTracking import MessageTracking
 import logging
 from flask_cors import cross_origin
 from twilio.twiml.messaging_response import MessagingResponse
@@ -74,7 +75,10 @@ def create_message():
 
             #see if user has signed up and been accepted
             if TwilioSignUpHelpers.CheckIfAccepted(phone_number) == True:
-                return f'Your physician has received your message.'
+                # if signed up and accepted, create new message to track conversation
+                if MessageTracking.create_new_message_patient(phone_number, body) == True:
+                    return f'Your physician has received your message.'
+
             #if new, prepare db table for new account registration
             elif TwilioSignUpHelpers.CheckForNewUser(phone_number) == True:
                 status_msg = TwilioSignUpHelpers.InitiateUserSignUp(phone_number)

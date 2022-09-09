@@ -46,6 +46,7 @@ def create_app(config):
         from .routes.office import office_bp
         from .routes.user import user_bp
         from .routes.message import message_bp
+        from .routes.physician import physician_bp
         
         # Register Blueprints
         app.register_blueprint(app_bp)
@@ -54,6 +55,7 @@ def create_app(config):
         app.register_blueprint(office_bp)
         app.register_blueprint(user_bp)
         app.register_blueprint(message_bp)
+        app.register_blueprint(physician_bp)
         # Create Database Models
         db.create_all()
 
