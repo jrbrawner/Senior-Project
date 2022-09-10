@@ -3,6 +3,7 @@ import axios from 'axios';
 class ProviderDataService {
 
     getAll(){
+        
         return axios.get("/provider");
     }
 

@@ -15,7 +15,7 @@ from ..services.twilio.test import TwilioClient
 from twilio.base.exceptions import TwilioRestException
 
 
-twilioClient = TwilioClient(account_sid='AC7a914eac1184b21ab730290493c44e8a', auth_token='21b8085b0b0a5b8e8cbe58d4ea2ee623')
+twilioClient = TwilioClient(account_sid='', auth_token='')
 message_bp = Blueprint('message', __name__)
 
 @message_bp.route('/api/message', methods = ['GET'])
@@ -61,11 +61,7 @@ def create_message():
     """
     POST: Creates new message.
 
-    To-Do: Implement receiving a message from Twilio.
     """
-
-    if request.method == 'GET':
-        return WebHelpers.EasyResponse(f'Use GET method to create message.', 405)
 
     if request.method == 'POST':
 
@@ -97,7 +93,7 @@ def create_message():
                     return WebHelpers.EasyResponse('Success.', 200)
             except TwilioRestException as e:
                 logging.warning(e)
-                pass
+                return WebHelpers.EasyResponse('Error', 400)
 
 
 

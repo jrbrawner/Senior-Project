@@ -50,7 +50,7 @@ def get_provider(id):
         return resp
     
 
-@provider_bp.route('/api/provider/', methods = ['POST'])
+@provider_bp.route('/api/provider', methods = ['POST'])
 @login_required
 def create_provider():
     """
