@@ -1,4 +1,5 @@
 from .. import db
+from flask import jsonify
 
 class Provider(db.Model):
     """Model class for provider. (Organization)"""
@@ -14,7 +15,7 @@ class Provider(db.Model):
         data = {
             'id': self.id,
             'name': self.name,
-            'offices': 'temp'
+            'offices': jsonify([x for x in self.offices])
         }
 
         return data
@@ -43,7 +44,8 @@ class Office(db.Model):
             'address': self.address,
             'city': self.city,
             'state': self.state,
-            'provider_id': self.provider_id
+            'provider_id': self.provider_id,
+            'physicians': [x.serialize() for x in self.physicians]
         }
 
         return data

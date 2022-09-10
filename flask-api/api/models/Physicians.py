@@ -16,6 +16,15 @@ class Physician(UserMixin, db.Model):
     provider_id = db.Column(db.Integer, db.ForeignKey('Provider.id'), nullable=False)
     office_id = db.Column(db.Integer, db.ForeignKey('Office.id'), nullable=False)
     patients = db.relationship('Patient', backref='patients', lazy=True)
+    pnumber_patients = db.relationship('PNumbertoUser', backref='pnumber_patients', lazy=True)
+
+    messages_sent = db.relationship('Message',
+                                    foreign_keys='Message.physician_sender_id',
+                                    backref='sent_physician', lazy='dynamic')
+
+    messages_received = db.relationship('Message',
+                                        foreign_keys='Message.physician_sender_id',
+                                        backref='received_physician', lazy='dynamic')
 
     def set_password(self, password):
         """Create hashed password."""
@@ -37,3 +46,9 @@ class Physician(UserMixin, db.Model):
 
     def __repr__(self):
         return f'Physician {self.name}'
+
+    def serialize(self):
+        return {
+            'Physician_id': self.id,
+            'Physician_name': self.name,
+        }

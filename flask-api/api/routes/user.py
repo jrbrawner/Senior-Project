@@ -90,7 +90,9 @@ def update_user(id):
             return WebHelpers.EasyResponse(f'user with that id does not exist.', 404)
     else:
         return WebHelpers.EasyResponse('You are not authorized to view this page.', 403)
-    
+
+@login_required
+@cross_origin()
 @user_bp.route('/api/user/<int:id>', methods=['DELETE'])
 def delete_user(id):
 
@@ -114,6 +116,8 @@ def delete_user(id):
     else:
         return WebHelpers.EasyResponse('You are not authorized to view this page.', 403)
 
+@login_required
+@cross_origin()
 @user_bp.route('/api/user/new', methods=['GET'])
 def get_new_users():
 
@@ -131,7 +135,8 @@ def get_new_users():
     else:
         return WebHelpers.EasyResponse('You are not authorized to view this page.', 403)
 
-
+@login_required
+@cross_origin()
 @user_bp.route('/api/user/new/accept/<int:id>', methods = ['PUT'])
 def accept_new_user(id):
 
@@ -155,6 +160,9 @@ def accept_new_user(id):
     else:
         return WebHelpers.EasyResponse('You are not authorized to view this page.', 403)
 
+
+@login_required
+@cross_origin()
 @user_bp.route('/api/user/new/decline/<int:id>', methods = ['DELETE'])
 def decline_new_user(id):
 
@@ -173,6 +181,24 @@ def decline_new_user(id):
         return WebHelpers.EasyResponse(f'user with that id does not exist.', 404)
     else:
         return WebHelpers.EasyResponse('You are not authorized to view this page.', 403)
+
+@login_required
+@cross_origin()
+@user_bp.route('/api/user/<int:id>/messages', methods=['GET'])
+def get_user_msgs(id):
+
+    if session['login_type'] == 'physician':
+        user = Patient.query.get(id)
+
+        if user:
+            resp = jsonify([x.serialize() for x in user.messages_sent])
+            resp.status_code = 200
+
+            return resp
+            
+        
+
+
 
 
 

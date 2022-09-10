@@ -121,6 +121,21 @@ def delete_provider(id):
             return WebHelpers.EasyResponse(f'{provider.name} deleted.', 200)
 
         return WebHelpers.EasyResponse(f'Provider with that id does not exist.', 404)
+
+
+@provider_bp.route('/api/provider/<int:id>/offices', methods = ['GET'])
+def get_provider_offices(id):
+
+    provider = Provider.query.get(id)
+
+    if provider:
+        offices = provider.offices
+
+        resp = jsonify([x.serialize() for x in offices])
+
+        resp.status_code = 200
+
+        return resp
     
  
 

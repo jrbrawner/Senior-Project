@@ -24,13 +24,13 @@ class Patient(UserMixin, db.Model):
     physician_id = db.Column(db.Integer, db.ForeignKey('Physician.id'), nullable=True)
     phone_number = db.Column(db.ForeignKey('PNumbertoUser.phone_number'), nullable=False)
     
-    #messages_sent = db.relationship('Message',
-    #                                foreign_keys='Message.sender_id',
-    #                                backref='author', lazy='dynamic')
+    messages_sent = db.relationship('Message',
+                                    foreign_keys='Message.patient_sender_id',
+                                    backref='sent_patient', lazy='dynamic')
 
-    #messages_received = db.relationship('Message',
-    #                                    foreign_keys='Message.recipient_id',
-    #                                    backref='recipient', lazy='dynamic')
+    messages_received = db.relationship('Message',
+                                        foreign_keys='Message.patient_recipient_id',
+                                        backref='received_patient', lazy='dynamic')
 
     last_message_read_time = db.Column(db.DateTime)
 

@@ -7,6 +7,7 @@ from flask import current_app as app, jsonify
 from ..models.Messages import Message, db, PNumbertoUser
 from ..services.WebHelpers import WebHelpers
 from ..services.twilio.SignUpHelpers import TwilioSignUpHelpers
+from ..services.twilio.MessageTracking import MessageTracking
 import logging
 from flask_cors import cross_origin
 from twilio.twiml.messaging_response import MessagingResponse
@@ -94,7 +95,6 @@ def create_message():
             except TwilioRestException as e:
                 logging.warning(e)
                 return WebHelpers.EasyResponse('Error', 400)
-
 
 
 

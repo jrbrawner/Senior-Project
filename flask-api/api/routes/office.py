@@ -135,17 +135,45 @@ def delete_office(id):
 
     office = Office.query.filter_by(id = id).first()
 
-    if request.method == 'DELETE':
-        if office:
+    if office:
 
-            db.session.delete(office)
-            db.session.commit()
-            #return redirect('/api/office')
-            logging.info(f'{office.name} deleted.')
-            return WebHelpers.EasyResponse(f'{office.name} deleted.', 200)
+        db.session.delete(office)
+        db.session.commit()
+        #return redirect('/api/office')
+        logging.info(f'{office.name} deleted.')
+        return WebHelpers.EasyResponse(f' deleted the {office.name} office.', 200)
 
-        return WebHelpers.EasyResponse(f'Office with that id does not exist.', 404)
-    
+    return WebHelpers.EasyResponse(f'Office with that id does not exist.', 404)
+
+@office_bp.route('/api/office/<int:id>/physicians', methods = ['GET'])
+def get_office_physicians(id):
+
+    office = Office.query.get(id)
+
+    if office:
+        physicians = office.physicians
+        data = jsonify([x.serialize() for x in physicians])
+        resp = data
+        resp.status_code = 200
+
+        return resp
+
+
+@office_bp.route('/api/office/<int:id>/patients', methods = ['GET'])
+def get_office_patients(id):
+
+    office = Office.query.get(id)
+    data = {}
+
+    if office:
+        physicians = office.physicians
+        
+        resp = data
+        #resp.status_code = 200
+
+        return resp
+
+
  
 
         
