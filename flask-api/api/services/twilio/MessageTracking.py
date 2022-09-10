@@ -16,7 +16,8 @@ class MessageTracking:
             message = Message(
                 patient_sender_id = user.id,
                 physician_recipient_id = user.physician_id,
-                body=body
+                body=body,
+                patient_phone_number=phone_number
             )
 
             db.session.add(message)
@@ -27,4 +28,16 @@ class MessageTracking:
         else:
             return False
 
+    @staticmethod
+    def create_new_message_before_signup(phone_number, body):
+        
+            message = Message(
+                body=body,
+                patient_phone_number=phone_number
+            )
 
+            db.session.add(message)
+            db.session.commit()
+
+            logging.warning(f'Message from brand new user to their office.')
+            return True

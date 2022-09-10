@@ -14,7 +14,7 @@ from flask_login import current_user
 from ..services.twilio.test import TwilioClient
 
 user_bp = Blueprint('user_bp', __name__)
-twilioClient = TwilioClient(account_sid='', auth_token='')
+twilioClient = TwilioClient(account_sid='AC7a914eac1184b21ab730290493c44e8a', auth_token='69c339ed4f294b6b2f0f2bb5deb7fb96')
 
 @user_bp.route('/api/user', methods = ['GET'])
 @login_required
