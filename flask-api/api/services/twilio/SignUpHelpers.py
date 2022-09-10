@@ -63,7 +63,7 @@ class TwilioSignUpHelpers:
         db.session.commit()
         logging.warning(f'Phone number {phone_number} entry made. Ready for user sign-up.')
 
-        return f'Thanks for choosing to be with us! Please fill out this form to complete your registration.'
+        return f'Thanks for choosing to be with us! Please fill out this form to complete your registration. Name.Email.'
 
     @staticmethod
     def CreateNewUser(phone_number, msg):

@@ -12,9 +12,12 @@ import logging
 from flask_cors import cross_origin
 from twilio.twiml.messaging_response import MessagingResponse
 from ..models.Patients import Patient
+from ..services.twilio.test import TwilioClient
+from twilio.base.exceptions import TwilioRestException
 
+
+twilioClient = TwilioClient(account_sid='', auth_token='')
 message_bp = Blueprint('message', __name__)
-
 
 @message_bp.route('/api/message', methods = ['GET'])
 @login_required
@@ -59,37 +62,39 @@ def create_message():
     """
     POST: Creates new message.
 
-    To-Do: Implement receiving a message from Twilio.
     """
-
-    if request.method == 'GET':
-        return WebHelpers.EasyResponse(f'Use GET method to create message.', 405)
 
     if request.method == 'POST':
 
             #get phone number and msg from twixml
-            phone_number = request.form['phone_number']
-            body = request.form['body']
-
+            phone_number = request.values.get('From', None)
+            body = request.values.get('Body', None)
+            
             #logic for handling signup of new users
-
-            #see if user has signed up and been accepted
-            if TwilioSignUpHelpers.CheckIfAccepted(phone_number) == True:
-                # if signed up and accepted, create new message to track conversation
-                if MessageTracking.create_new_message_patient(phone_number, body) == True:
-                    return f'Your physician has received your message.'
-
-            #if new, prepare db table for new account registration
-            elif TwilioSignUpHelpers.CheckForNewUser(phone_number) == True:
-                status_msg = TwilioSignUpHelpers.InitiateUserSignUp(phone_number)
-                return WebHelpers.EasyResponse(status_msg, 201)
-            #see if user has signed up but not accepted,
-            elif TwilioSignUpHelpers.CheckIfRegistered(phone_number) == True:
-                return f'Your physician is in the process of accepting your registration.'
-                #user has signed up but account not made yet, initiate signup form
-            else:
-                status_msg = TwilioSignUpHelpers.CreateNewUser(phone_number=phone_number, msg=body)
-                return WebHelpers.EasyResponse(status_msg, 201)
+            try:
+                #see if user has signed up and been accepted
+                if TwilioSignUpHelpers.CheckIfAccepted(phone_number) == True:
+                    status_msg = f'Your physician has received your message.'
+                    twilioClient.send_message(phone_number, status_msg,)
+                    return WebHelpers.EasyResponse('Success.', 200)
+                #if new, prepare db table for new account registration
+                elif TwilioSignUpHelpers.CheckForNewUser(phone_number) == True:
+                    status_msg = TwilioSignUpHelpers.InitiateUserSignUp(phone_number)
+                    twilioClient.send_message(phone_number, status_msg)
+                    return WebHelpers.EasyResponse('Success.', 200)
+                #see if user has signed up but not accepted,
+                elif TwilioSignUpHelpers.CheckIfRegistered(phone_number) == True:
+                    status_msg = f'Your physician is in the process of accepting your registration.'
+                    twilioClient.send_message(phone_number, status_msg)
+                    return WebHelpers.EasyResponse('Success.', 200)
+                    #user has signed up but account not made yet, initiate signup form
+                else:
+                    status_msg = TwilioSignUpHelpers.CreateNewUser(phone_number=phone_number, msg=body)
+                    twilioClient.send_message(phone_number, status_msg)
+                    return WebHelpers.EasyResponse('Success.', 200)
+            except TwilioRestException as e:
+                logging.warning(e)
+                return WebHelpers.EasyResponse('Error', 400)
 
 
 

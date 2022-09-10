@@ -70,7 +70,6 @@ def create_office():
         zip_code = request.form['zip_code'] 
         provider_id = request.form['provider_id']
 
-
         office = Office(
             name=name,
             phone_number=phone_number,
