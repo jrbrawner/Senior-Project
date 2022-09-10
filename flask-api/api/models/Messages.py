@@ -10,6 +10,7 @@ class Message(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     sender_id = db.Column(db.Integer, db.ForeignKey('Patient.id'), nullable=True)
     recipient_id = db.Column(db.Integer, db.ForeignKey('Physician.id'), nullable=True)
+    patient_phone_number = 
     body = db.Column(db.String(), nullable=False)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
