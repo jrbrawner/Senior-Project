@@ -6,6 +6,7 @@ from flask import current_app as app
 from ...models.Messages import PNumbertoUser, db
 from ...models.Patients import Patient
 import logging
+from .MessageTracking import MessageTracking
 
 class TwilioSignUpHelpers:
 
@@ -52,13 +53,15 @@ class TwilioSignUpHelpers:
     
 
     @staticmethod
-    def InitiateUserSignUp(phone_number):
+    def InitiateUserSignUp(phone_number, msg):
         """
         Creates an entry in the database that is associated with a users phone number.
         """
         pnumbertouser = PNumbertoUser(
                 phone_number=phone_number
             )
+
+        MessageTracking.create_new_message_before_signup(phone_number=phone_number, body=msg)
         db.session.add(pnumbertouser)
         db.session.commit()
         logging.warning(f'Phone number {phone_number} entry made. Ready for user sign-up.')
@@ -85,11 +88,13 @@ class TwilioSignUpHelpers:
                     email=email,
                     phone_number=phone_number_user.phone_number
                 )
+
                 db.session.add(new_patient)
                 new_patient.set_creation_date()
                 db.session.commit()
                 phone_number_user.user_id = new_patient.id
                 db.session.commit()
+                MessageTracking.create_new_message_before_signup(phone_number=phone_number, body=msg)
 
                 logging.warning(f'New user registered. Name - {new_patient.name} Phone Number - {phone_number_user.phone_number}. ')
                 return f'Thanks {new_patient.name}! You will be notified when your physician accepts your registration.'
