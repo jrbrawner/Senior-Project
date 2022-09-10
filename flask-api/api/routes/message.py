@@ -16,7 +16,7 @@ from ..services.twilio.test import TwilioClient
 from twilio.base.exceptions import TwilioRestException
 from ..services.twilio.MessageTracking import MessageTracking
 
-twilioClient = TwilioClient(account_sid='AC7a914eac1184b21ab730290493c44e8a', auth_token='69c339ed4f294b6b2f0f2bb5deb7fb96')
+twilioClient = TwilioClient(account_sid='', auth_token='')
 message_bp = Blueprint('message', __name__)
 
 @message_bp.route('/api/message', methods = ['GET'])
