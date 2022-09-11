@@ -1,7 +1,5 @@
 import React from 'react';
-import ProviderDataSerivce from '../services/provider.service'
-
-//const baseURL = "http://127.0.0.1:5000/api";
+import ProviderDataSerivce from '../../services/provider.service'
 
 export default function App() {
   const [providers, setProviders] = React.useState(null);
@@ -18,7 +16,13 @@ export default function App() {
   return (
     <div>
       {providers.map((provider) => (
-        <div>{provider.name}{provider.id}{provider.offices}</div>
+        <ul key={provider.id}>
+          <h2>{provider.name}</h2>
+          <li>{provider.offices}</li>
+          <li>{provider.twilio_account_id}</li>
+          <li>{provider.twilio_auth_token}</li>
+        </ul>
+        
       ))}
     </div>
   );

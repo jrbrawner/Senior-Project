@@ -1,9 +1,8 @@
 from flask import Blueprint, request, send_from_directory
 from .. import login_manager
-from flask_login import logout_user, login_required
+from flask_login import logout_user, login_required, current_user
 from sqlalchemy import create_engine, MetaData
-import json
-from flask import current_app as app, jsonify
+from flask import current_app as app, jsonify, session
 from ..models.Messages import Message, db, PNumbertoUser
 from ..services.WebHelpers import WebHelpers
 from ..services.twilio.SignUpHelpers import TwilioSignUpHelpers
@@ -12,11 +11,12 @@ import logging
 from flask_cors import cross_origin
 from twilio.twiml.messaging_response import MessagingResponse
 from ..models.Patients import Patient
-from ..services.twilio.test import TwilioClient
+from ..services.twilio.ClientCreation import TwilioClient
 from twilio.base.exceptions import TwilioRestException
 from ..services.twilio.MessageTracking import MessageTracking
+from ..models.ProviderModels import Office, Provider
 
-twilioClient = TwilioClient(account_sid='', auth_token='')
+
 message_bp = Blueprint('message', __name__)
 
 @message_bp.route('/api/message', methods = ['GET'])
@@ -63,39 +63,42 @@ def create_message():
     POST: Creates new message.
 
     """
+    #get phone number and msg from twixml
+    phone_number = request.values.get('From', None)
+    body = request.values.get('Body', None)
+    to = request.values.get('To', None)
 
-    if request.method == 'POST':
-
-            #get phone number and msg from twixml
-            phone_number = request.values.get('From', None)
-            body = request.values.get('Body', None)
-            
-            #logic for handling signup of new users
-            try:
-                #see if user has signed up and been accepted
-                if TwilioSignUpHelpers.CheckIfAccepted(phone_number) == True:
-                    status_msg = f'Your physician has received your message.'
-                    MessageTracking.create_new_message_patient(phone_number=phone_number, body=body)
-                    twilioClient.send_message(phone_number, status_msg,)
-                    return WebHelpers.EasyResponse('Success.', 200)
-                #if new, prepare db table for new account registration
-                elif TwilioSignUpHelpers.CheckForNewUser(phone_number) == True:
-                    status_msg = TwilioSignUpHelpers.InitiateUserSignUp(phone_number, body)
-                    twilioClient.send_message(phone_number, status_msg)
-                    return WebHelpers.EasyResponse('Success.', 200)
-                #see if user has signed up but not accepted,
-                elif TwilioSignUpHelpers.CheckIfRegistered(phone_number) == True:
-                    status_msg = f'Your physician is in the process of accepting your registration.'
-                    twilioClient.send_message(phone_number, status_msg)
-                    return WebHelpers.EasyResponse('Success.', 200)
-                    #user has signed up but account not made yet, initiate signup form
-                else:
-                    status_msg = TwilioSignUpHelpers.CreateNewUser(phone_number=phone_number, msg=body)
-                    twilioClient.send_message(phone_number, status_msg)
-                    return WebHelpers.EasyResponse('Success.', 200)
-            except TwilioRestException as e:
-                logging.warning(e)
-                return WebHelpers.EasyResponse('Error', 400)
+    office = Office.query.filter_by(phone_number = to).first()
+    provider_id = office.provider_id
+    provider = Provider.query.get(provider_id)
+    twilioClient = TwilioClient(provider.twilio_account_id, provider.twilio_auth_token)
+    
+    #logic for handling signup of new users
+    try:
+        #see if user has signed up and been accepted
+        if TwilioSignUpHelpers.CheckIfAccepted(phone_number) == True:
+            status_msg = f'Your physician has received your message.'
+            MessageTracking.create_new_message_patient(phone_number=phone_number, body=body)
+            twilioClient.send_message(office.phone_number, phone_number, status_msg,)
+            return WebHelpers.EasyResponse('Success.', 200)
+        #if new, prepare db table for new account registration
+        elif TwilioSignUpHelpers.CheckForNewUser(phone_number) == True:
+            status_msg = TwilioSignUpHelpers.InitiateUserSignUp(phone_number, body)
+            twilioClient.send_message(office.phone_number, phone_number, status_msg)
+            return WebHelpers.EasyResponse('Success.', 200)
+        #see if user has signed up but not accepted,
+        elif TwilioSignUpHelpers.CheckIfRegistered(phone_number) == True:
+            status_msg = f'Your physician is in the process of accepting your registration.'
+            twilioClient.send_message(office.phone_number, phone_number, status_msg)
+            return WebHelpers.EasyResponse('Success.', 200)
+            #user has signed up but account not made yet, initiate signup form
+        else:
+            status_msg = TwilioSignUpHelpers.CreateNewUser(phone_number=phone_number, msg=body)
+            twilioClient.send_message(office.phone_number, phone_number, status_msg)
+            return WebHelpers.EasyResponse('Success.', 200)
+    except TwilioRestException as e:
+        logging.warning(e)
+        return WebHelpers.EasyResponse('Error', 400)
 
 
 
@@ -114,3 +117,24 @@ def delete_message(id):
             return WebHelpers.EasyResponse(f'{message.name} deleted.', 200)
 
         return WebHelpers.EasyResponse(f'message with that id does not exist.', 404)
+
+
+@message_bp.route('/api/message/<int:id>', methods=['POST'])
+def physician_message(id):
+
+    if session['login_type'] == 'physician':
+        user = Patient.query.get(id)
+        message = request.form['msg']
+        office_id = current_user.office_id
+        office = Office.query.get(office_id)
+        provider_id = office.provider_id
+        provider = Provider.query.get(provider_id)
+        twilioClient = TwilioClient(provider.twilio_account_id, provider.twilio_auth_token)
+
+        if user:
+            twilioClient.send_message(office.phone_number, user.phone_number, message)
+            MessageTracking.create_new_message_physician_to_patient(current_user.id, user.phone_number, message)
+            logging.warning(f'{current_user.name} sent a message to patient with id ({user.id})')
+            return WebHelpers.EasyResponse(f'Message sent.', 200)
+
+        return WebHelpers.EasyResponse(f'User with id {id} does not exist.', 404)

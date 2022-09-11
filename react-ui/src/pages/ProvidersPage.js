@@ -1,7 +1,7 @@
 import Body from '../components/Body'
-import Providers from '../components/Providers'
+import Providers from '../components/ProviderComponents/Providers'
 
-export default function ProviderPage(){
+export default function ProvidersPage(){
     return(
         <Body sidebar>
             <Providers />

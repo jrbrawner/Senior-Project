@@ -11,10 +11,10 @@ from ..services.WebHelpers import WebHelpers
 import logging
 from flask_cors import cross_origin
 from flask_login import current_user
-from ..services.twilio.test import TwilioClient
+from ..services.twilio.ClientCreation import TwilioClient
+from ..models.ProviderModels import Office, Provider
 
 user_bp = Blueprint('user_bp', __name__)
-twilioClient = TwilioClient(account_sid='', auth_token='')
 
 @user_bp.route('/api/user', methods = ['GET'])
 @login_required
@@ -141,9 +141,16 @@ def get_new_users():
 def accept_new_user(id):
 
     if session['login_type'] == 'physician':
-
+        
         physician = Physician.query.get(current_user.id)
         user = Patient.query.get(id)
+        office_id = physician.office_id
+        office = Office.query.get(office_id)
+        provider_id = office.provider_id
+        provider = Provider.query.get(provider_id)
+
+        twilioClient = TwilioClient(provider.twilio_account_id, provider.twilio_auth_token)
+
         if user:
             user_name = user.name
             user.physician_id = physician.id
@@ -152,7 +159,7 @@ def accept_new_user(id):
 
             logging.warning(f'{current_user} accepted {user.name} as a patient.')
             db.session.commit()
-            twilioClient.send_message(user.phone_number, f'{user_name}, your physician has accepted your registration.')
+            twilioClient.send_message(office.phone_number, user.phone_number, f'{user_name}, your physician has accepted your registration.')
             return WebHelpers.EasyResponse('Success.', 200)
             
 

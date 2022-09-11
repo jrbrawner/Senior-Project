@@ -10,14 +10,14 @@ class TwilioClient():
         self.auth_token = auth_token
         self.client = Client(account_sid, auth_token)
 
-    def send_message(self, user_number, text):
+    def send_message(self, office_number, user_number, text):
         """
         Send message using twilio client.
         """
         message = self.client.messages \
                         .create(
                             body=text,
-                            from_='+18155510787',
+                            from_=office_number,
                             to=user_number
                  )
 

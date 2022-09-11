@@ -65,9 +65,13 @@ def create_provider():
     if request.method == 'POST':
 
         name = request.form['name']
+        twilio_account_id = request.form['twilio_account_id']
+        twilio_auth_token = request.form['twilio_auth_token']
 
         provider = Provider(
-            name=name
+            name=name,
+            twilio_account_id=twilio_account_id,
+            twilio_auth_token=twilio_auth_token
         )
 
         db.session.add(provider)

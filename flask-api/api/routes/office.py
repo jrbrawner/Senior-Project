@@ -100,30 +100,24 @@ def update_office(id):
     if request.method == 'PUT':
         if office:
 
-            db.session.delete(office)
-            db.session.commit()
-
             name = request.form['name']
-            phone_number = request.form['phone_number']
+            phone_number = request.form['phoneNumber']
             address = request.form['address']
             city = request.form['city']
             state = request.form['state']
-            zip_code = request.form['zip_code']
-            provider_id = request.form['provider_id']
+            zip_code = request.form['zipCode']
+            provider_id = request.form['providerId']
 
-            office = Office(
-                name=name,
-                phone_number=phone_number,
-                address=address,
-                city=city,
-                state=state,
-                zip_code=zip_code,
-                provider_id = provider_id
-            )
+            office.name = name
+            office.phone_number = phone_number
+            office.address = address
+            office.city = city
+            office.state = state
+            office.zip_code = zip_code
+            office.provider_id = provider_id
             
-            db.session.add(office)
             db.session.commit()
-            logging.info(f'office {office.id} updated.')
+            logging.info(f'Office {office.id} updated.')
             return WebHelpers.EasyResponse(f'{office_name} updated.', 200)
 
             #return redirect(f'api/office/{id}')

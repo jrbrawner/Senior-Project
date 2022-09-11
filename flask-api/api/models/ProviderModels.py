@@ -8,6 +8,8 @@ class Provider(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), index=True)
+    twilio_account_id = db.Column(db.String(64), nullable=False)
+    twilio_auth_token = db.Column(db.String(64), nullable=False)
     offices = db.relationship('Office', backref='offices', lazy = True)
 
     def serialize(self):
@@ -15,7 +17,11 @@ class Provider(db.Model):
         data = {
             'id': self.id,
             'name': self.name,
-            'offices': jsonify([x for x in self.offices])
+            'offices': str([x.serialize() for x in self.offices]),
+            'twilio_account_id': self.twilio_account_id,
+            'twilio_auth_token': self.twilio_auth_token
+
+            #'offices': jsonify([x.serialize() for x in self.offices])
         }
 
         return data
@@ -45,7 +51,8 @@ class Office(db.Model):
             'city': self.city,
             'state': self.state,
             'provider_id': self.provider_id,
-            'physicians': [x.serialize() for x in self.physicians]
+            'zip_code': self.zip_code
+            #'physicians': jsonify([x.serialize() for x in self.physicians])
         }
 
         return data
