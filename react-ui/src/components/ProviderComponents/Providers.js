@@ -1,5 +1,5 @@
 import React from 'react';
-import ProviderDataSerivce from '../services/provider.service'
+import ProviderDataSerivce from '../../services/provider.service'
 
 //const baseURL = "http://127.0.0.1:5000/api";
 

@@ -1,9 +1,9 @@
 import Container from 'react-bootstrap/Container';
 import Header from './components/Header';
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
-import ProviderPage from './pages/ProviderPage';
-import LoginPage from './pages/LoginPage';
-import PhysicianPage from './pages/PhysicianPage';
+import ProvidersPage from './pages/ProvidersPage';
+import OfficesPage from './pages/OfficesPage'
+
 
 export default function App(){
 
@@ -13,10 +13,8 @@ export default function App(){
         <BrowserRouter>
         <Header/>
           <Routes>
-            <Route path="/provider" element={<ProviderPage/>}/>
-            <Route path="/login" element={<LoginPage/>}/>
-            <Route path='/physician/:id' element={<PhysicianPage/>}/>
-            <Route path="*" element={<Navigate to="/" />} />
+            <Route path="/provider" element={<ProvidersPage/>}/>
+            <Route path="/office" element={<OfficesPage/>}/>
           </Routes>
         </BrowserRouter>
       </Container>

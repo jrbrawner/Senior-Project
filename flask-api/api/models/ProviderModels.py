@@ -15,7 +15,8 @@ class Provider(db.Model):
         data = {
             'id': self.id,
             'name': self.name,
-            'offices': jsonify([x for x in self.offices])
+            'offices': str([x.serialize() for x in self.offices])
+            #'offices': jsonify([x.serialize() for x in self.offices])
         }
 
         return data
@@ -44,8 +45,8 @@ class Office(db.Model):
             'address': self.address,
             'city': self.city,
             'state': self.state,
-            'provider_id': self.provider_id,
-            'physicians': [x.serialize() for x in self.physicians]
+            'provider_id': self.provider_id
+            #'physicians': jsonify([x.serialize() for x in self.physicians])
         }
 
         return data
