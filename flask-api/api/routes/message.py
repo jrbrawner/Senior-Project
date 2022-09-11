@@ -16,6 +16,7 @@ from twilio.base.exceptions import TwilioRestException
 from ..services.twilio.MessageTracking import MessageTracking
 from ..models.ProviderModels import Office, Provider
 
+
 message_bp = Blueprint('message', __name__)
 
 @message_bp.route('/api/message', methods = ['GET'])
@@ -116,6 +117,7 @@ def delete_message(id):
             return WebHelpers.EasyResponse(f'{message.name} deleted.', 200)
 
         return WebHelpers.EasyResponse(f'message with that id does not exist.', 404)
+
 
 @message_bp.route('/api/message/<int:id>', methods=['POST'])
 def physician_message(id):

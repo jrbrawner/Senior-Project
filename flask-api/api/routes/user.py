@@ -16,7 +16,6 @@ from ..models.ProviderModels import Office, Provider
 
 user_bp = Blueprint('user_bp', __name__)
 
-
 @user_bp.route('/api/user', methods = ['GET'])
 @login_required
 @cross_origin()
