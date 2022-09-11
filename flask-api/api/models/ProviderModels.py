@@ -45,7 +45,8 @@ class Office(db.Model):
             'address': self.address,
             'city': self.city,
             'state': self.state,
-            'provider_id': self.provider_id
+            'provider_id': self.provider_id,
+            'zip_code': self.zip_code
             #'physicians': jsonify([x.serialize() for x in self.physicians])
         }
 
