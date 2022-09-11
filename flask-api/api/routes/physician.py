@@ -97,7 +97,6 @@ def delete_physician(id):
         physician_name = physician.name
         physician_id = physician.id
 
-
         if request.method == 'DELETE':
             if physician:
 
