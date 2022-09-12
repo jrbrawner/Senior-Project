@@ -1,6 +1,7 @@
 """Initialize app."""
 from distutils.command.config import config
-from flask import Flask
+from flask import Flask, session
+from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 import logging
@@ -22,10 +23,12 @@ def create_app(config):
     else:
         #change to prod for deployment
         app.config.from_object('config.DevConfig')
+        
     
     # Initialize Plugins
     db.init_app(app)
     login_manager.init_app(app)
+    Session(app)
 
     #Set up logging
     logging.basicConfig(filename='record.log',level=logging.DEBUG, format=f'%(asctime)s %(levelname)s %(name)s : %(message)s', filemode='w+')
