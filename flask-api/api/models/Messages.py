@@ -24,7 +24,7 @@ class Message(db.Model):
         db.Integer, db.ForeignKey("Patient.id"), nullable=True
     )
     patient_phone_number = db.Column(db.String(16), nullable=False, index=True)
-    body = db.Column(EncryptedType(db.String, app.config['SECRET_KEY']), nullable=True)
+    body = db.Column(EncryptedType(db.String, app.config["SECRET_KEY"]), nullable=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):

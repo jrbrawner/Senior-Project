@@ -11,7 +11,7 @@ import logging
 from flask_cors import cross_origin
 from twilio.twiml.messaging_response import MessagingResponse
 from ..models.Patients import Patient
-from ..services.twilio.ClientCreation import TwilioClient
+from ..services.twilio.TwilioClient import TwilioClient
 from twilio.base.exceptions import TwilioRestException
 from ..services.twilio.MessageTracking import MessageTracking
 from ..models.ProviderModels import Office, Provider
