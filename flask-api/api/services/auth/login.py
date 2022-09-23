@@ -1,15 +1,18 @@
 from ..WebHelpers import WebHelpers
 from flask_login import current_user, login_user
 import logging
-from ...models.Patients import Patient
+from ...models.Employees import Employee
+from ...models.Admins import Admin
 from ...models.Physicians import Physician
 from ...models.Employees import Employee
 from flask_session import Session
 from flask import session
+from functools import wraps
+
 
 
 class Login:
-    def login_patient(request):
+    def login_employee(request):
 
         if current_user.is_authenticated:
             return WebHelpers.EasyResponse(
@@ -21,20 +24,20 @@ class Login:
         # next_page = request.form['next_page']
 
         # Validate login attempt
-        patient = Patient.query.filter_by(email=email).first()
+        employee = Employee.query.filter_by(email=email).first()
 
-        if patient and patient.check_password(password=password):
-            # Patient exists and password matches password in db
-            login_user(patient)
-            patient.set_last_login()
-            session["login_type"] = "patient"
-            logging.debug(f"{patient.name} logged in.")
+        if employee and employee.check_password(password=password):
+            # Employee exists and password matches password in db
+            login_user(employee)
+            employee.set_last_login()
+            session["login_type"] = "employee"
+            logging.debug(f"{employee.name} logged in.")
 
-            return WebHelpers.EasyResponse(patient.name + " logged in.", 405)
+            return WebHelpers.EasyResponse(employee.name + " logged in.", 405)
 
         # Patient exists but password does not match password in db
         return WebHelpers.EasyResponse(
-            "Invalid Patient email/password combination.", 405
+            "Invalid Employee email/password combination.", 405
         )
 
     def login_physician(request):
@@ -52,7 +55,7 @@ class Login:
         physician = Physician.query.filter_by(email=email).first()
 
         if physician and physician.check_password(password=password):
-            # Patient exists and password matches password in db
+            #  Patient exists and password matches password in db
 
             login_user(physician)
             physician.set_last_login()
@@ -66,7 +69,7 @@ class Login:
             "Invalid Physician email/password combination.", 405
         )
 
-    def login_employee(request):
+    def login_admin(request):
 
         if current_user.is_authenticated:
             return WebHelpers.EasyResponse(
@@ -78,19 +81,59 @@ class Login:
         # next_page = request.form['next_page']
 
         # Validate login attempt
-        employee = Employee.query.filter_by(email=email).first()
+        admin = Admin.query.filter_by(email=email).first()
 
-        if employee and employee.check_password(password=password):
-            # Patient exists and password matches password in db
+        if admin and admin.check_password(password=password):
+            # Admin exists and password matches password in db
 
-            login_user(employee)
-            employee.set_last_login()
-            session["login_type"] = "employee"
-            logging.debug(f"Employee - {employee.name} logged in.")
+            login_user(admin)
+            admin.set_last_login()
+            session["login_type"] = "admin"
+            logging.debug(f"{admin.name} logged in.")
 
-            return WebHelpers.EasyResponse(employee.name + " logged in.", 405)
+            return WebHelpers.EasyResponse(admin.name + " logged in.", 405)
 
-        # Patient exists but password does not match password in db
-        return WebHelpers.EasyResponse(
-            "Invalid Employee email/password combination.", 405
-        )
+        # Admin exists but password does not match password in db
+        return WebHelpers.EasyResponse("Invalid Admin email/password combination.", 405)
+
+
+def admin_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        login_type = session.get("admin")
+        if login_type == "admin":
+            return f(*args, **kwargs)
+        else:
+            return f'"You need to be an admin to use this route."'
+
+    return wrap
+
+
+def physician_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        login_type = session.get("login_type")
+        if login_type == "physician" or login_type == "admin":
+            return f(*args, **kwargs)
+        else:
+            return f'"You need to be a physician or admin to use this route."'
+
+    return wrap
+
+
+def employee_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        login_type = session.get("admin")
+        if (
+            login_type == "admin"
+            or login_type == "physician"
+            or login_type == "employee"
+        ):
+            return f(*args, **kwargs)
+        else:
+            return (
+                f'"You need to be an employee, physician, or admin to use this route."'
+            )
+
+    return wrap

@@ -16,9 +16,18 @@ class Employee(UserMixin, db.Model):
     password = db.Column(
         db.String(200), primary_key=False, unique=False, nullable=False
     )
-    phone_number = db.Column(db.String(20), nullable=False)
     provider_id = db.Column(db.Integer, db.ForeignKey("Provider.id"), nullable=False)
     office_id = db.Column(db.Integer, db.ForeignKey("Office.id"), nullable=False)
+    # patients = db.relationship('Patient', backref='patients', lazy=True)
+    # pnumber_patients = db.relationship('PNumbertoUser', backref='pnumber_patients', lazy=True)
+
+    # messages_sent = db.relationship('Message',
+    #                                foreign_keys='Message.Employee_sender_id',
+    #                                backref='sent_Employee', lazy='dynamic')
+
+    # messages_received = db.relationship('Message',
+    #                                    foreign_keys='Message.Employee_sender_id',
+    #                                    backref='received_Employee', lazy='dynamic')
 
     def set_password(self, password):
         """Create hashed password."""
@@ -39,4 +48,7 @@ class Employee(UserMixin, db.Model):
         return f"Employee {self.name}"
 
     def serialize(self):
-        return {"Employee_id": self.id, "Employee_name": self.name}
+        return {
+            "Employee_id": self.id,
+            "Employee_name": self.name,
+        }

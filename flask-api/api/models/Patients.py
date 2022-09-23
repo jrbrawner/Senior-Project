@@ -10,22 +10,21 @@ import json
 from ..models.Physicians import Physician
 
 
+
 class Patient(UserMixin, db.Model):
     """Patient account model."""
 
     __tablename__ = "Patient"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False, unique=False)
+    name = db.Column(db.String(100),  nullable=False,  unique=False)
     email = db.Column(db.String(40), unique=True, nullable=False)
-    password = db.Column(db.String(200), primary_key=False, unique=False, nullable=True)
+    # password = db.Column(db.String(200), primary_key=False, unique=False, nullable=True)
     created_on = db.Column(db.DateTime, index=False, unique=False, nullable=True)
     last_login = db.Column(db.DateTime, index=False, unique=False, nullable=True)
     profile_pic = db.Column(db.String(), index=False, unique=False, nullable=True)
     physician_id = db.Column(db.Integer, db.ForeignKey("Physician.id"), nullable=True)
-    phone_number = db.Column(
-        db.ForeignKey("PNumbertoUser.phone_number"), nullable=False
-    )
+    phone_number = db.Column(db.ForeignKey("PNumbertoUser.phone_number"), nullable=True)
 
     messages_sent = db.relationship(
         "Message",
@@ -82,3 +81,4 @@ class Patient(UserMixin, db.Model):
             "Patient_id": self.id,
             "Patient_name": self.name,
         }
+

@@ -12,6 +12,7 @@ db = SQLAlchemy()
 login_manager = LoginManager()
 
 
+
 def create_app(config):
     """Construct the core app object."""
     app = Flask(__name__)
@@ -54,6 +55,8 @@ def create_app(config):
         from .routes.user import user_bp
         from .routes.message import message_bp
         from .routes.physician import physician_bp
+        from .routes.employee import employee_bp
+        from .routes.admin import admin_bp
 
         # Register Blueprints
         app.register_blueprint(app_bp)
@@ -63,6 +66,8 @@ def create_app(config):
         app.register_blueprint(user_bp)
         app.register_blueprint(message_bp)
         app.register_blueprint(physician_bp)
+        app.register_blueprint(employee_bp)
+        app.register_blueprint(admin_bp)
         # Create Database Models
         db.create_all()
 
@@ -79,5 +84,6 @@ def create_test_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = "xxxxxxtestdatabasexxx"
     # Dynamically bind SQLAlchemy to application
     db.init_app(app)
-    app.app_context().push()  # this does the binding
+    app.app_context().push()   # this does the binding
     return app
+

@@ -11,7 +11,7 @@ from ..services.WebHelpers import WebHelpers
 import logging
 from flask_cors import cross_origin
 from flask_login import current_user
-from ..services.twilio.ClientCreation import TwilioClient
+from ..services.twilio.TwilioClient import TwilioClient
 from ..models.ProviderModels import Office, Provider
 
 user_bp = Blueprint("user_bp", __name__)

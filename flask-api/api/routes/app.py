@@ -1,12 +1,24 @@
-from flask import Blueprint, request, send_from_directory
-from .. import login_manager
-from flask_login import logout_user
-from sqlalchemy import create_engine, MetaData
-import json
+from flask import Blueprint
 from flask import current_app as app, jsonify
 import time
+from ..models.Admins import Admin, db
+import logging
+
 
 app_bp = Blueprint("app_bp", __name__)
+
+
+@app.before_first_request
+def start_up():
+    if Admin.query.count() == 0:
+
+        admin = Admin(name="admin", email="admin@email.com", password="adminpassword")
+        admin.set_creation_date()
+        db.session.add(admin)
+        db.session.commit()
+        logging.warning(
+            f"No admin found, default admin account made. Make sure default credentials are changed."
+        )
 
 
 @app_bp.route("/", methods=["GET"])

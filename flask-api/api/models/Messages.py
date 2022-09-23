@@ -2,6 +2,8 @@ from .. import db
 from datetime import datetime
 from flask import current_app as app
 from .Physicians import Physician
+from sqlalchemy_utils import EncryptedType
+
 
 
 class Message(db.Model):
@@ -23,7 +25,7 @@ class Message(db.Model):
         db.Integer, db.ForeignKey("Patient.id"), nullable=True
     )
     patient_phone_number = db.Column(db.String(16), nullable=False, index=True)
-    body = db.Column(db.String(), nullable=False)
+    body = db.Column(EncryptedType(db.String, app.config["SECRET_KEY"]), nullable=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):

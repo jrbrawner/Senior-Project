@@ -2,49 +2,41 @@ from ...services.WebHelpers import WebHelpers
 from ...models.Patients import db, Patient
 from ...models.Physicians import Physician
 from ...models.Employees import Employee
+from ...models.Admins import Admin
 import logging
 from flask_login import login_user
 from flask import session
-from flask_session import Session
+from .login import admin_required, employee_required, physician_required
 
 
 class SignUp:
+    @employee_required
     def signup_patient(request):
         """Handles logic for creating a new patient."""
-        if session["login_type"] == "physician":
-            name = request.form["name"]
-            email = request.form["email"]
-            password = request.form["password"]
-            physician_id = request.form["physician_id"]
+        name = request.form["name"]
+        email = request.form["email"]
+        # not supporting patients logging into the site, dont need to set up a password for them
+        # password = request.form['password']
+        physician_id = request.form["physician_id"]
 
-            # see if patient exists
-            existing_patient = Patient.query.filter_by(email=email).first()
+        # see if patient exists
+        existing_patient = Patient.query.filter_by(email=email).first()
 
-            # make sure patient doesnt already exist
-            if existing_patient is None:
-                patient = Patient(name=name, email=email, physician=physician_id)
+        # make sure patient doesnt already exist
+        if existing_patient is None:
+            patient = Patient(name=name, email=email, physician_id=physician_id)
 
-                patient.set_password(password)
-                patient.set_creation_date()
-                db.session.add(patient)
-                db.session.commit()  # Create new Patient
-                logging.debug(f"New patient {patient.id} created {patient.name}")
-                login_user(patient)  # Log in as newly created Patient
-                session["login_type"] = "patient"
+            patient.set_creation_date()
+            db.session.add(patient)
+            db.session.commit()  # Create new Patient
+            logging.debug(f"New patient {patient.id} created {patient.name}")
+            login_user(patient)  # Log in as newly created Patient
 
-                return WebHelpers.EasyResponse(
-                    f"New patient {patient.name} created.", 201
-                )
+            return WebHelpers.EasyResponse(f"New patient {patient.name} created.", 201)
 
-            return WebHelpers.EasyResponse(
-                "Patient with that email already exists. ", 400
-            )
+        return WebHelpers.EasyResponse("Patient with that email already exists. ", 400)
 
-        else:
-            return WebHelpers.EasyResponse(
-                "You are not authorized to use this page.", 403
-            )
-
+    @physician_required
     def signup_physician(request):
         """Handles logic for creating a new physician."""
         name = request.form["name"]
@@ -85,6 +77,7 @@ class SignUp:
             "Physician with that email already exists. ", 400
         )
 
+    @physician_required
     def signup_employee(request):
         """Handles logic for creating a new physician."""
         name = request.form["name"]
@@ -92,25 +85,20 @@ class SignUp:
         password = request.form["password"]
         office_id = request.form["office_id"]
         provider_id = request.form["provider_id"]
-        phone_number = request.form["phone_number"]
 
-        # see if employee exists
+        # see if patient exists
         existing_employee = Employee.query.filter_by(email=email).first()
 
         # make sure patient doesnt already exist
         if existing_employee is None:
             employee = Employee(
-                name=name,
-                email=email,
-                office_id=office_id,
-                provider_id=provider_id,
-                phone_number=phone_number,
+                name=name, email=email, office_id=office_id, provider_id=provider_id
             )
 
             employee.set_password(password)
             employee.set_creation_date()
             db.session.add(employee)
-            db.session.commit()  # Create new Patient
+            db.session.commit()  # Create new Employee
             logging.debug(f"New employee {employee.name} created id ({employee.id}).")
             login_user(employee)  # Log in as newly created Employee
             session["login_type"] = "employee"
@@ -120,3 +108,26 @@ class SignUp:
             )
 
         return WebHelpers.EasyResponse("Employee with that email already exists. ", 400)
+
+    @admin_required
+    def signup_admin(request):
+        """Handles logic for creating a new physician."""
+        name = request.form["name"]
+        email = request.form["email"]
+        password = request.form["password"]
+
+        # see if patient exists
+        existing_admin = Admin.query.filter_by(email=email).first()
+
+        # make sure patient doesnt already exist
+        if existing_admin is None:
+            admin = Admin(name=name, email=email)
+
+            admin.set_password(password)
+            admin.set_creation_date()
+            db.session.add(admin)
+            db.session.commit()  # Create new Admin
+            logging.debug(f"New admin {admin.name} created id ({admin.id}).")
+
+            return WebHelpers.EasyResponse(f"New admin {admin.name} created.", 201)
+        return WebHelpers.EasyResponse("Admin with that email already exists. ", 400)
