@@ -39,9 +39,6 @@ def signup(type):
     if type == 'admin':
         return sign_up.signup_admin(request)
 
-        
-
-        
 @auth_bp.post('/api/login/<string:type>')
 def login(type):
     """
@@ -52,9 +49,6 @@ def login(type):
     password = password associated with existing account
     
     """
-
-    if type == 'patient':
-        return log_in.login_patient(request)
 
     if type == 'physician':
         return log_in.login_physician(request)

@@ -2,14 +2,15 @@ from ...services.WebHelpers import WebHelpers
 from ...models.Patients import db, Patient
 from ...models.Physicians import Physician
 from ...models.Employees import Employee
+from ...models.Admins import Admin
 import logging
 from flask_login import login_user
 from flask import session
-from .login import physician_required
+from .login import admin_required, employee_required, physician_required
 
 class SignUp:
 
-    @physician_required
+    @employee_required
     def signup_patient(request):
         """ Handles logic for creating a new patient."""
         name = request.form['name']
@@ -41,6 +42,7 @@ class SignUp:
 
         return WebHelpers.EasyResponse('Patient with that email already exists. ', 400)
 
+    @physician_required
     def signup_physician(request):
         """ Handles logic for creating a new physician. """
         name = request.form['name']
@@ -74,7 +76,7 @@ class SignUp:
 
         return WebHelpers.EasyResponse('Physician with that email already exists. ', 400)
 
-
+    @physician_required
     def signup_employee(request):
         """ Handles logic for creating a new physician. """
         name = request.form['name']
@@ -100,12 +102,38 @@ class SignUp:
             db.session.add(employee)
             db.session.commit()  # Create new Employee
             logging.debug(f'New employee {employee.name} created id ({employee.id}).')
-            login_user(employee)  # Log in as newly created Physician
+            login_user(employee)  # Log in as newly created Employee
             session['login_type'] = 'employee'
             
-            return WebHelpers.EasyResponse(f'New physician {employee.name} created.' , 201)
+            return WebHelpers.EasyResponse(f'New employee {employee.name} created.' , 201)
 
-        return WebHelpers.EasyResponse('Physician with that email already exists. ', 400)
+        return WebHelpers.EasyResponse('Employee with that email already exists. ', 400)
+
+    @admin_required
+    def signup_admin(request):
+        """ Handles logic for creating a new physician. """
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+        
+        #see if patient exists
+        existing_admin = Admin.query.filter_by(email=email).first()
+        
+        #make sure patient doesnt already exist
+        if existing_admin is None:
+            admin = Admin(
+                name= name,
+                email= email
+            )
+
+            admin.set_password(password)
+            admin.set_creation_date()
+            db.session.add(admin)
+            db.session.commit()  # Create new Admin
+            logging.debug(f'New admin {admin.name} created id ({admin.id}).')
+            
+            return WebHelpers.EasyResponse(f'New admin {admin.name} created.' , 201)
+        return WebHelpers.EasyResponse('Admin with that email already exists. ', 400)
 
     
         
