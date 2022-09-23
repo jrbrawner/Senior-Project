@@ -8,67 +8,62 @@ import logging
 from ..services.auth.signup import SignUp
 from ..services.auth.login import Login
 from ..models.Physicians import Physician
+from ..models.Employees import Employee
+from ..models.Admins import Admin
 
 auth_bp = Blueprint('auth_bp', __name__)
 sign_up = SignUp
 log_in = Login
 
-@auth_bp.route('/api/signup/<string:type>', methods=['GET', 'POST'])
+@auth_bp.post('/api/signup/<string:type>')
 def signup(type):
     """
-    Patient sign-up page.
-    GET requests serve sign-up page.
-    POST requests handle Patient creation.
+    Account sign up route.
     """
-
     """
     Sign-Up Form:
-
     name = Patientname associated with new account.
     email = Patient email associated with new account.
-    password = Password associated with new account.
-    
+    password = Password associated with new account. (Not needed for patients.)
     """
-    if request.method == 'GET':
+   
+    if type == 'patient':
+        return sign_up.signup_patient(request)
 
-        return WebHelpers.EasyResponse('Use POST method for creating a new Patient.', 405)
-    
-    if request.method == 'POST':
+    if type == 'physician':
+        return sign_up.signup_physician(request)
 
-        if type == 'patient':
-            return sign_up.signup_patient(request)
+    if type == 'employee':
+        return sign_up.signup_employee(request)
 
-        if type == 'physician':
-            return sign_up.signup_physician(request)
-
-        else:
-            return WebHelpers(f'Resource type not recognized.', 404)
+    if type == 'admin':
+        return sign_up.signup_admin(request)
 
         
-@auth_bp.route('/api/login/<string:type>', methods=['GET', 'POST'])
+
+        
+@auth_bp.post('/api/login/<string:type>')
 def login(type):
     """
-    Log-in page for registered Patients & Physicians.
-    GET requests serve Log-in page.
+    Log-in page for registered Employees, Physicians, & Admins.
 
-    POST requests validate and redirect Physicians to dashboard.
     Login Form
-
     email = email associated with existing account
     password = password associated with existing account
     
     """
 
-    if request.method == 'GET':
-        return WebHelpers.EasyResponse('Login with POST method.', 405)
+    if type == 'patient':
+        return log_in.login_patient(request)
 
-    if request.method == 'POST':
-        
-        if type == 'patient':
-            return log_in.login_patient(request)
+    if type == 'physician':
+        return log_in.login_physician(request)
 
-        if type == 'physician':
-            return log_in.login_physician(request)
+    if type == 'admin':
+        return log_in.login_admin(request)
+
+    if type == 'employee':
+        return log_in.login_employee(request)
 
         
 @login_manager.user_loader
@@ -76,11 +71,15 @@ def load_user(id):
     """Check if user is logged-in on every page load."""
     
     login_type = session.get('login_type')
-    if login_type == 'patient':
+    if login_type == 'employee':
         if id is not None:
-            return Patient.query.get(id)
+            return Employee.query.get(id)
     elif login_type == 'physician':
+        if id is not None:
             return Physician.query.get(id)
+    elif login_type == 'admin':
+        if id is not None:
+            return Admin.query.get(id)
     else:
         return None
     return None
@@ -91,10 +90,11 @@ def unauthorized():
     flash('You must be logged in to view that page.')
     return redirect(url_for('auth_bp.login'))
 
-@auth_bp.route("/api/logout", methods=['GET'])
+
+@auth_bp.get("/api/logout")
 @login_required
 def logout():
-    """Patient log-out logic."""
+    """User log-out logic."""
 
     name = current_user.name
     logout_user()
