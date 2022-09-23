@@ -32,10 +32,10 @@ class Admin(UserMixin, db.Model):
         return check_password_hash(self.password, password)
 
     def __repr__(self):
-        return f"Physician {self.name}"
+        return f"Admin {self.name}"
 
     def serialize(self):
         return {
-            "Physician_id": self.id,
-            "Physician_name": self.name,
+            "Admin_id": self.id,
+            "Admin_name": self.name,
         }

@@ -1,14 +1,10 @@
 from flask import (
     Blueprint,
     redirect,
-    render_template,
     flash,
     request,
     session,
     url_for,
-    send_from_directory,
-    Response,
-    jsonify,
     session,
 )
 from flask_login import login_required, logout_user, login_user, current_user
