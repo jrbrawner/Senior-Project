@@ -6,12 +6,14 @@ import json
 from flask import current_app as app, jsonify
 import time
 
-app_bp = Blueprint('app_bp', __name__)
+app_bp = Blueprint("app_bp", __name__)
 
-@app_bp.route('/', methods = ['GET'])
+
+@app_bp.route("/", methods=["GET"])
 def index():
-    return 'Index'
+    return "Index"
 
-@app_bp.route('/api/time', methods = ['GET'])
+
+@app_bp.route("/api/time", methods=["GET"])
 def get_time():
-    return {'time': time.time()}
+    return {"time": time.time()}
