@@ -2,14 +2,12 @@ import pytest
 import sqlite3
 from ...models.ProviderModels import Provider
 
-class TestDB:
 
+class TestDB:
     def test_db_entry(db):
         assert db
-        
-        provider = Provider(
-            name = 'Test Provider'
-        )
+
+        provider = Provider(name="Test Provider")
 
         assert provider
         db.session.add(provider)
@@ -18,7 +16,3 @@ class TestDB:
         test_provider = Provider.query.get(1)
 
         assert test_provider
-
-        
-
-            

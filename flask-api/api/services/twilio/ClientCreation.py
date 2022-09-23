@@ -1,8 +1,8 @@
 import os
 from twilio.rest import Client
 
-class TwilioClient():
 
+class TwilioClient:
     def __init__(self, account_sid, auth_token):
         # Find your Account SID and Auth Token at twilio.com/console
         # and set the environment variables. See http://twil.io/secure
@@ -14,11 +14,8 @@ class TwilioClient():
         """
         Send message using twilio client.
         """
-        message = self.client.messages \
-                        .create(
-                            body=text,
-                            from_=office_number,
-                            to=user_number
-                 )
+        message = self.client.messages.create(
+            body=text, from_=office_number, to=user_number
+        )
 
         print(message.sid)
