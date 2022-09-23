@@ -89,6 +89,7 @@ def load_user(id):
     return None
 
 
+
 @login_manager.unauthorized_handler
 def unauthorized():
     """Redirect unauthorized Patients to Login page."""
@@ -111,6 +112,7 @@ def logout():
 @login_required
 def troubleshoot():
 
+    login_type = session["login_type"]
     data = {
         "testing": current_user.name,
         "testing1": current_user.id,
@@ -118,3 +120,4 @@ def troubleshoot():
     }
 
     return data
+

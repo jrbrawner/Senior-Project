@@ -10,13 +10,14 @@ import json
 from ..models.Physicians import Physician
 
 
+
 class Patient(UserMixin, db.Model):
     """Patient account model."""
 
     __tablename__ = "Patient"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False, unique=False)
+    name = db.Column(db.String(100),  nullable=False,  unique=False)
     email = db.Column(db.String(40), unique=True, nullable=False)
     # password = db.Column(db.String(200), primary_key=False, unique=False, nullable=True)
     created_on = db.Column(db.DateTime, index=False, unique=False, nullable=True)
@@ -80,3 +81,4 @@ class Patient(UserMixin, db.Model):
             "Patient_id": self.id,
             "Patient_name": self.name,
         }
+

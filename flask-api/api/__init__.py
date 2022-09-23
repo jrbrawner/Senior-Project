@@ -1,6 +1,7 @@
 """Initialize app."""
 from distutils.command.config import config
-from flask import Flask
+from flask import Flask, session
+from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 import logging
@@ -9,6 +10,7 @@ UPLOADS = "api/uploads"
 
 db = SQLAlchemy()
 login_manager = LoginManager()
+
 
 
 def create_app(config):
@@ -27,6 +29,7 @@ def create_app(config):
     # Initialize Plugins
     db.init_app(app)
     login_manager.init_app(app)
+    Session(app)
 
     # Set up logging
     logging.basicConfig(
@@ -81,5 +84,6 @@ def create_test_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = "xxxxxxtestdatabasexxx"
     # Dynamically bind SQLAlchemy to application
     db.init_app(app)
-    app.app_context().push()  # this does the binding
+    app.app_context().push()   # this does the binding
     return app
+

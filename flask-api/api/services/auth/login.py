@@ -4,8 +4,11 @@ import logging
 from ...models.Employees import Employee
 from ...models.Admins import Admin
 from ...models.Physicians import Physician
+from ...models.Employees import Employee
+from flask_session import Session
 from flask import session
 from functools import wraps
+
 
 
 class Login:
@@ -52,7 +55,7 @@ class Login:
         physician = Physician.query.filter_by(email=email).first()
 
         if physician and physician.check_password(password=password):
-            # Patient exists and password matches password in db
+            #  Patient exists and password matches password in db
 
             login_user(physician)
             physician.set_last_login()

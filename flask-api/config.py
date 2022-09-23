@@ -29,6 +29,11 @@ class DevConfig:
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    #Flask-Session
+    SESSION_TYPE = environ.get('SESSION_TYPE')
+    SESSION_PERMANENT = environ.get('SESSION_PERMANENT')
+    #SESSION_FILE_THRESHOLD = environ.get('SESSION_FILE_THRESHOLD')
+
     #Flask-Login
     LOGIN_DISABLED = True
 
