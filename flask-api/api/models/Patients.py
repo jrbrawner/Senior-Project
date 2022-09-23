@@ -9,41 +9,45 @@ from .Notifications import Notification
 import json
 from ..models.Physicians import Physician
 
+
 class Patient(UserMixin, db.Model):
     """Patient account model."""
 
-    __tablename__ = 'Patient'
+    __tablename__ = "Patient"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100),nullable=False,unique=False)
+    name = db.Column(db.String(100), nullable=False, unique=False)
     email = db.Column(db.String(40), unique=True, nullable=False)
     password = db.Column(db.String(200), primary_key=False, unique=False, nullable=True)
-    created_on = db.Column(db.DateTime, index=False, unique=False,nullable=True)
-    last_login = db.Column(db.DateTime, index=False, unique=False,nullable=True)
+    created_on = db.Column(db.DateTime, index=False, unique=False, nullable=True)
+    last_login = db.Column(db.DateTime, index=False, unique=False, nullable=True)
     profile_pic = db.Column(db.String(), index=False, unique=False, nullable=True)
-    physician_id = db.Column(db.Integer, db.ForeignKey('Physician.id'), nullable=True)
-    phone_number = db.Column(db.ForeignKey('PNumbertoUser.phone_number'), nullable=False)
-    
-    messages_sent = db.relationship('Message',
-                                    foreign_keys='Message.patient_sender_id',
-                                    backref='sent_patient', lazy='dynamic')
+    physician_id = db.Column(db.Integer, db.ForeignKey("Physician.id"), nullable=True)
+    phone_number = db.Column(
+        db.ForeignKey("PNumbertoUser.phone_number"), nullable=False
+    )
 
-    messages_received = db.relationship('Message',
-                                        foreign_keys='Message.patient_recipient_id',
-                                        backref='received_patient', lazy='dynamic')
+    messages_sent = db.relationship(
+        "Message",
+        foreign_keys="Message.patient_sender_id",
+        backref="sent_patient",
+        lazy="dynamic",
+    )
+
+    messages_received = db.relationship(
+        "Message",
+        foreign_keys="Message.patient_recipient_id",
+        backref="received_patient",
+        lazy="dynamic",
+    )
 
     last_message_read_time = db.Column(db.DateTime)
 
-    notifications = db.relationship('Notification', backref='Patient',
-                                    lazy='dynamic')
-    
-    
+    notifications = db.relationship("Notification", backref="Patient", lazy="dynamic")
+
     def set_password(self, password):
         """Create hashed password."""
-        self.password = generate_password_hash(
-            password,
-            method='sha256'
-        )
+        self.password = generate_password_hash(password, method="sha256")
 
     def set_creation_date(self):
         self.created_on = datetime.today()
@@ -57,13 +61,15 @@ class Patient(UserMixin, db.Model):
         return check_password_hash(self.password, password)
 
     def __repr__(self):
-        return '<Patient {}>'.format(self.name)
+        return "<Patient {}>".format(self.name)
 
-            
     def new_messages(self):
         last_read_time = self.last_message_read_time or datetime(1900, 1, 1)
-        return Message.query.filter_by(recipient=self).filter(
-            Message.timestamp > last_read_time).count()
+        return (
+            Message.query.filter_by(recipient=self)
+            .filter(Message.timestamp > last_read_time)
+            .count()
+        )
 
     def add_notification(self, name, data):
         self.notifications.filter_by(name=name).delete()
@@ -73,6 +79,6 @@ class Patient(UserMixin, db.Model):
 
     def serialize(self):
         return {
-            'Patient_id': self.id,
-            'Patient_name': self.name,
+            "Patient_id": self.id,
+            "Patient_name": self.name,
         }
