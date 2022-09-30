@@ -1,5 +1,6 @@
 from ...services.WebHelpers import WebHelpers
-from ...models.Patients import db, Patient
+from ...models.Users import User
+from ...models.db import db
 from ...models.Physicians import Physician
 from ...models.Employees import Employee
 from ...models.Admins import Admin

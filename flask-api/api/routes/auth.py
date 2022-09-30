@@ -8,7 +8,8 @@ from flask import (
     session,
 )
 from flask_login import login_required, logout_user, login_user, current_user
-from ..models.Patients import db, Patient
+from ..models.Users import User
+from ..models.db import db
 from flask import current_app as app
 from .. import login_manager
 from ..services.WebHelpers import WebHelpers

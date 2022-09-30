@@ -4,7 +4,8 @@ from flask_login import current_user
 import os
 from flask import current_app as app
 from ...models.Messages import PNumbertoUser, db
-from ...models.Patients import Patient
+from ...models.Users import User
+from ...models.db import db
 import logging
 from .MessageTracking import MessageTracking
 

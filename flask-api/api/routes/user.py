@@ -4,7 +4,8 @@ from flask_login import logout_user, login_required
 from sqlalchemy import create_engine, MetaData
 import json
 from flask import current_app as app, jsonify
-from ..models.Patients import Patient, db
+from ..models.Users import User
+from ..models.db import db
 from ..models.Physicians import Physician
 from ..models.Messages import PNumbertoUser
 from ..services.WebHelpers import WebHelpers

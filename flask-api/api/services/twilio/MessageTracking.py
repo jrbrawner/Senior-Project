@@ -1,5 +1,6 @@
 from ...models.Messages import Message, PNumbertoUser, db
-from ...models.Patients import Patient
+from ...models.Users import User
+from ...models.db import db
 import logging
 
 

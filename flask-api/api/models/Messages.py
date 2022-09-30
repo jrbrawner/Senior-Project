@@ -1,7 +1,6 @@
-from .. import db
+from api.models.db import db
 from datetime import datetime
 from flask import current_app as app
-from .Physicians import Physician
 from sqlalchemy_utils import EncryptedType
 
 
@@ -10,22 +9,23 @@ class Message(db.Model):
     """Model for messages between physicians and patients."""
 
     __tablename__ = "Message"
+    __key = '123456'
 
     id = db.Column(db.Integer, primary_key=True)
     patient_sender_id = db.Column(
-        db.Integer, db.ForeignKey("Patient.id"), nullable=True
+        db.Integer, db.ForeignKey("User.id"), nullable=True
     )
     physician_recipient_id = db.Column(
-        db.Integer, db.ForeignKey("Physician.id"), nullable=True
+        db.Integer, db.ForeignKey("User.id"), nullable=True
     )
     physician_sender_id = db.Column(
-        db.Integer, db.ForeignKey("Physician.id"), nullable=True
+        db.Integer, db.ForeignKey("User.id"), nullable=True
     )
     patient_recipient_id = db.Column(
-        db.Integer, db.ForeignKey("Patient.id"), nullable=True
+        db.Integer, db.ForeignKey("User.id"), nullable=True
     )
     patient_phone_number = db.Column(db.String(16), nullable=False, index=True)
-    body = db.Column(EncryptedType(db.String, app.config["SECRET_KEY"]), nullable=True)
+    body = db.Column(EncryptedType(db.String, __key), nullable=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
     def __repr__(self):
@@ -46,5 +46,5 @@ class PNumbertoUser(db.Model):
     phone_number = db.Column(
         db.String(16), nullable=False, index=True, primary_key=True
     )
-    user_id = db.Column(db.ForeignKey("Patient.id"))
-    physician_id = db.Column(db.ForeignKey("Physician.id"))
+    user_id = db.Column(db.ForeignKey("User.id"))
+    physician_id = db.Column(db.ForeignKey("User.id"))

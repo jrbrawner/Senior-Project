@@ -5,13 +5,14 @@ from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 import logging
+from flask_security import SQLAlchemyUserDatastore, Security
+from api.models.Users import User, Role
+from api.models.db import db
 
 UPLOADS = "api/uploads"
 
-db = SQLAlchemy()
 login_manager = LoginManager()
-
-
+user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 
 def create_app(config):
     """Construct the core app object."""
@@ -26,6 +27,7 @@ def create_app(config):
         # change to prod for deployment
         app.config.from_object("config.DevConfig")
 
+    security = Security(app, user_datastore)
     # Initialize Plugins
     db.init_app(app)
     login_manager.init_app(app)
@@ -46,6 +48,7 @@ def create_app(config):
     logging.getLogger("").addHandler(console)
 
     with app.app_context():
+
 
         # import blueprints
         from .routes.auth import auth_bp
