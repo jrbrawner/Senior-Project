@@ -12,18 +12,13 @@ class Message(db.Model):
     __key = '123456'
 
     id = db.Column(db.Integer, primary_key=True)
-    patient_sender_id = db.Column(
+    sender_id = db.Column(
         db.Integer, db.ForeignKey("User.id"), nullable=True
     )
-    physician_recipient_id = db.Column(
+    recipient_id = db.Column(
         db.Integer, db.ForeignKey("User.id"), nullable=True
     )
-    physician_sender_id = db.Column(
-        db.Integer, db.ForeignKey("User.id"), nullable=True
-    )
-    patient_recipient_id = db.Column(
-        db.Integer, db.ForeignKey("User.id"), nullable=True
-    )
+    
     patient_phone_number = db.Column(db.String(16), nullable=False, index=True)
     body = db.Column(EncryptedType(db.String, __key), nullable=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)

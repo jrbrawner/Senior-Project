@@ -1,12 +1,12 @@
 from flask import Blueprint
 from flask import current_app as app, jsonify
 import time
-from ..models.Admins import Admin, db
 import logging
 
 
 app_bp = Blueprint("app_bp", __name__)
 
+"""
 
 @app.before_first_request
 def start_up():
@@ -19,6 +19,7 @@ def start_up():
         logging.warning(
             f"No admin found, default admin account made. Make sure default credentials are changed."
         )
+"""
 
 
 @app_bp.route("/", methods=["GET"])

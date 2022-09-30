@@ -1,17 +1,39 @@
 from ..WebHelpers import WebHelpers
-from flask_login import current_user, login_user
+from flask_security import current_user, login_user
 import logging
-from ...models.Employees import Employee
-from ...models.Admins import Admin
-from ...models.Physicians import Physician
-from ...models.Employees import Employee
 from flask_session import Session
 from flask import session
 from functools import wraps
-
+from api.models.Users import User
+from api import user_datastore
+from flask_security.utils import verify_password
 
 
 class Login:
+
+    def login_user(request):
+        if current_user.is_authenticated:
+            return WebHelpers.EasyResponse(
+                current_user.name + " already logged in.", 400
+            )
+
+        email = request.form['email']
+        password = request.form['password']
+
+        user = user_datastore.find_user(email=email)
+        password_matches = verify_password(password, user.password)
+
+        if user and password_matches:
+            login_user(user)
+            user.set_last_login()
+            logging.debug(f" User with id {user.id} logged in.")
+
+            return WebHelpers.EasyResponse(user.name + " logged in.", 405)
+        return WebHelpers.EasyResponse(
+            "Invalid Employee email/password combination.", 405
+        )
+
+    """
     def login_employee(request):
 
         if current_user.is_authenticated:
@@ -95,7 +117,7 @@ class Login:
 
         # Admin exists but password does not match password in db
         return WebHelpers.EasyResponse("Invalid Admin email/password combination.", 405)
-
+        """
 
 def admin_required(f):
     @wraps(f)

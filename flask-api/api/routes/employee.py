@@ -3,7 +3,8 @@ from .. import login_manager
 from flask_login import logout_user, login_required, current_user
 from sqlalchemy import create_engine, MetaData
 from flask import current_app as app, jsonify
-from ..models.Employees import Employee, db
+from ..models import db
+from ..models.Users import User as Employee
 from ..models.Messages import PNumbertoUser
 from ..services.WebHelpers import WebHelpers
 import logging

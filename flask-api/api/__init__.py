@@ -59,7 +59,6 @@ def create_app(config):
         from .routes.message import message_bp
         from .routes.physician import physician_bp
         from .routes.employee import employee_bp
-        from .routes.admin import admin_bp
 
         # Register Blueprints
         app.register_blueprint(app_bp)
@@ -70,7 +69,6 @@ def create_app(config):
         app.register_blueprint(message_bp)
         app.register_blueprint(physician_bp)
         app.register_blueprint(employee_bp)
-        app.register_blueprint(admin_bp)
         # Create Database Models
         db.create_all()
 

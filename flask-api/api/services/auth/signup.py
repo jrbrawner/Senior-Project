@@ -1,19 +1,40 @@
 from ...services.WebHelpers import WebHelpers
 from ...models.Users import User
 from ...models.db import db
-from ...models.Physicians import Physician
-from ...models.Employees import Employee
-from ...models.Admins import Admin
+from ...models.Users import User, Role
 import logging
-from flask_login import login_user
+from flask_security import login_user
 from flask import session
 from .login import admin_required, employee_required, physician_required
-
+from api import user_datastore
+from flask_security.utils import hash_password
 
 class SignUp:
+
+    def signup_user(request):
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+
+        user = user_datastore.find_user(email=email)
+
+        if user is None:
+            password = hash_password(password)
+            user_datastore.create_user(
+                email=email,
+                name=name,
+                password=password
+            )
+            db.session.commit()
+            logging.debug(
+                f"New user {email} created.)."
+            )
+            return WebHelpers.EasyResponse(f"New user {user.name} created.", 201)
+        return WebHelpers.EasyResponse(f"User with that email already exists.", 400)
+    """
     @employee_required
     def signup_patient(request):
-        """Handles logic for creating a new patient."""
+        Handles logic for creating a new patient.
         name = request.form["name"]
         email = request.form["email"]
         # not supporting patients logging into the site, dont need to set up a password for them
@@ -39,7 +60,7 @@ class SignUp:
 
     @physician_required
     def signup_physician(request):
-        """Handles logic for creating a new physician."""
+        Handles logic for creating a new physician.
         name = request.form["name"]
         email = request.form["email"]
         password = request.form["password"]
@@ -80,7 +101,7 @@ class SignUp:
 
     @physician_required
     def signup_employee(request):
-        """Handles logic for creating a new physician."""
+        Handles logic for creating a new physician.
         name = request.form["name"]
         email = request.form["email"]
         password = request.form["password"]
@@ -112,7 +133,7 @@ class SignUp:
 
     @admin_required
     def signup_admin(request):
-        """Handles logic for creating a new physician."""
+        Handles logic for creating a new physician.
         name = request.form["name"]
         email = request.form["email"]
         password = request.form["password"]
@@ -132,3 +153,4 @@ class SignUp:
 
             return WebHelpers.EasyResponse(f"New admin {admin.name} created.", 201)
         return WebHelpers.EasyResponse("Admin with that email already exists. ", 400)
+    """

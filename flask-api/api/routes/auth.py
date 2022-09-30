@@ -7,7 +7,7 @@ from flask import (
     url_for,
     session,
 )
-from flask_login import login_required, logout_user, login_user, current_user
+from flask_security import login_required, logout_user, login_user, current_user
 from ..models.Users import User
 from ..models.db import db
 from flask import current_app as app
@@ -16,17 +16,16 @@ from ..services.WebHelpers import WebHelpers
 import logging
 from ..services.auth.signup import SignUp
 from ..services.auth.login import Login
-from ..models.Physicians import Physician
-from ..models.Employees import Employee
-from ..models.Admins import Admin
+from ..models.Users import User
+from api import user_datastore
 
 auth_bp = Blueprint("auth_bp", __name__)
 sign_up = SignUp
 log_in = Login
 
 
-@auth_bp.post("/api/signup/<string:type>")
-def signup(type):
+@auth_bp.post("/api/signup")
+def signup():
     """
     Account sign up route.
     """
@@ -37,21 +36,11 @@ def signup(type):
     password = Password associated with new account. (Not needed for patients.)
     """
 
-    if type == "patient":
-        return sign_up.signup_patient(request)
-
-    if type == "physician":
-        return sign_up.signup_physician(request)
-
-    if type == "employee":
-        return sign_up.signup_employee(request)
-
-    if type == "admin":
-        return sign_up.signup_admin(request)
+    return sign_up.signup_user(request)
 
 
-@auth_bp.post("/api/login/<string:type>")
-def login(type):
+@auth_bp.post("/api/login")
+def login():
     """
     Log-in page for registered Employees, Physicians, & Admins.
 
@@ -61,34 +50,13 @@ def login(type):
 
     """
 
-    if type == "physician":
-        return log_in.login_physician(request)
-
-    if type == "admin":
-        return log_in.login_admin(request)
-
-    if type == "employee":
-        return log_in.login_employee(request)
+    return log_in.login_user(request)
 
 
 @login_manager.user_loader
 def load_user(id):
     """Check if user is logged-in on every page load."""
-
-    login_type = session.get("login_type")
-    if login_type == "employee":
-        if id is not None:
-            return Employee.query.get(id)
-    elif login_type == "physician":
-        if id is not None:
-            return Physician.query.get(id)
-    elif login_type == "admin":
-        if id is not None:
-            return Admin.query.get(id)
-    else:
-        return None
-    return None
-
+    return user_datastore.get_user(id)
 
 
 @login_manager.unauthorized_handler
@@ -102,10 +70,8 @@ def unauthorized():
 @login_required
 def logout():
     """User log-out logic."""
-
     name = current_user.name
     logout_user()
-
     return WebHelpers.EasyResponse(name + " logged out.", 200)
 
 
@@ -113,7 +79,6 @@ def logout():
 @login_required
 def troubleshoot():
 
-    login_type = session["login_type"]
     data = {
         "testing": current_user.name,
         "testing1": current_user.id,

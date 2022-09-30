@@ -41,6 +41,10 @@ class DevConfig:
     UPLOADS = environ.get('UPLOADS')
     MESSAGES_PER_PAGE = environ.get('MESSAGES_PER_PAGE')
 
+    #Flask-Security
+    SECURITY_PASSWORD_SALT = environ.get('SECURITY_PASSWORD_SALT')
+    SECURITY_TRACKABLE = environ.get('SECURITY_TRACKABLE')
+
 class TestConfig:
     
     TESTING = True
