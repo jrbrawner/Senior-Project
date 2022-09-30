@@ -35,7 +35,7 @@ class DevConfig:
     #SESSION_FILE_THRESHOLD = environ.get('SESSION_FILE_THRESHOLD')
 
     #Flask-Login
-    LOGIN_DISABLED = True
+    LOGIN_DISABLED = False
 
     #Configure application settings
     UPLOADS = environ.get('UPLOADS')

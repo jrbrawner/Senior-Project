@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask import current_app as app, jsonify
 import time
 import logging
-
+from flask_security.decorators import login_required, roles_required
 
 app_bp = Blueprint("app_bp", __name__)
 
@@ -21,12 +21,12 @@ def start_up():
         )
 """
 
-
 @app_bp.route("/", methods=["GET"])
+@login_required
 def index():
     return "Index"
 
-
 @app_bp.route("/api/time", methods=["GET"])
+@roles_required('admin')
 def get_time():
     return {"time": time.time()}

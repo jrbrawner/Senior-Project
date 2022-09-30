@@ -11,13 +11,14 @@ from flask_security import login_required, logout_user, login_user, current_user
 from ..models.Users import User
 from ..models.db import db
 from flask import current_app as app
-from .. import login_manager
+#from .. import login_manager
 from ..services.WebHelpers import WebHelpers
 import logging
 from ..services.auth.signup import SignUp
 from ..services.auth.login import Login
 from ..models.Users import User
 from api import user_datastore
+from api import security
 
 auth_bp = Blueprint("auth_bp", __name__)
 sign_up = SignUp
@@ -52,18 +53,19 @@ def login():
 
     return log_in.login_user(request)
 
-
+"""
 @login_manager.user_loader
 def load_user(id):
-    """Check if user is logged-in on every page load."""
+    #Check if user is logged-in on every page load.
     return user_datastore.get_user(id)
 
 
 @login_manager.unauthorized_handler
 def unauthorized():
-    """Redirect unauthorized Patients to Login page."""
+    #Redirect unauthorized Patients to Login page.
     flash("You must be logged in to view that page.")
     return redirect(url_for("auth_bp.login"))
+"""
 
 
 @auth_bp.get("/api/logout")

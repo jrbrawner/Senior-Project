@@ -1,5 +1,5 @@
 from flask import Blueprint, request, send_from_directory
-from .. import login_manager
+#from .. import login_manager
 from flask_login import logout_user, login_required, current_user
 from sqlalchemy import create_engine, MetaData
 from flask import current_app as app, jsonify, session

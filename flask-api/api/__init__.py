@@ -11,8 +11,9 @@ from api.models.db import db
 
 UPLOADS = "api/uploads"
 
-login_manager = LoginManager()
+
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+security = None
 
 def create_app(config):
     """Construct the core app object."""
@@ -27,11 +28,10 @@ def create_app(config):
         # change to prod for deployment
         app.config.from_object("config.DevConfig")
 
-    security = Security(app, user_datastore)
     # Initialize Plugins
     db.init_app(app)
-    login_manager.init_app(app)
     Session(app)
+    security = Security(app, user_datastore)
 
     # Set up logging
     logging.basicConfig(

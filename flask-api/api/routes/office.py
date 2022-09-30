@@ -1,6 +1,6 @@
 from audioop import add
 from flask import Blueprint, request, send_from_directory
-from .. import login_manager
+#from .. import login_manager
 from flask_login import logout_user, login_required
 from sqlalchemy import create_engine, MetaData
 import json
