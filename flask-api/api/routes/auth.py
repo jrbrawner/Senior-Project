@@ -11,7 +11,8 @@ from flask_security import login_required, logout_user, login_user, current_user
 from ..models.Users import User
 from ..models.db import db
 from flask import current_app as app
-#from .. import login_manager
+
+# from .. import login_manager
 from ..services.WebHelpers import WebHelpers
 import logging
 from ..services.auth.signup import SignUp
@@ -43,7 +44,7 @@ def signup():
 @auth_bp.post("/api/login")
 def login():
     """
-    Log-in page for registered Employees, Physicians, & Admins.
+    Log-in page for registered users.
 
     Login Form
     email = email associated with existing account
@@ -53,20 +54,46 @@ def login():
 
     return log_in.login_user(request)
 
-"""
-@login_manager.user_loader
-def load_user(id):
-    #Check if user is logged-in on every page load.
-    return user_datastore.get_user(id)
+@auth_bp.post('/api/grant_role')
+def grant_role():
+    """Add a role to a users account."""
 
+    user_id = request.form['user_id']
+    role_name = request.form['role_name']
+    user = User.query.get(user_id)
+    if user:
+        user_datastore.add_role_to_user(user, role_name)
+        db.session.commit()
+        logging.warning(f'User id - {current_user.id} - granted {role_name} role to User id - {user_id} - ')
+        return WebHelpers.EasyResponse('Role granted to user.', 200)
+    return WebHelpers.EasyResponse('User with that id does not exist.', 404)
 
-@login_manager.unauthorized_handler
-def unauthorized():
-    #Redirect unauthorized Patients to Login page.
-    flash("You must be logged in to view that page.")
-    return redirect(url_for("auth_bp.login"))
-"""
+@auth_bp.post('/api/revoke_role')
+def revoke_rule():
+    """Remove a role from a users account. """
 
+    user_id = request.form['user_id']
+    role_name = request.form['role_name']
+
+    user = User.query.get(user_id)
+    if user:
+        user_datastore.remove_role_from_user(user, role_name)
+        db.session.commit()
+        logging.warning(f'User id - {current_user.id} - revoked {role_name} role from User id - {user_id} -')
+        return WebHelpers.EasyResponse('Role revoked from user.', 200)
+    return WebHelpers.EasyResponse('User with that id does not exist.', 404)
+
+@auth_bp.get('/api/check_roles')
+def check_roles():
+    """Check a users roles. """
+
+    user_id = request.form['user_id']
+    user = User.query.get(user_id)
+
+    if user:
+        roles = [x.serialize() for x in user.roles]
+        logging.info(f'User id {current_user.id} accessed User id - {user_id} - roles')
+        return roles
 
 @auth_bp.get("/api/logout")
 @login_required
@@ -88,4 +115,3 @@ def troubleshoot():
     }
 
     return data
-

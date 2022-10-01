@@ -10,15 +10,14 @@ from flask_security.utils import verify_password
 
 
 class Login:
-
     def login_user(request):
         if current_user.is_authenticated:
             return WebHelpers.EasyResponse(
                 current_user.name + " already logged in.", 400
             )
 
-        email = request.form['email']
-        password = request.form['password']
+        email = request.form["email"]
+        password = request.form["password"]
 
         user = user_datastore.find_user(email=email)
         password_matches = verify_password(password, user.password)
@@ -118,6 +117,7 @@ class Login:
         # Admin exists but password does not match password in db
         return WebHelpers.EasyResponse("Invalid Admin email/password combination.", 405)
         """
+
 
 def admin_required(f):
     @wraps(f)

@@ -9,28 +9,25 @@ from .login import admin_required, employee_required, physician_required
 from api import user_datastore
 from flask_security.utils import hash_password
 
-class SignUp:
 
+class SignUp:
     def signup_user(request):
-        name = request.form['name']
-        email = request.form['email']
-        password = request.form['password']
+        name = request.form["name"]
+        email = request.form["email"]
+        password = request.form["password"]
+        role = request.form['role']
 
         user = user_datastore.find_user(email=email)
 
         if user is None:
             password = hash_password(password)
-            user_datastore.create_user(
-                email=email,
-                name=name,
-                password=password
-            )
+            user = user_datastore.create_user(email=email, name=name, password=password)
+            user_datastore.add_role_to_user(user, role)
             db.session.commit()
-            logging.debug(
-                f"New user {email} created.)."
-            )
+            logging.debug(f"New user {email} created.).")
             return WebHelpers.EasyResponse(f"New user {user.name} created.", 201)
         return WebHelpers.EasyResponse(f"User with that email already exists.", 400)
+
     """
     @employee_required
     def signup_patient(request):

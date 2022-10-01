@@ -9,9 +9,12 @@ from .Notifications import Notification
 import json
 
 
-roles_users = db.Table('roles_users',
-        db.Column('user_id', db.Integer(), db.ForeignKey('User.id')),
-        db.Column('role_id', db.Integer(), db.ForeignKey('Role.id')))
+roles_users = db.Table(
+    "roles_users",
+    db.Column("user_id", db.Integer(), db.ForeignKey("User.id")),
+    db.Column("role_id", db.Integer(), db.ForeignKey("Role.id")),
+)
+
 
 class Role(db.Model, RoleMixin):
     __tablename__ = "Role"
@@ -19,15 +22,19 @@ class Role(db.Model, RoleMixin):
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
 
+    def serialize(self):
+        return {"id": self.id, "name": self.name, "description": self.description}
+
+
 class User(UserMixin, db.Model):
     """User account model."""
 
     __tablename__ = "User"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100),  nullable=False,  unique=False)
+    name = db.Column(db.String(100), unique=False, nullable=False,)
     email = db.Column(db.String(40), unique=True, nullable=False)
-    password = db.Column(db.String(255), primary_key=False, unique=False, nullable=True)
+    password = db.Column(db.String(255), unique=False, nullable=True)
     active = db.Column(db.String(255))
     created_on = db.Column(db.DateTime, index=False, unique=False, nullable=True)
     last_login_at = db.Column(db.DateTime, index=False, unique=False, nullable=True)
@@ -35,12 +42,15 @@ class User(UserMixin, db.Model):
     last_login_ip = db.Column(db.String())
     current_login_ip = db.Column(db.String())
     login_count = db.Column(db.Integer)
-    roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
+    roles = db.relationship(
+        "Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic")
+    )
 
     profile_pic = db.Column(db.String(), index=False, unique=False, nullable=True)
-    physician_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=True)
+    location_id = db.Column(db.ForeignKey('Location.id'), nullable=True)
+    organization_id = db.Column(db.ForeignKey('Organization.id'), nullable=True)
+
     phone_number = db.Column(db.ForeignKey("PNumbertoUser.phone_number"), nullable=True)
-    
 
     messages_sent = db.relationship(
         "Message",
@@ -93,8 +103,4 @@ class User(UserMixin, db.Model):
         return n
 
     def serialize(self):
-        return {
-            "User_id": self.id,
-            "User_name": self.name,
-        }
-
+        return {"User_id": self.id, "User_name": self.name}

@@ -4,21 +4,16 @@ from flask import current_app as app
 from sqlalchemy_utils import EncryptedType
 
 
-
 class Message(db.Model):
     """Model for messages between physicians and patients."""
 
     __tablename__ = "Message"
-    __key = '123456'
+    __key = "123456"
 
     id = db.Column(db.Integer, primary_key=True)
-    sender_id = db.Column(
-        db.Integer, db.ForeignKey("User.id"), nullable=True
-    )
-    recipient_id = db.Column(
-        db.Integer, db.ForeignKey("User.id"), nullable=True
-    )
-    
+    sender_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=True)
+    recipient_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=True)
+
     patient_phone_number = db.Column(db.String(16), nullable=False, index=True)
     body = db.Column(EncryptedType(db.String, __key), nullable=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)

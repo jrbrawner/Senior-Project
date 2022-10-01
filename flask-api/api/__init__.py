@@ -15,6 +15,7 @@ UPLOADS = "api/uploads"
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = None
 
+
 def create_app(config):
     """Construct the core app object."""
     app = Flask(__name__)
@@ -49,26 +50,23 @@ def create_app(config):
 
     with app.app_context():
 
-
         # import blueprints
         from .routes.auth import auth_bp
         from .routes.app import app_bp
-        from .routes.provider import provider_bp
-        from .routes.office import office_bp
+        from .routes.organization import organization_bp
+        from .routes.location import location_bp
         from .routes.user import user_bp
         from .routes.message import message_bp
-        from .routes.physician import physician_bp
-        from .routes.employee import employee_bp
+        from .routes.UserRoutes.role import role_bp
 
         # Register Blueprints
         app.register_blueprint(app_bp)
         app.register_blueprint(auth_bp)
-        app.register_blueprint(provider_bp)
-        app.register_blueprint(office_bp)
+        app.register_blueprint(organization_bp)
+        app.register_blueprint(location_bp)
         app.register_blueprint(user_bp)
         app.register_blueprint(message_bp)
-        app.register_blueprint(physician_bp)
-        app.register_blueprint(employee_bp)
+        app.register_blueprint(role_bp)
         # Create Database Models
         db.create_all()
 
@@ -85,6 +83,5 @@ def create_test_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = "xxxxxxtestdatabasexxx"
     # Dynamically bind SQLAlchemy to application
     db.init_app(app)
-    app.app_context().push()   # this does the binding
+    app.app_context().push()  # this does the binding
     return app
-
