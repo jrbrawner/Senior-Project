@@ -36,6 +36,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(40), unique=True, nullable=False)
     password = db.Column(db.String(255), unique=False, nullable=True)
     active = db.Column(db.String(255))
+    accepted_patient = db.Column(db.Boolean, default = False)
     created_on = db.Column(db.DateTime, index=False, unique=False, nullable=True)
     last_login_at = db.Column(db.DateTime, index=False, unique=False, nullable=True)
     current_login_at = db.Column(db.DateTime, index=False, unique=False, nullable=True)
@@ -49,8 +50,7 @@ class User(UserMixin, db.Model):
     profile_pic = db.Column(db.String(), index=False, unique=False, nullable=True)
     location_id = db.Column(db.ForeignKey('Location.id'), nullable=True)
     organization_id = db.Column(db.ForeignKey('Organization.id'), nullable=True)
-
-    phone_number = db.Column(db.ForeignKey("PNumbertoUser.phone_number"), nullable=True)
+    phone_number = db.Column(db.String(20), unique=True, nullable=True)
 
     messages_sent = db.relationship(
         "Message",

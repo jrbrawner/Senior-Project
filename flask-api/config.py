@@ -44,6 +44,8 @@ class DevConfig:
     #Flask-Security
     SECURITY_PASSWORD_SALT = environ.get('SECURITY_PASSWORD_SALT')
     SECURITY_TRACKABLE = environ.get('SECURITY_TRACKABLE')
+    
+    SECURITY_REGISTERABLE = False
 
 class TestConfig:
     

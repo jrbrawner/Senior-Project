@@ -55,7 +55,7 @@ def create_app(config):
         from .routes.app import app_bp
         from .routes.organization import organization_bp
         from .routes.location import location_bp
-        from .routes.user import user_bp
+        from .routes.UserRoutes.user import user_bp
         from .routes.message import message_bp
         from .routes.UserRoutes.role import role_bp
 

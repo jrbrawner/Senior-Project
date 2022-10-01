@@ -11,14 +11,14 @@ class Organization(db.Model):
     name = db.Column(db.String(128), index=True)
     twilio_account_id = db.Column(db.String(64), nullable=False)
     twilio_auth_token = db.Column(db.String(64), nullable=False)
-    Locations = db.relationship("Location", backref="Locations", lazy=True)
+    locations = db.relationship("Location", backref="Locations", lazy=True)
 
     def serialize(self):
 
         data = {
             "id": self.id,
             "name": self.name,
-            "Locations": str([x.serialize() for x in self.Locations]),
+            "Locations": str([x.serialize() for x in self.locations]),
             "twilio_account_id": self.twilio_account_id,
             "twilio_auth_token": self.twilio_auth_token
             #'Locations': jsonify([x.serialize() for x in self.Locations])
@@ -39,7 +39,7 @@ class Location(db.Model):
     city = db.Column(db.String(32), index=True)
     state = db.Column(db.String(16), index=True)
     zip_code = db.Column(db.String(16), index=True)
-    Organization_id = db.Column(
+    organization_id = db.Column(
         db.Integer, db.ForeignKey("Organization.id"), nullable=True
     )
     # physicians = db.relationship("Physician", backref="physicians", lazy=True)
@@ -53,7 +53,7 @@ class Location(db.Model):
             "address": self.address,
             "city": self.city,
             "state": self.state,
-            "Organization_id": self.Organization_id,
+            "organization_id": self.organization_id,
             "zip_code": self.zip_code
             #'physicians': jsonify([x.serialize() for x in self.physicians])
         }

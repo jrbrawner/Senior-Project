@@ -109,9 +109,6 @@ def logout():
 def troubleshoot():
 
     data = {
-        "testing": current_user.name,
-        "testing1": current_user.id,
-        "login_type": session["login_type"],
+        "testing": 'idk'
     }
-
     return data

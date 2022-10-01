@@ -7,7 +7,6 @@ import json
 from flask import current_app as app, jsonify
 from api.models.Users import User, Role
 from api.models.db import db
-from api.models.Messages import PNumbertoUser
 from api.services.WebHelpers import WebHelpers
 import logging
 from flask_cors import cross_origin

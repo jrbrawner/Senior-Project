@@ -14,7 +14,6 @@ class Message(db.Model):
     sender_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=True)
     recipient_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=True)
 
-    patient_phone_number = db.Column(db.String(16), nullable=False, index=True)
     body = db.Column(EncryptedType(db.String, __key), nullable=True)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
 
@@ -29,12 +28,3 @@ class Message(db.Model):
             "body": self.body,
             "timestamp": self.timestamp,
         }
-
-
-class PNumbertoUser(db.Model):
-    __tablename__ = "PNumbertoUser"
-    phone_number = db.Column(
-        db.String(16), nullable=False, index=True, primary_key=True
-    )
-    user_id = db.Column(db.ForeignKey("User.id"))
-    physician_id = db.Column(db.ForeignKey("User.id"))

@@ -1,68 +1,95 @@
 from audioop import add
 from flask import Blueprint, request, send_from_directory
-
 # from .. import login_manager
 from flask_login import logout_user, login_required
 from sqlalchemy import create_engine, MetaData
 import json
 from flask import current_app as app, jsonify
-from ..models.OrganizationModels import Location, db
+from ..models.OrganizationModels import Location
+from api.models.db import db
 from ..services.WebHelpers import WebHelpers
 import logging
+from flask_security import current_user
 
 location_bp = Blueprint("location_bp", __name__)
 
 
-@location_bp.route("/api/Location", methods=["GET"])
+@location_bp.get("/api/location")
 @login_required
-def get_Locations():
+def get_locations():
     """
     GET: Returns all Locations.
     """
 
-    if request.method == "GET":
+    Locations = Location.query.all()
 
-        Locations = Location.query.all()
+    resp = jsonify([x.serialize() for x in Locations])
+    resp.status_code = 200
 
-        resp = jsonify([x.serialize() for x in Locations])
-        resp.status_code = 200
-
-        return resp
+    return resp
 
 
-@location_bp.route("/api/Location/<int:id>", methods=["GET"])
+@location_bp.get("/api/location/<int:id>")
 @login_required
 def get_Location(id):
     """
     GET: Returns Location with specified id.
     """
 
-    if request.method == "GET":
+    location = Location.query.get(id)
 
-        Location = Location.query.get(id)
+    if location is None:
+        return WebHelpers.EasyResponse("Location with that id does not exist.", 404)
 
-        if Location is None:
-            return WebHelpers.EasyResponse("Location with that id does not exist.", 404)
+    resp = jsonify(location.serialize())
+    resp.status_code = 200
 
-        resp = jsonify(Location.serialize())
-        resp.status_code = 200
-
-        return resp
+    return resp
 
 
-@location_bp.route("/api/Location/", methods=["POST"])
+@location_bp.post("/api/location")
 @login_required
 def create_Location():
     """
     POST: Creates new Location.
-
-    To-Do: Implement authorization, i.e. only certain users can make Location.
     """
 
-    if request.method == "GET":
-        return WebHelpers.EasyResponse(f"Use GET method to retrive Location.", 405)
+    name = request.form["name"]
+    phone_number = request.form["phone_number"]
+    address = request.form["address"]
+    city = request.form["city"]
+    state = request.form["state"]
+    zip_code = request.form["zip_code"]
+    organization_id = request.form["organization_id"]
 
-    if request.method == "POST":
+    location = Location(
+        name=name,
+        phone_number=phone_number,
+        address=address,
+        city=city,
+        state=state,
+        zip_code=zip_code,
+        organization_id=organization_id,
+    )
+
+    db.session.add(location)
+    db.session.commit()
+    logging.debug(f"User id - {current_user.id} - created new location id - {location.id} -")
+
+    return WebHelpers.EasyResponse(f"New location {location.name} created.", 201)
+
+
+@location_bp.put("/api/location/<int:id>")
+@login_required
+def update_Location(id):
+    """
+    PUT: Updates Location with new information.
+    """
+
+    location = Location.query.filter_by(id=id).first()
+    location_name = location.name
+
+    if location:
 
         name = request.form["name"]
         phone_number = request.form["phone_number"]
@@ -70,104 +97,30 @@ def create_Location():
         city = request.form["city"]
         state = request.form["state"]
         zip_code = request.form["zip_code"]
-        provider_id = request.form["provider_id"]
+        organization_id = request.form["organization_id"]
 
-        Location = Location(
-            name=name,
-            phone_number=phone_number,
-            address=address,
-            city=city,
-            state=state,
-            zip_code=zip_code,
-            provider_id=provider_id,
-        )
+        location.name = name
+        location.phone_number = phone_number
+        location.address = address
+        location.city = city
+        location.state = state
+        location.zip_code = zip_code
+        location.organization_id = organization_id
 
-        db.session.add(Location)
         db.session.commit()
-        logging.debug(f"New Location {Location.name} created.")
-
-        return WebHelpers.EasyResponse(f"New Location {Location.name} created.", 201)
-
-
-@location_bp.route("/api/Location/<int:id>", methods=["PUT"])
-@login_required
-def update_Location(id):
-    """
-    PUT: Deletes Location with specified id, then creates Location with specified data from form.
-
-    """
-
-    Location = Location.query.filter_by(id=id).first()
-    Location_name = Location.name
-
-    if request.method == "PUT":
-        if Location:
-
-            name = request.form["name"]
-            phone_number = request.form["phoneNumber"]
-            address = request.form["address"]
-            city = request.form["city"]
-            state = request.form["state"]
-            zip_code = request.form["zipCode"]
-            provider_id = request.form["providerId"]
-
-            Location.name = name
-            Location.phone_number = phone_number
-            Location.address = address
-            Location.city = city
-            Location.state = state
-            Location.zip_code = zip_code
-            Location.provider_id = provider_id
-
-            db.session.commit()
-            logging.info(f"Location {Location.id} updated.")
-            return WebHelpers.EasyResponse(f"{Location_name} updated.", 200)
-
-            # return redirect(f'api/Location/{id}')
-
-        return WebHelpers.EasyResponse(f"Location with that id does not exist.", 404)
+        logging.info(f"User id - {current_user.id} - updated location id - {location.id} -")
+        return WebHelpers.EasyResponse(f"{location.name} updated.", 200)
 
 
-@location_bp.route("/api/Location/<int:id>", methods=["DELETE"])
+@location_bp.delete("/api/location/<int:id>")
 def delete_Location(id):
 
-    Location = Location.query.filter_by(id=id).first()
+    location = Location.query.get(id)
 
-    if Location:
+    if location:
 
-        db.session.delete(Location)
+        db.session.delete(location)
         db.session.commit()
-        # return redirect('/api/Location')
-        logging.info(f"{Location.name} deleted.")
-        return WebHelpers.EasyResponse(f" deleted the {Location.name} Location.", 200)
-
+        logging.info(f"User id - {current_user.id} - deleted location - {id} -")
+        return WebHelpers.EasyResponse(f"Location deleted.", 200)
     return WebHelpers.EasyResponse(f"Location with that id does not exist.", 404)
-
-
-@location_bp.route("/api/Location/<int:id>/physicians", methods=["GET"])
-def get_Location_physicians(id):
-
-    Location = Location.query.get(id)
-
-    if Location:
-        physicians = Location.physicians
-        data = jsonify([x.serialize() for x in physicians])
-        resp = data
-        resp.status_code = 200
-
-        return resp
-
-
-@location_bp.route("/api/Location/<int:id>/patients", methods=["GET"])
-def get_Location_patients(id):
-
-    Location = Location.query.get(id)
-    data = {}
-
-    if Location:
-        physicians = Location.physicians
-
-        resp = data
-        # resp.status_code = 200
-
-        return resp
