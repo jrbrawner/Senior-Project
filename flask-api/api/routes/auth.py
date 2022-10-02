@@ -108,7 +108,13 @@ def logout():
 @login_required
 def troubleshoot():
 
+    user = user_datastore.get_user(2)
+    test = None
+
+    if user.roles:
+        test = 'YEP'
+
     data = {
-        "testing": 'idk'
+        "testing": test
     }
     return data

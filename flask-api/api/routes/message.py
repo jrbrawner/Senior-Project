@@ -1,3 +1,4 @@
+from re import T
 from flask import Blueprint, request, send_from_directory
 
 from flask_login import logout_user, login_required, current_user
@@ -78,8 +79,9 @@ def create_message():
 
     # logic for handling signup of new users
     try:
+        user_status = TwilioSignUpHelpers.CheckUserState(phone_number)
         # see if user has signed up and been accepted
-        if TwilioSignUpHelpers.CheckIfAccepted(phone_number) == True:
+        if user_status == 'Accepted':
             status_msg = f"Your physician has received your message."
             MessageTracking.create_new_message_patient(
                 phone_number=phone_number, body=body
@@ -92,20 +94,22 @@ def create_message():
             return WebHelpers.EasyResponse("Success.", 200)
 
         # if new, prepare db table for new account registration
-        elif TwilioSignUpHelpers.CheckIfNewUser(phone_number) == True:
+        elif user_status == 'New':
             status_msg = TwilioSignUpHelpers.InitiateUserSignUp(phone_number, location, organization, body)
-            twilioClient.send_message(location.phone_number, phone_number, status_msg)
+            twilioClient.send_message(location.phone_number, phone_number, text=status_msg)
             return WebHelpers.EasyResponse("Success.", 200)
 
-        # see if user has signed up but not accepted,
-        elif TwilioSignUpHelpers.CheckIfRegistered(phone_number) == True:
+        # see if user has signed up but not been accepted,
+        elif user_status == 'Pending':
             status_msg = (
                 f"Your physician is in the process of accepting your registration."
             )
-            twilioClient.send_message(location.phone_number, phone_number, status_msg)
+            twilioClient.send_message(location.phone_number, phone_number, text=status_msg)
             return WebHelpers.EasyResponse("Success.", 200)
-            # user has signed up but account not made yet, initiate signup form
-        else:
+
+
+        # user has signed up but account not made yet, initiate signup form
+        elif user_status == 'Signup':
             status_msg = TwilioSignUpHelpers.CompleteUserSignUp(
                 phone_number=phone_number, msg=body
             )

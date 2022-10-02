@@ -32,11 +32,10 @@ class User(UserMixin, db.Model):
     __tablename__ = "User"
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=False, nullable=False,)
-    email = db.Column(db.String(40), unique=True, nullable=False)
+    name = db.Column(db.String(100), unique=False, nullable=True)
+    email = db.Column(db.String(40), unique=True, nullable=True)
     password = db.Column(db.String(255), unique=False, nullable=True)
     active = db.Column(db.String(255))
-    accepted_patient = db.Column(db.Boolean, default = False)
     created_on = db.Column(db.DateTime, index=False, unique=False, nullable=True)
     last_login_at = db.Column(db.DateTime, index=False, unique=False, nullable=True)
     current_login_at = db.Column(db.DateTime, index=False, unique=False, nullable=True)

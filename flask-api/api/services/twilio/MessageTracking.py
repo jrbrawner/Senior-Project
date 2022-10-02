@@ -2,7 +2,7 @@ from ...models.Messages import Message
 from ...models.Users import User
 from ...models.db import db
 import logging
-
+from api import user_datastore
 
 class MessageTracking:
     @staticmethod
@@ -11,20 +11,19 @@ class MessageTracking:
         Standard function for creating messages between a patient and physician.
         """
 
-        user = User.query.filter_by(phone_number=phone_number).first()
+        user = user_datastore.find_user(phone_number=phone_number)
 
         if user:
             message = Message(
-                patient_sender_id=user.id,
-                physician_recipient_id=user.location_id,
+                sender_id=user.id,
+                recipient_id=user.location_id,
                 body=body,
-                patient_phone_number=phone_number,
             )
 
             db.session.add(message)
             db.session.commit()
 
-            logging.warning(f"New message created from {user.name} to their physician.")
+            logging.warning(f"New message created from {user.name} to their office.")
             return True
         else:
             return False
