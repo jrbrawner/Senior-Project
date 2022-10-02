@@ -32,6 +32,10 @@ export default function App() {
       if (response.status == 200){
           navigate('/location');
       }
+      else{
+        alert('Error');
+      }
+      
     })
   }
 
