@@ -1,69 +1,61 @@
 from flask import jsonify, request
 from werkzeug.utils import secure_filename
 from flask_login import current_user
-import os
 from flask import current_app as app
-from ...models.Messages import PNumbertoUser, db
-from ...models.Patients import Patient
+from api.models.Users import User
+from api.models.Messages import Message
+from api.models.db import db
+from ...models.Users import User
+from ...models.db import db
 import logging
 from .MessageTracking import MessageTracking
+from api import user_datastore
 
 
 class TwilioSignUpHelpers:
     @staticmethod
-    def CheckForNewUser(phone_number):
+    def CheckUserState(phone_number):
         """
-        Checks phone number to see if it is associated with a patient in the database.
+        Takes phone number and determines where a patient is at in the sign up process.
         """
-        phone_number_user = PNumbertoUser.query.get(phone_number)
+        result = None
 
-        if phone_number_user is None:
-            logging.warning(f"New phone number {phone_number} recognized.")
-            return True
-        else:
-            logging.warning(f"Phone number {phone_number} recognized.")
-            return False
-
-    @staticmethod
-    def CheckIfRegistered(phone_number):
-        """
-        Checks phone number to see if it is associated with a user id in the database.
-        """
-        phone_number_user = PNumbertoUser.query.get(phone_number)
-
-        if phone_number_user.phone_number and phone_number_user.user_id is not None:
-            return True
-        else:
-            return False
-
-    @staticmethod
-    def CheckIfAccepted(phone_number):
-        """
-        Checks phone number to see if it is associated with a physician in the database.
-        """
-        phone_number_user = PNumbertoUser.query.get(phone_number)
-
-        if phone_number_user and phone_number_user.physician_id is not None:
-            logging.warning(f"Registered patient sent a message.")
-            return True
-        else:
-            logging.warning(
-                f"Registered patient sent a message before being accepted by a physician."
-            )
-            return False
+        user = user_datastore.find_user(phone_number=phone_number)
+        # user exists,
+        if user:
+            #see if they have role assigned
+            role_status = user.roles
+            #have been accepted as a patient
+            if 'Patient' in role_status:
+                result = 'Accepted'
+                return result
+            #have completed sign up, but not accepted yet
+            elif 'Pending Patient' in role_status:
+                result = 'Pending'
+                return result
+            elif 'Pending Patient' and 'Patient' not in role_status:
+                result = 'Signup'
+                return result
+        #brand new, no account started
+        result = 'New'
+        logging.warning(f"New phone number {phone_number} recognized.")
+        return result
 
     @staticmethod
-    def InitiateUserSignUp(phone_number, msg):
+    def InitiateUserSignUp(phone_number, location, organization, msg):
         """
-        Creates an entry in the database that is associated with a users phone number.
+        Creates new user to be a pending patient.
         """
-        pnumbertouser = PNumbertoUser(phone_number=phone_number)
-
+        new_patient = user_datastore.create_user(
+            phone_number = phone_number,
+            location_id = location.id,
+            organization_id = organization.id)
+        user_datastore.commit()
+        
         MessageTracking.create_new_message_before_signup(
-            phone_number=phone_number, body=msg
+            user_id=new_patient.id, body=msg
         )
-        db.session.add(pnumbertouser)
-        db.session.commit()
+
         logging.warning(
             f"Phone number {phone_number} entry made. Ready for user sign-up."
         )
@@ -71,11 +63,11 @@ class TwilioSignUpHelpers:
         return f"Thanks for choosing to be with us! Please fill out this form to complete your registration. Name.Email."
 
     @staticmethod
-    def CreateNewUser(phone_number, msg):
+    def CompleteUserSignUp(phone_number, msg):
 
-        phone_number_user = PNumbertoUser.query.get(phone_number)
-        if phone_number_user is not None and phone_number_user.user_id is None:
-
+        phone_number_user = user_datastore.find_user(phone_number=phone_number)
+        
+        if phone_number_user and 'Pending Patient' not in phone_number_user.roles and 'Patient' not in phone_number_user.roles:
             """
             Basic example form to have user send in, seperate fields with '.' in message:
             Name.Email.
@@ -85,20 +77,17 @@ class TwilioSignUpHelpers:
             name = msg_array[0]
             email = msg_array[1]
 
-            new_patient = Patient(
-                name=name, email=email, phone_number=phone_number_user.phone_number
-            )
+            phone_number_user.name = name
+            phone_number_user.email = email
 
-            db.session.add(new_patient)
-            new_patient.set_creation_date()
+            user_datastore.add_role_to_user(phone_number_user, 'Pending Patient')
             db.session.commit()
-            phone_number_user.user_id = new_patient.id
-            db.session.commit()
+
             MessageTracking.create_new_message_before_signup(
-                phone_number=phone_number, body=msg
+                user_id=phone_number_user.id, body=msg
             )
 
             logging.warning(
-                f"New user registered. Name - {new_patient.name} Phone Number - {phone_number_user.phone_number}. "
+                f"New user registered. Name - {phone_number_user.name} Phone Number - {phone_number_user.phone_number}. "
             )
-            return f"Thanks {new_patient.name}! You will be notified when your physician accepts your registration."
+            return f"Thanks {phone_number_user.name}! You will be notified when your physician accepts your registration."

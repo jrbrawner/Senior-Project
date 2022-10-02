@@ -1,6 +1,6 @@
 import os
 from twilio.rest import Client
-
+import logging
 
 class TwilioClient:
     def __init__(self, account_sid, auth_token):
@@ -10,12 +10,13 @@ class TwilioClient:
         self.auth_token = auth_token
         self.client = Client(account_sid, auth_token)
 
-    def send_message(self, office_number, user_number, text):
+    def send_message(self, location_number, user_number, text):
         """
         Send message using twilio client.
         """
         message = self.client.messages.create(
-            body=text, from_=office_number, to=user_number
+            body=text, from_=location_number, to=user_number
         )
 
-        print(message.sid)
+twilio_logger = logging.getLogger('twilio.http_client')
+twilio_logger.setLevel(logging.CRITICAL)

@@ -7,25 +7,27 @@ from flask import (
     url_for,
     session,
 )
-from flask_login import login_required, logout_user, login_user, current_user
-from ..models.Patients import db, Patient
+from flask_security import login_required, logout_user, login_user, current_user
+from ..models.Users import User
+from ..models.db import db
 from flask import current_app as app
-from .. import login_manager
+
+# from .. import login_manager
 from ..services.WebHelpers import WebHelpers
 import logging
 from ..services.auth.signup import SignUp
 from ..services.auth.login import Login
-from ..models.Physicians import Physician
-from ..models.Employees import Employee
-from ..models.Admins import Admin
+from ..models.Users import User
+from api import user_datastore
+from api import security
 
 auth_bp = Blueprint("auth_bp", __name__)
 sign_up = SignUp
 log_in = Login
 
 
-@auth_bp.post("/api/signup/<string:type>")
-def signup(type):
+@auth_bp.post("/api/signup")
+def signup():
     """
     Account sign up route.
     """
@@ -36,23 +38,13 @@ def signup(type):
     password = Password associated with new account. (Not needed for patients.)
     """
 
-    if type == "patient":
-        return sign_up.signup_patient(request)
-
-    if type == "physician":
-        return sign_up.signup_physician(request)
-
-    if type == "employee":
-        return sign_up.signup_employee(request)
-
-    if type == "admin":
-        return sign_up.signup_admin(request)
+    return sign_up.signup_user(request)
 
 
-@auth_bp.post("/api/login/<string:type>")
-def login(type):
+@auth_bp.post("/api/login")
+def login():
     """
-    Log-in page for registered Employees, Physicians, & Admins.
+    Log-in page for registered users.
 
     Login Form
     email = email associated with existing account
@@ -60,51 +52,55 @@ def login(type):
 
     """
 
-    if type == "physician":
-        return log_in.login_physician(request)
+    return log_in.login_user(request)
 
-    if type == "admin":
-        return log_in.login_admin(request)
+@auth_bp.post('/api/grant_role')
+def grant_role():
+    """Add a role to a users account."""
 
-    if type == "employee":
-        return log_in.login_employee(request)
+    user_id = request.form['user_id']
+    role_name = request.form['role_name']
+    user = User.query.get(user_id)
+    if user:
+        user_datastore.add_role_to_user(user, role_name)
+        db.session.commit()
+        logging.warning(f'User id - {current_user.id} - granted {role_name} role to User id - {user_id} - ')
+        return WebHelpers.EasyResponse('Role granted to user.', 200)
+    return WebHelpers.EasyResponse('User with that id does not exist.', 404)
 
+@auth_bp.post('/api/revoke_role')
+def revoke_rule():
+    """Remove a role from a users account. """
 
-@login_manager.user_loader
-def load_user(id):
-    """Check if user is logged-in on every page load."""
+    user_id = request.form['user_id']
+    role_name = request.form['role_name']
 
-    login_type = session.get("login_type")
-    if login_type == "employee":
-        if id is not None:
-            return Employee.query.get(id)
-    elif login_type == "physician":
-        if id is not None:
-            return Physician.query.get(id)
-    elif login_type == "admin":
-        if id is not None:
-            return Admin.query.get(id)
-    else:
-        return None
-    return None
+    user = User.query.get(user_id)
+    if user:
+        user_datastore.remove_role_from_user(user, role_name)
+        db.session.commit()
+        logging.warning(f'User id - {current_user.id} - revoked {role_name} role from User id - {user_id} -')
+        return WebHelpers.EasyResponse('Role revoked from user.', 200)
+    return WebHelpers.EasyResponse('User with that id does not exist.', 404)
 
+@auth_bp.get('/api/check_roles')
+def check_roles():
+    """Check a users roles. """
 
+    user_id = request.form['user_id']
+    user = User.query.get(user_id)
 
-@login_manager.unauthorized_handler
-def unauthorized():
-    """Redirect unauthorized Patients to Login page."""
-    flash("You must be logged in to view that page.")
-    return redirect(url_for("auth_bp.login"))
-
+    if user:
+        roles = [x.serialize() for x in user.roles]
+        logging.info(f'User id {current_user.id} accessed User id - {user_id} - roles')
+        return roles
 
 @auth_bp.get("/api/logout")
 @login_required
 def logout():
     """User log-out logic."""
-
     name = current_user.name
     logout_user()
-
     return WebHelpers.EasyResponse(name + " logged out.", 200)
 
 
@@ -112,12 +108,13 @@ def logout():
 @login_required
 def troubleshoot():
 
-    login_type = session["login_type"]
+    user = user_datastore.get_user(2)
+    test = None
+
+    if user.roles:
+        test = 'YEP'
+
     data = {
-        "testing": current_user.name,
-        "testing1": current_user.id,
-        "login_type": session["login_type"],
+        "testing": test
     }
-
     return data
-
