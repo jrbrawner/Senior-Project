@@ -35,7 +35,7 @@ class DevConfig:
     #SESSION_FILE_THRESHOLD = environ.get('SESSION_FILE_THRESHOLD')
 
     #Flask-Login
-    LOGIN_DISABLED = False
+    LOGIN_DISABLED = environ.get('LOGIN_DISABLED')
 
     #Configure application settings
     UPLOADS = environ.get('UPLOADS')
@@ -44,7 +44,7 @@ class DevConfig:
     #Flask-Security
     SECURITY_PASSWORD_SALT = environ.get('SECURITY_PASSWORD_SALT')
     SECURITY_TRACKABLE = environ.get('SECURITY_TRACKABLE')
-    
+    #SECURITY_LOGIN_URL = '/api/login'	
     SECURITY_REGISTERABLE = False
 
 class TestConfig:

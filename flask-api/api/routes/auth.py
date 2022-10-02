@@ -7,19 +7,19 @@ from flask import (
     url_for,
     session,
 )
-from flask_security import login_required, logout_user, login_user, current_user
+from flask_login import login_user, logout_user, current_user
 from ..models.Users import User
 from ..models.db import db
 from flask import current_app as app
-
-# from .. import login_manager
+from api import login_manager
 from ..services.WebHelpers import WebHelpers
 import logging
 from ..services.auth.signup import SignUp
 from ..services.auth.login import Login
 from ..models.Users import User
 from api import user_datastore
-from api import security
+from flask_login import login_required
+
 
 auth_bp = Blueprint("auth_bp", __name__)
 sign_up = SignUp
@@ -102,6 +102,10 @@ def logout():
     name = current_user.name
     logout_user()
     return WebHelpers.EasyResponse(name + " logged out.", 200)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
 
 
 @auth_bp.route("/api/troubleshoot", methods=["GET"])

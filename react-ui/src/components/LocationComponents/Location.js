@@ -1,94 +1,105 @@
 import React from 'react';
-import OfficeDataService from '../../services/office.service'
-import {useParams} from 'react-router-dom';
+import LocationDataService from '../../services/location.service'
+import { useParams } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 
 export default function App() {
-  const [office, setOffice] = React.useState(null);
+  const [location, setLocation] = React.useState(null);
 
   const params = useParams();
+  const navigate = useNavigate(); 
 
   React.useEffect(() => {
-    OfficeDataService.get(params.officeId).then((response) => {
-      setOffice(response.data);
+    LocationDataService.get(params.locationId).then((response) => {
+      setLocation(response.data);
     });
   }, []);
+
+  
 
   const handleSubmit = e => {
     e.preventDefault()
     const formData = new FormData(e.target);
-    formData.append('providerId', office.provider_id);
+    formData.append('organizationId', location.organization_id);
     const formDataObj = Object.fromEntries(formData.entries());
     console.log(formDataObj);
-    OfficeDataService.update(params.officeId, formData);
+    LocationDataService.update(params.locationId, formData).then((response) =>
+    {
+      if (response.status == 200){
+          navigate('/location');
+      }
+    })
   }
 
-  if (!office) return null;
+  if (!location) return null;
 
   return (
     <Form onSubmit={handleSubmit}>
-      <Form.Group className="mb-3" controlId="formOfficeName">
-        <Form.Label>Office Name</Form.Label>
+      <Form.Group className="mb-3" controlId="formLocationName">
+        <Form.Label>Location Name</Form.Label>
         <Form.Control
             required
             type="text"
             name="name"
-            defaultValue={office.name}
+            defaultValue={location.name}
           />
       </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formOfficeAddress">
+      <Form.Group className="mb-3" controlId="formLocationAddress">
         <Form.Label>Address</Form.Label>
         <Form.Control
             required
             type="text"
             name="address"
-            defaultValue={office.address}
+            defaultValue={location.address}
           />
       </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formOfficeCity">
+      <Form.Group className="mb-3" controlId="formLocationCity">
         <Form.Label>City</Form.Label>
         <Form.Control
             required
             type="text"
             name="city"
-            defaultValue={office.city}
+            defaultValue={location.city}
           />
       </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formOfficeState">
+      <Form.Group className="mb-3" controlId="formLocationState">
         <Form.Label>State</Form.Label>
         <Form.Control
             required
             type="text"
             name="state"
-            defaultValue={office.state}
+            defaultValue={location.state}
           />
       </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formOfficeZipCode">
+      <Form.Group className="mb-3" controlId="formLocationZipCode">
         <Form.Label>Zip Code</Form.Label>
         <Form.Control
             required
             type="text"
             name="zipCode"
-            defaultValue={office.zip_code}
+            defaultValue={location.zip_code}
           />
       </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formOfficePhoneNumber">
+      <Form.Group className="mb-3" controlId="formLocationPhoneNumber">
         <Form.Label>Phone Number</Form.Label>
         <Form.Control
             required
             type="text"
             name="phoneNumber"
-            defaultValue={office.phone_number}
+            defaultValue={location.phone_number}
           />
       </Form.Group>
       <Button variant="primary" type="submit">
-        Edit Office
+        Edit location
       </Button>
     </Form>
   )

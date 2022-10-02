@@ -9,10 +9,10 @@ export default function Sidebar() {
         <Nav.Link as={NavLink} to ="/">Home</Nav.Link>
       </Nav.Item>
       <Nav.Item>
-        <Nav.Link as={NavLink} to="/provider">Provider</Nav.Link>
+        <Nav.Link as={NavLink} to="/organization">Organizations</Nav.Link>
       </Nav.Item>
       <Nav.Item>
-        <Nav.Link as={NavLink} to="/office">Offices</Nav.Link>
+        <Nav.Link as={NavLink} to="/location">Locations</Nav.Link>
       </Nav.Item>
     </Navbar>
   );

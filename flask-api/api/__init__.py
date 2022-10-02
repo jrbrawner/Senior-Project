@@ -8,14 +8,12 @@ import logging
 from flask_security import SQLAlchemyUserDatastore, Security
 from api.models.Users import User, Role
 from api.models.db import db
+from flask_login import LoginManager
 
 UPLOADS = "api/uploads"
-
+login_manager = LoginManager()
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-security = None
-
-
 def create_app(config):
     """Construct the core app object."""
     app = Flask(__name__)
@@ -33,6 +31,7 @@ def create_app(config):
     db.init_app(app)
     Session(app)
     security = Security(app, user_datastore)
+    login_manager.init_app(app)
 
     # Set up logging
     logging.basicConfig(

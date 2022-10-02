@@ -1,12 +1,11 @@
 from flask import Blueprint, request, send_from_directory
-from flask_security import login_required
 from flask import current_app as app, jsonify
 from ..models.OrganizationModels import Organization
 from api.models.db import db
 from ..services.WebHelpers import WebHelpers
 import logging
 from flask_cors import cross_origin
-from flask_security import current_user
+from flask_login import login_required, current_user
 
 organization_bp = Blueprint("organization_bp", __name__)
 
@@ -17,11 +16,11 @@ def get_Organizations():
     """
     GET: Returns all Organizations.
     """
-    Organizations = Organization.query.all()
+    organizations = Organization.query.all()
 
-    resp = jsonify([x.serialize() for x in Organizations])
+    resp = jsonify([x.serialize() for x in organizations])
     resp.status_code = 200
-    logging.info(f"User id {current_user.id} accessed all organizations")
+    #logging.info(f"User id {current_user.id} accessed all organizations")
 
     return resp
 
