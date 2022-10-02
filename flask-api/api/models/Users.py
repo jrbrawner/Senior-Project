@@ -25,6 +25,9 @@ class Role(db.Model, RoleMixin):
     def serialize(self):
         return {"id": self.id, "name": self.name, "description": self.description}
 
+    def serialize_name(self):
+        return {'name': self.name}
+
 
 class User(UserMixin, db.Model):
     """User account model."""
@@ -102,4 +105,10 @@ class User(UserMixin, db.Model):
         return n
 
     def serialize(self):
-        return {"User_id": self.id, "User_name": self.name}
+        return {
+        "id": self.id,
+        "name": self.name,
+        'roles': [x.serialize_name() for x in self.roles],
+        'location_id': self.location_id,
+        'email': self.email,
+        'phone_number': self.phone_number}

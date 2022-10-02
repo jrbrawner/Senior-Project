@@ -28,7 +28,7 @@ def get_users():
     users = User.query.all()
     resp = jsonify([x.serialize() for x in users])
     resp.status_code = 200
-    logging.info(f"User id - {current_user.id} - accessed all users.")
+    #logging.info(f"User id - {current_user.id} - accessed all users.")
 
     return resp
 
@@ -111,8 +111,6 @@ def get_new_users():
 
     return resp
                     
-
-
 @login_required
 @cross_origin()
 @user_bp.put("/api/user/new/accept/<int:id>")

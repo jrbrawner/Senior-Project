@@ -4,7 +4,7 @@ import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import OrganizationsPage from './pages/OrganizationsPage';
 import LocationsPage from './pages/LocationsPage'
 import LocationPage from './pages/LocationPage'
-
+import UsersPage from './pages/UserPage';
 
 export default function App(){
 
@@ -17,6 +17,7 @@ export default function App(){
             <Route path="/organization" element={<OrganizationsPage/>}/>
             <Route path="/location" element={<LocationsPage/>}/>
             <Route path="/location/:locationId" element={<LocationPage />} />
+            <Route path="/user" element={<UsersPage />} />
           </Routes>
         </BrowserRouter>
       </Container>

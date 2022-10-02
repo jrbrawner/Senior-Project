@@ -3,7 +3,7 @@ import Locations from '../components/LocationComponents/Locations'
 
 export default function LocationsPage(){
     return(
-        <Body sidebar>
+        <Body>
             <Locations />
         </Body>
     );
