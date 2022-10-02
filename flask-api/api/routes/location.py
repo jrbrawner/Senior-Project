@@ -4,12 +4,13 @@ from flask import Blueprint, request, send_from_directory
 from flask_login import logout_user, login_required
 from sqlalchemy import create_engine, MetaData
 import json
-from flask import current_app as app, jsonify
+from flask import current_app as app, jsonify, url_for
 from ..models.OrganizationModels import Location
 from api.models.db import db
 from ..services.WebHelpers import WebHelpers
 import logging
 from flask_security import current_user
+
 
 location_bp = Blueprint("location_bp", __name__)
 
@@ -92,12 +93,12 @@ def update_Location(id):
     if location:
 
         name = request.form["name"]
-        phone_number = request.form["phone_number"]
+        phone_number = request.form["phoneNumber"]
         address = request.form["address"]
         city = request.form["city"]
         state = request.form["state"]
-        zip_code = request.form["zip_code"]
-        organization_id = request.form["organization_id"]
+        zip_code = request.form["zipCode"]
+        organization_id = request.form["organizationId"]
 
         location.name = name
         location.phone_number = phone_number
@@ -108,8 +109,8 @@ def update_Location(id):
         location.organization_id = organization_id
 
         db.session.commit()
-        logging.info(f"User id - {current_user.id} - updated location id - {location.id} -")
-        return WebHelpers.EasyResponse(f"{location.name} updated.", 200)
+        #logging.info(f"User id - {current_user.id} - updated location id - {location.id} -")
+        return url_for('location_bp.get_locations')
 
 
 @location_bp.delete("/api/location/<int:id>")
