@@ -23,8 +23,8 @@ class Message(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "patient_sender_id": self.patient_sender_id,
-            "physician_recipient_id": self.physician_recipient_id,
+            "sender_id": self.sender_id,
+            "recipient_id": self.recipient_id,
             "body": self.body,
             "timestamp": self.timestamp,
         }

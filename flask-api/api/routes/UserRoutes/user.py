@@ -95,96 +95,82 @@ def delete_user(id):
 
 @login_required
 @cross_origin()
-@user_bp.route("/api/user/new", methods=["GET"])
+@user_bp.get("/api/user/new")
 def get_new_users():
 
-    if session["login_type"] == "physician":
+    # get all pending users
+    # 6 is role id for pending patient, could look it up but its faster if we keep id's the same
+    #pending_patient = Role.query.filter_by(name='Pending Patient').first()
+    #new_users = User.query.filter(User.roles.any(id=pending_patient)).all() 
 
-        # get all users without physician
-        new_users = Patient.query.filter_by(physician_id=None).all()
+    new_users = User.query.filter(User.roles.any(id=6)).all() 
 
-        resp = jsonify([x.serialize() for x in new_users])
-        resp.status_code = 200
-        logging.info(f"{current_user} accessed all new users.")
+    resp = jsonify([x.serialize() for x in new_users])
+    resp.status_code = 200
+    logging.info(f"User id ({current_user.id}) accessed all new users.")
 
-        return resp
-
-    else:
-        return WebHelpers.EasyResponse("You are not authorized to view this page.", 403)
+    return resp
+                    
 
 
 @login_required
 @cross_origin()
-@user_bp.route("/api/user/new/accept/<int:id>", methods=["PUT"])
+@user_bp.put("/api/user/new/accept/<int:id>")
 def accept_new_user(id):
 
-    if session["login_type"] == "physician":
+    user = User.query.get(id)
+    location_id = user.location_id
+    location = Location.query.get(location_id)
+    organization_id = location.organization_id
+    organization = Organization.query.get(organization_id)
 
-        physician = Physician.query.get(current_user.id)
-        user = Patient.query.get(id)
-        Location_id = physician.Location_id
-        Location = Location.query.get(Location_id)
-        Organization_id = Location.Organization_id
-        Organization = Organization.query.get(Organization_id)
+    twilioClient = TwilioClient(
+        organization.twilio_account_id, organization.twilio_auth_token
+    )
 
-        twilioClient = TwilioClient(
-            Organization.twilio_account_id, Organization.twilio_auth_token
+    if user and 'Pending Patient' in user.roles:
+
+        user_datastore.remove_role_from_user(user, 'Pending Patient')
+        user_datastore.add_role_to_user(user, 'Patient')
+        logging.warning(f" User id ({current_user.id}) accepted {user.id} as a patient.")
+        db.session.commit()
+        twilioClient.send_message(
+            location.phone_number,
+            user.phone_number,
+            f"{user.name}, your physician has accepted your registration.",
         )
+        return WebHelpers.EasyResponse("Success.", 200)
 
-        if user:
-            user_name = user.name
-            user.physician_id = physician.id
-            p_number_to_user = PNumbertoUser.query.get(user.phone_number)
-            p_number_to_user.physician_id = physician.id
-
-            logging.warning(f"{current_user} accepted {user.name} as a patient.")
-            db.session.commit()
-            twilioClient.send_message(
-                Location.phone_number,
-                user.phone_number,
-                f"{user_name}, your physician has accepted your registration.",
-            )
-            return WebHelpers.EasyResponse("Success.", 200)
-
-        return WebHelpers.EasyResponse(f"user with that id does not exist.", 404)
-    else:
-        return WebHelpers.EasyResponse("You are not authorized to view this page.", 403)
-
+    return WebHelpers.EasyResponse(f"User with that id does not exist.", 404)
+    
 
 @login_required
 @cross_origin()
-@user_bp.route("/api/user/new/decline/<int:id>", methods=["DELETE"])
+@user_bp.delete("/api/user/new/decline/<int:id>")
 def decline_new_user(id):
 
-    if session["login_type"] == "physician":
+    user = User.query.get(id)
+    if user:
+        user_name = user.name
 
-        user = Patient.query.get(id)
-        if user:
-            user_name = user.name
-            p_number_to_user = PNumbertoUser.query.get(user.phone_number)
-            db.session.delete(user)
-            db.session.delete(p_number_to_user)
-            db.session.commit()
-            logging.warning(f"{current_user} declined {user_name} as a patient.")
-            return WebHelpers.EasyResponse(
-                f"{current_user} declined {user_name} as a patient.", 200
-            )
-
-        return WebHelpers.EasyResponse(f"user with that id does not exist.", 404)
-    else:
-        return WebHelpers.EasyResponse("You are not authorized to view this page.", 403)
+        user_datastore.delete_user(user)
+        db.session.commit()
+        logging.warning(f"User id ({current_user.id}) declined {user_name} as a patient.")
+        return WebHelpers.EasyResponse(
+            f"{current_user.name} declined {user_name} as a patient.", 200
+        )
+    return WebHelpers.EasyResponse(f"user with that id does not exist.", 404)
 
 
 @login_required
 @cross_origin()
-@user_bp.route("/api/user/<int:id>/messages", methods=["GET"])
+@user_bp.get("/api/user/<int:id>/messages")
 def get_user_msgs(id):
 
-    if session["login_type"] == "physician":
-        user = Patient.query.get(id)
 
-        if user:
-            resp = jsonify([x.serialize() for x in user.messages_sent])
-            resp.status_code = 200
+    user = user_datastore.find_user(id=id)
+    if user:
+        resp = jsonify([x.serialize() for x in user.messages_sent])
+        resp.status_code = 200
 
-            return resp
+        return resp
