@@ -33,7 +33,10 @@ class TwilioSignUpHelpers:
         """
         Checks phone number to see if sign-up process has been initiated.
         """
-        phone_number_user = User.query.filter_by(phone_number=phone_number)
+        phone_number_user = User.query.filter_by(phone_number=phone_number).first()
+
+        if phone_number_user == None:
+            return False
 
         if phone_number_user and phone_number_user.accepted_patient == False:
             return True
@@ -48,6 +51,9 @@ class TwilioSignUpHelpers:
 
         phone_number_user = User.query.filter_by(phone_number=phone_number).first()
 
+        if phone_number_user == None:
+            return False
+            
         if phone_number_user and phone_number_user.accepted_patient == True:
             logging.warning(f"Registered patient sent a message.")
             return True
@@ -62,13 +68,20 @@ class TwilioSignUpHelpers:
         """
         Creates new user to be a pending patient.
         """
+        """
         new_patient = User(
             phone_number = phone_number,
             location = location,
             organization = organization
         )
-        db.session.add(new_patient)
-        db.session.commit()
+        """
+
+        new_patient = user_datastore.create_user(
+            phone_number = phone_number,
+            location = location,
+            organization = organization)
+
+        user_datastore.commit()
 
         MessageTracking.create_new_message_before_signup(
             user_id=new_patient.id, body=msg
@@ -83,7 +96,7 @@ class TwilioSignUpHelpers:
     @staticmethod
     def CompleteUserSignUp(phone_number, msg):
 
-        phone_number_user = User.query.filter_by(phone_number=phone_number)
+        phone_number_user = User.query.filter_by(phone_number=phone_number).first()
 
         if phone_number_user is not None and phone_number_user.user_id is None and phone_number_user.accepted_patient == False:
             """
