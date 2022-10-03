@@ -16,14 +16,32 @@ export default function App() {
 
   function editUser(id) {
       navigate(`/user/${id}`);
-
     }
-  
+  function newUser() {
+    navigate(`/user/create`);
+  }
 
-  if (!users) return <p>Error.</p>;
+  function deleteUser(userId) {
+    UserDataService.delete(userId).then((response) =>
+    {
+      if (response.status === 200){
+          navigate(0);
+      }
+      else{
+        alert("Error");
+      }
+      
+    })
+  }
+
+  if (!users) return <p>Loading</p>;
 
   return (
     <div>
+      <div className="mb-1" >
+        <Button variant="outline-success" onClick={() => newUser()}>Create New User</Button>
+      </div>
+
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -46,7 +64,7 @@ export default function App() {
                         role.name))}</td>
                 <td>{user.phone_number}</td>
                 <td><Button variant="primary" onClick={() => editUser(user.id)}>Edit</Button>{' '}</td>
-                <td><Button variant="danger">Delete</Button>{' '}</td>
+                <td><Button variant="danger" onClick={() => deleteUser(user.id)}>Delete</Button>{' '}</td>
             </tr>
                 ))}
             </tbody>

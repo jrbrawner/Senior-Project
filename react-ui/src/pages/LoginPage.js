@@ -1,10 +1,10 @@
-import Body from '../components/Body'
+import Body from '../components/Body';
+import Login from '../components/Login';
 
-export default function LoginPage(){
-    return (
-        <Body sidebar>
-            <h1>Login Form</h1>
-            <p>TODO</p>
+export default function UsersPage(){
+    return(
+        <Body>
+            <Login />
         </Body>
     );
 }

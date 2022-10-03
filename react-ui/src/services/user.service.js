@@ -15,7 +15,7 @@ class UserDataService {
     }
 
     delete(id) {
-        return axios.delete(`/location/${id}`)
+        return axios.delete(`/user/${id}`)
     }
 
 
