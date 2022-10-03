@@ -4,8 +4,12 @@ import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
+import React, { useState} from 'react';
 
 export default function NavigationBar() {
+
+  const [user, setUser] = useState(0);
+
   return (
     <Navbar bg="light" expand="sm">
       <Container>
@@ -31,6 +35,9 @@ export default function NavigationBar() {
             />
             <Button variant="outline-success">Search</Button>
           </Form>
+          <Navbar.Text>
+            Signed in as: <a href="">{user}</a>
+          </Navbar.Text>
       </Container>
     </Navbar>
   );

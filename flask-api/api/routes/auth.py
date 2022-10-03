@@ -1,10 +1,6 @@
 from flask import (
     Blueprint,
-    redirect,
-    flash,
     request,
-    session,
-    url_for,
     session,
 )
 from flask_login import login_user, logout_user, current_user
@@ -19,6 +15,7 @@ from ..services.auth.login import Login
 from ..models.Users import User
 from api import user_datastore
 from flask_login import login_required
+from flask_security.utils import verify_password
 
 
 auth_bp = Blueprint("auth_bp", __name__)
@@ -35,7 +32,7 @@ def signup():
     Sign-Up Form:
     name = Patientname associated with new account.
     email = Patient email associated with new account.
-    password = Password associated with new account. (Not needed for patients.)
+    password = Password associated with new account.
     """
 
     return sign_up.signup_user(request)
@@ -44,15 +41,29 @@ def signup():
 @auth_bp.post("/api/login")
 def login():
     """
-    Log-in page for registered users.
-
-    Login Form
-    email = email associated with existing account
-    password = password associated with existing account
-
+    Log-in for registered users.
     """
 
-    return log_in.login_user(request)
+    if current_user.is_authenticated:
+            return WebHelpers.EasyResponse(
+                current_user.name + " already logged in.", 400
+            )
+
+    email = request.form["email"]
+    password = request.form["password"]
+
+    user = user_datastore.find_user(email=email)
+    password_matches = verify_password(password, user.password)
+
+    if user and password_matches:
+        login_user(user)
+        user.set_last_login()
+        logging.debug(f" User with id {user.id} logged in.")
+
+        return WebHelpers.EasyResponse(user.name + " logged in.", 200)
+    return WebHelpers.EasyResponse(
+        "Invalid email/password combination.", 405
+    )
 
 @auth_bp.post('/api/grant_role')
 def grant_role():
@@ -101,11 +112,21 @@ def logout():
     """User log-out logic."""
     name = current_user.name
     logout_user()
-    return WebHelpers.EasyResponse(name + " logged out.", 200)
+    return WebHelpers.EasyResponse(f'{name} logged out.', 200)
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(user_id)
+    """Check if user is logged-in on every page load."""
+    if user_id is not None:
+        return User.query.get(user_id)
+    return None
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    """Redirect unauthorized users to Login page."""
+    resp = 'You must be logged in to view this page.'
+    resp.status_code = 400
+    return resp
 
 
 @auth_bp.route("/api/troubleshoot", methods=["GET"])

@@ -66,7 +66,76 @@ def seed_db():
         logging.warning(
             f"No admin found, default admin account made. Make sure default credentials are changed."
         )
+        
+    #everything past here is extra for testing purposes
+        
+    if User.query.count() == 1:
 
+        password = hash_password("password")
+        user = user_datastore.create_user(
+            name="TestPatient",
+            email="testpatient@email.com",
+            location_id=1,
+            password=password,
+            phone_number="+18124536789"
+        )
+        db.session.add(user)
+        db.session.commit()
+        user_datastore.add_role_to_user(user, 'Patient')
+        user_datastore.commit()
+    if User.query.count() == 2:
+
+        password = hash_password("password")
+        user = user_datastore.create_user(
+            name="TestDoctor",
+            email="TestDoctor@email.com",
+            location_id=1,
+            password=password,
+            phone_number="+18124533801"
+        )
+        db.session.add(user)
+        db.session.commit()
+        user_datastore.add_role_to_user(user, 'Physician')
+        user_datastore.commit()
+    if User.query.count() == 3:
+        password = hash_password("password")
+        user = user_datastore.create_user(
+            name="TestAdmin",
+            email="TestAdmin@email.com",
+            location_id=1,
+            password=password,
+            phone_number="+18127831029"
+        )
+        db.session.add(user)
+        db.session.commit()
+        user_datastore.add_role_to_user(user, 'Admin')
+        user_datastore.commit()
+    if User.query.count() == 4:
+        password = hash_password("password")
+        user = user_datastore.create_user(
+            name="TestEmployee",
+            email="TestEmployee@email.com",
+            location_id=1,
+            password=password,
+            phone_number="+18124581234"
+        )
+        db.session.add(user)
+        db.session.commit()
+        user_datastore.add_role_to_user(user, 'Employee')
+        user_datastore.commit()
+    if User.query.count() == 5:
+        password = hash_password("password")
+        user = user_datastore.create_user(
+            name="Test1Admin",
+            email="Test1Admin@email.com",
+            location_id=2,
+            password=password,
+            phone_number="+1812"
+        )
+        db.session.add(user)
+        db.session.commit()
+        user_datastore.add_role_to_user(user, 'Admin')
+        user_datastore.commit()
     if Organization.query.count() == 0:
         organization = Organization(
             name = 'Healthcare Inc',
@@ -74,6 +143,14 @@ def seed_db():
             twilio_auth_token = ''
         )
         db.session.add(organization)
+        db.session.commit()
+    if Organization.query.count() == 1:
+        organization1 = Organization(
+            name = 'Healthcare Overlords',
+            twilio_account_id = '',
+            twilio_auth_token = ''
+        )
+        db.session.add(organization1)
         db.session.commit()
 
     if Location.query.count() == 0:
@@ -87,6 +164,19 @@ def seed_db():
             organization_id = '1'
         )
         db.session.add(location)
+        db.session.commit()
+
+    if Location.query.count() == 1:
+        location1 = Location(
+            name = 'Sweet Water Healthcare',
+            phone_number = '+18126789028',
+            address = '1000 Test Avenue',
+            city = 'Testville',
+            state = 'Kentucky',
+            zip_code = '47714',
+            organization_id = '2'
+            )
+        db.session.add(location1)
         db.session.commit()
 
         logging.warning(f"Database seeded.")

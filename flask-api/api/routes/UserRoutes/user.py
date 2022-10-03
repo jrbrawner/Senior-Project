@@ -46,7 +46,7 @@ def get_user(id):
 
     resp = jsonify(user.serialize())
     resp.status_code = 200
-    logging.info(f"User id - {current_user.id} - accessed patient with id of {id}.")
+    #logging.info(f"User id - {current_user.id} - accessed patient with id of {id}.")
 
     return resp
 
@@ -63,10 +63,20 @@ def update_user(id):
 
     if user:
         name = request.form["name"]
-        user.name = str(name)
-        logging.warning(
-            f"User id - {current_user.id} - updated user with id - {user.id} -"
-        )
+        email = request.form["email"]
+        location_id = request.form["locationId"]
+        roles = request.form["roles"]
+        phone_number = request.form["phoneNumber"]
+
+        user.name = name
+        user.email = email
+        user.location_id = location_id
+        #user.roles = roles 
+        user.phone_number = phone_number
+        db.session.commit()
+        #logging.warning(
+        #    f"User id - {current_user.id} - updated user with id - {user.id} -"
+        #)
         return WebHelpers.EasyResponse(f"Name updated.", 200)
     return WebHelpers.EasyResponse(f"user with that id does not exist.", 404)
 
@@ -85,9 +95,9 @@ def delete_user(id):
 
         db.session.delete(user)
         db.session.commit()
-        logging.warning(
-            f"User id - {current_user.id} - deleted user with id {user_id} and name of {user_name}."
-        )
+        #logging.warning(
+        #    f"User id - {current_user.id} - deleted user with id {user_id} and name of {user_name}."
+        #)
         return WebHelpers.EasyResponse(f"{user.name} deleted.", 200)
 
     return WebHelpers.EasyResponse(f"user with that id does not exist.", 404)

@@ -3,7 +3,7 @@ import Location from '../components/LocationComponents/Location'
 
 export default function LocationPage(){
     return(
-        <Body sidebar>
+        <Body>
             <Location/>
         </Body>
     );
