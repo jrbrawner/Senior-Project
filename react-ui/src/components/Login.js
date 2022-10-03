@@ -3,9 +3,12 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import AuthDataService from '../services/auth.service';
 import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 
 export default function LoginPage(){
     
+    const [user, setUser] = useState(0);
+
     const navigate = useNavigate(); 
     
     const handleLoginSubmit = e => {
@@ -19,7 +22,7 @@ export default function LoginPage(){
     {
         if (response.status === 200){
             navigate(`/user`);
-            //setLoggedIn(LoggedIn = "Yes");
+            setUser(user = "YES");
         }
         if (response.status === 400){
             alert("Error");
