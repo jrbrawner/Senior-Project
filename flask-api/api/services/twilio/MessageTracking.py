@@ -1,7 +1,8 @@
-from ...models.Messages import Message, PNumbertoUser, db
-from ...models.Patients import Patient
+from ...models.Messages import Message
+from ...models.Users import User
+from ...models.db import db
 import logging
-
+from api import user_datastore
 
 class MessageTracking:
     @staticmethod
@@ -10,39 +11,39 @@ class MessageTracking:
         Standard function for creating messages between a patient and physician.
         """
 
-        user = Patient.query.filter_by(phone_number=phone_number).first()
+        user = user_datastore.find_user(phone_number=phone_number)
 
         if user:
             message = Message(
-                patient_sender_id=user.id,
-                physician_recipient_id=user.physician_id,
+                sender_id=user.id,
+                recipient_id=user.location_id,
                 body=body,
-                patient_phone_number=phone_number,
             )
 
             db.session.add(message)
             db.session.commit()
 
-            logging.warning(f"New message created from {user.name} to their physician.")
+            logging.warning(f"New message created from {user.name} to their office.")
             return True
         else:
             return False
 
     @staticmethod
-    def create_new_message_before_signup(phone_number, body):
+    def create_new_message_before_signup(user_id, body):
 
-        message = Message(body=body, patient_phone_number=phone_number)
+        message = Message(body=body, sender_id=user_id)
 
         db.session.add(message)
         db.session.commit()
 
         logging.warning(f"Message from brand new user to their office.")
+
         return True
 
     @staticmethod
     def create_new_message_physician_to_patient(physician_id, patient_number, body):
 
-        user = Patient.query.filter_by(phone_number=patient_number).first()
+        user = User.query.filter_by(phone_number=patient_number).first()
 
         if user:
             message = Message(

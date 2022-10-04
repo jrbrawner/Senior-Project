@@ -1,10 +1,10 @@
 import Body from '../components/Body';
-import Login from '../components/Login';
+import Users from '../components/UserComponents/Users';
 
 export default function UsersPage(){
     return(
         <Body>
-            <Login />
+            <Users />
         </Body>
     );
 }

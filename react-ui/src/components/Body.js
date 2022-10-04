@@ -1,12 +1,12 @@
 import Container from 'react-bootstrap/Container';
 import Stack from 'react-bootstrap/Stack';
-import Sidebar from './Sidebar';
+import NavigationBar from './NavigationBar';
 
-export default function Body({ sidebar, children }) {
+export default function Body({ NavigationBar, children }) {
   return (
     <Container>
       <Stack direction="horizontal" className="Body">
-        {sidebar && <Sidebar />}
+        {NavigationBar && <NavigationBar />}
         <Container className="Content">
           {children}
         </Container>
