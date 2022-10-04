@@ -8,7 +8,7 @@ import React, { useState} from 'react';
 
 export default function NavigationBar() {
 
-  const [user, setUser] = useState(0);
+  const [user, setUser] = useState();
 
   return (
     <Navbar bg="light" expand="sm">
@@ -36,7 +36,7 @@ export default function NavigationBar() {
             <Button variant="outline-success">Search</Button>
           </Form>
           <Navbar.Text>
-            Signed in as: <a href="">{user}</a>
+            Signed in as: <a href="/logout">{user}</a>
           </Navbar.Text>
       </Container>
     </Navbar>

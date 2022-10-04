@@ -17,6 +17,7 @@ export default function App(){
         <Header/>
           <Routes>
             <Route path="/login" element={<LoginPage/>}/>
+            <Route path="/logout"/>
 
             <Route path="/organization" element={<OrganizationsPage/>}/>
             

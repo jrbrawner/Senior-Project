@@ -43,6 +43,9 @@ def login():
     """
     Log-in for registered users.
     """
+    ###REMOVE THIS
+    logout_user()
+    ########
 
     if current_user.is_authenticated:
             return WebHelpers.EasyResponse(
@@ -110,9 +113,9 @@ def check_roles():
 @login_required
 def logout():
     """User log-out logic."""
-    name = current_user.name
+    #name = current_user.name
     logout_user()
-    return WebHelpers.EasyResponse(f'{name} logged out.', 200)
+    return WebHelpers.EasyResponse(f'Logged out.', 200)
 
 @login_manager.user_loader
 def load_user(user_id):

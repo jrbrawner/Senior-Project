@@ -4,36 +4,39 @@ import Form from 'react-bootstrap/Form';
 import AuthDataService from '../services/auth.service';
 import { useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
 
-export default function LoginPage(){
-    
-    const [user, setUser] = useState(0);
+function LoginPage() {
 
-    const navigate = useNavigate(); 
-    
-    const handleLoginSubmit = e => {
-        
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const formDataObj = Object.fromEntries(formData.entries());
-    console.log(formDataObj);
-
-    AuthDataService.login(formData).then((response) =>
-    {
-        if (response.status === 200){
-            navigate(`/user`);
-            setUser(user = "YES");
+        const navigate = useNavigate(); 
+        const mapStateToProps = state => {
+            return { loggedIn: state.loggedIn }
         }
-        if (response.status === 400){
-            alert("Error");
-        }
-        
-    });
-}
 
-    return (
-        <Body >
-            <Form onSubmit={handleLoginSubmit}>
+        const connect(mapStateToProps);
+
+        const handleLoginSubmit = e => {
+
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const formDataObj = Object.fromEntries(formData.entries());
+        console.log(formDataObj);
+
+        AuthDataService.login(formData).then((response) =>
+        {
+            if (response.status === 200){
+                navigate(`/user`);
+                
+            }
+            if (response.status === 400){
+                alert("Error");
+            }
+            
+        });
+    
+        return (
+            <Body >
+            <Form onSubmit={this.handleLoginSubmit}>
             
                 <Form.Group className="mb-1" controlId="formLoginEmail">
                 <Form.Label>Email</Form.Label>
@@ -59,3 +62,6 @@ export default function LoginPage(){
         </Body>
     );
 }
+
+}
+export default connect(mapStateToProps)(LoginPage)
