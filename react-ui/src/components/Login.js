@@ -11,6 +11,7 @@ const LoginPage = ({setUserName, name}) => {
 
         const navigate = useNavigate();
         const dispatch = useDispatch();
+        //const selector = useSelector();
 
         const handleLoginSubmit = e => {
 
@@ -23,9 +24,8 @@ const LoginPage = ({setUserName, name}) => {
         {
             if (response.status === 200){
                 navigate(`/user`);
-                dispatch(setUserName("YES"));
-                console.log(name);
-                //dispatch(setLoggedIn(true));
+                dispatch(setUserName(response.data['msg']));
+                dispatch(setLoggedIn(true));
                 
             }
             if (response.status === 400){

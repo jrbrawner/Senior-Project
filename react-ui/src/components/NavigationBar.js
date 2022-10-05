@@ -6,11 +6,18 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import React from 'react';
 import { useSelector, useDispatch, connect } from 'react-redux';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 
 const NavigationBar = ({name}) => {
   //const loggedIn = useSelector((state) => state.loggedIn.value);
   //const name = useSelector((state) => state.name.value);
+  const navigate = useNavigate();
+
+  if (name === ""){
+    
+  }
+  
 
   return (
     <Navbar bg="light" expand="sm">
