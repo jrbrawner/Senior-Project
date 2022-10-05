@@ -5,10 +5,10 @@ import './index.css';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
-import { Provider } from 'react-redux'
+import { Provider } from 'react-redux';
 import store from '../src/store/index';
 
-window.store = store
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

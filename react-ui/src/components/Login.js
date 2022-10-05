@@ -3,29 +3,29 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import AuthDataService from '../services/auth.service';
 import { useNavigate } from 'react-router-dom';
-import React, { useState } from 'react';
-import { connect } from 'react-redux';
+import React from 'react';
+import { useSelector, useDispatch, connect } from 'react-redux';
+import {setName, setLoggedIn} from '../store/userSlice';
 
-function LoginPage() {
+const LoginPage = ({setUserName, name}) => {
 
-        const navigate = useNavigate(); 
-        const mapStateToProps = state => {
-            return { loggedIn: state.loggedIn }
-        }
-
-        const connect(mapStateToProps);
+        const navigate = useNavigate();
+        const dispatch = useDispatch();
 
         const handleLoginSubmit = e => {
 
         e.preventDefault();
         const formData = new FormData(e.target);
-        const formDataObj = Object.fromEntries(formData.entries());
-        console.log(formDataObj);
+        //const formDataObj = Object.fromEntries(formData.entries());
+        //console.log(formDataObj);
 
         AuthDataService.login(formData).then((response) =>
         {
             if (response.status === 200){
                 navigate(`/user`);
+                dispatch(setUserName("YES"));
+                console.log(name);
+                //dispatch(setLoggedIn(true));
                 
             }
             if (response.status === 400){
@@ -33,10 +33,10 @@ function LoginPage() {
             }
             
         });
-    
+    }
         return (
             <Body >
-            <Form onSubmit={this.handleLoginSubmit}>
+            <Form onSubmit={handleLoginSubmit}>
             
                 <Form.Group className="mb-1" controlId="formLoginEmail">
                 <Form.Label>Email</Form.Label>
@@ -61,7 +61,14 @@ function LoginPage() {
             </Form>
         </Body>
     );
+    
+}
+const actions = {
+    setUserName: setName
 }
 
-}
-export default connect(mapStateToProps)(LoginPage)
+const select = state => ({
+    name: state.user.name
+})
+
+export default connect(select, actions)(LoginPage)

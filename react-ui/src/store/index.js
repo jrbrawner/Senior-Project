@@ -1,4 +1,16 @@
-import { createStore } from 'redux';
+import { configureStore } from '@reduxjs/toolkit'
+import userReducer from './userSlice';
+
+export default configureStore({
+  reducer: {
+    user: userReducer,
+  },
+})
+
+
+
+
+/*import { createStore } from 'redux';
 
 
 const initialState = {
@@ -28,3 +40,4 @@ const store = createStore(reducer);
 
 export default store
 
+*/

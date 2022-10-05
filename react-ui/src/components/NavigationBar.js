@@ -4,11 +4,13 @@ import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import React, { useState} from 'react';
+import React from 'react';
+import { useSelector, useDispatch, connect } from 'react-redux';
 
-export default function NavigationBar() {
 
-  const [user, setUser] = useState();
+const NavigationBar = ({name}) => {
+  //const loggedIn = useSelector((state) => state.loggedIn.value);
+  //const name = useSelector((state) => state.name.value);
 
   return (
     <Navbar bg="light" expand="sm">
@@ -32,13 +34,19 @@ export default function NavigationBar() {
               placeholder="Search"
               className="me-2"
               aria-label="Search"
-            />
+              />
             <Button variant="outline-success">Search</Button>
           </Form>
           <Navbar.Text>
-            Signed in as: <a href="/logout">{user}</a>
+            Signed in as: <a href="/logout">{name}</a>
           </Navbar.Text>
       </Container>
     </Navbar>
   );
 }
+const select = state => ({
+  name: state.user.name
+})
+
+
+export default connect(select)(NavigationBar)
