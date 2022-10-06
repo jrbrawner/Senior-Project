@@ -1,14 +1,24 @@
 import React from 'react';
 import OrganizationDataService from '../../services/organization.service'
+import { useNavigate } from 'react-router-dom';
 
 export default function App() {
   const [organizations, setOrganizations] = React.useState(null);
+  const navigate = useNavigate();
 
   React.useEffect(() => {
-    OrganizationDataService.getAll().then((response) => {
-      setOrganizations(response.data);
-      console.log(response.data)
-    });
+    OrganizationDataService.getAll().then((response) => 
+    {
+      if(response.status === 200){
+        setOrganizations(response.data);
+        
+      }
+    }).catch(error => {
+      if (error.response.status === 401){
+        navigate(`/login`);
+        console.log('Not authenticated.');
+      }});
+
   }, []);
 
   if (!organizations) return <p>No data.</p>;

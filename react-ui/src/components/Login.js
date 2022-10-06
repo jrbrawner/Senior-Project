@@ -4,15 +4,16 @@ import Form from 'react-bootstrap/Form';
 import AuthDataService from '../services/auth.service';
 import { useNavigate } from 'react-router-dom';
 import React from 'react';
-import { useSelector, useDispatch, connect } from 'react-redux';
-import {setName, setLoggedIn} from '../store/userSlice';
+import Cookies from 'js-cookie';
 
-const LoginPage = ({setUserName, name}) => {
+export default function Login(){
 
         const navigate = useNavigate();
-        const dispatch = useDispatch();
-        //const selector = useSelector();
 
+        const idk = {
+            _id: Cookies.get('_id')
+        }
+        
         const handleLoginSubmit = e => {
 
         e.preventDefault();
@@ -24,14 +25,10 @@ const LoginPage = ({setUserName, name}) => {
         {
             if (response.status === 200){
                 navigate(`/user`);
-                dispatch(setUserName(response.data['msg']));
-                dispatch(setLoggedIn(true));
-                
             }
             if (response.status === 400){
                 alert("Error");
             }
-            
         });
     }
         return (
@@ -63,12 +60,3 @@ const LoginPage = ({setUserName, name}) => {
     );
     
 }
-const actions = {
-    setUserName: setName
-}
-
-const select = state => ({
-    name: state.user.name
-})
-
-export default connect(select, actions)(LoginPage)

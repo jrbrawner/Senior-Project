@@ -5,20 +5,8 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import React from 'react';
-import { useSelector, useDispatch, connect } from 'react-redux';
-import { Navigate, useNavigate } from 'react-router-dom';
 
-
-const NavigationBar = ({name}) => {
-  //const loggedIn = useSelector((state) => state.loggedIn.value);
-  //const name = useSelector((state) => state.name.value);
-  const navigate = useNavigate();
-
-  if (name === ""){
-    
-  }
-  
-
+export default function NavigationBar(){
   return (
     <Navbar bg="light" expand="sm">
       <Container>
@@ -45,15 +33,10 @@ const NavigationBar = ({name}) => {
             <Button variant="outline-success">Search</Button>
           </Form>
           <Navbar.Text>
-            Signed in as: <a href="/logout">{name}</a>
+            Signed in as: <a href="/logout">Logout</a>
           </Navbar.Text>
       </Container>
     </Navbar>
   );
 }
-const select = state => ({
-  name: state.user.name
-})
 
-
-export default connect(select)(NavigationBar)

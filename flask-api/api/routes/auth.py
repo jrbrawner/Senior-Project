@@ -6,7 +6,7 @@ from flask import (
 from flask_login import login_user, logout_user, current_user
 from ..models.Users import User
 from ..models.db import db
-from flask import current_app as app
+from flask import current_app as app, jsonify
 from api import login_manager
 from ..services.WebHelpers import WebHelpers
 import logging
@@ -16,6 +16,7 @@ from ..models.Users import User
 from api import user_datastore
 from flask_login import login_required
 from flask_security.utils import verify_password
+from flask_jwt_extended import create_access_token, get_jwt, jwt_required, unset_jwt_cookies
 
 
 auth_bp = Blueprint("auth_bp", __name__)
@@ -62,7 +63,7 @@ def login():
         login_user(user)
         user.set_last_login()
         logging.debug(f" User with id {user.id} logged in.")
-
+        
         return WebHelpers.EasyResponse(user.name + " logged in.", 200)
     return WebHelpers.EasyResponse(
         "Invalid email/password combination.", 405
@@ -127,10 +128,7 @@ def load_user(user_id):
 @login_manager.unauthorized_handler
 def unauthorized():
     """Redirect unauthorized users to Login page."""
-    resp = 'You must be logged in to view this page.'
-    resp.status_code = 400
-    return resp
-
+    return WebHelpers.EasyResponse('You must login to view this page', 401)
 
 @auth_bp.route("/api/troubleshoot", methods=["GET"])
 @login_required

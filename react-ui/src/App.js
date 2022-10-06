@@ -7,6 +7,7 @@ import LocationPage from './pages/LocationPage'
 import UsersPage from './pages/UserPage';
 import EditUserPage from './pages/EditUserPage';
 import LoginPage from './pages/LoginPage';
+import LogoutPage from './pages/LogoutPage';
 
 export default function App(){
 
@@ -17,7 +18,7 @@ export default function App(){
         <Header/>
           <Routes>
             <Route path="/login" element={<LoginPage/>}/>
-            <Route path="/logout"/>
+            <Route path="/logout" element={<LogoutPage/>}/>
 
             <Route path="/organization" element={<OrganizationsPage/>}/>
             
