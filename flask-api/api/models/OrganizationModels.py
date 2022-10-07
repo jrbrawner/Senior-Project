@@ -40,7 +40,7 @@ class Location(db.Model):
     state = db.Column(db.String(16), index=True)
     zip_code = db.Column(db.String(16), index=True)
     organization_id = db.Column(
-        db.Integer, db.ForeignKey("Organization.id"), nullable=True
+        db.Integer, db.ForeignKey("Organization.id"), nullable=False
     )
     # physicians = db.relationship("Physician", backref="physicians", lazy=True)
 

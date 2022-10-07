@@ -11,11 +11,15 @@ class UserDataService {
     }
 
     update(id, data) {
-        return axios.put(`/user/${id}`, data)
+        return axios.put(`/user/${id}`, data);
     }
 
     delete(id) {
-        return axios.delete(`/user/${id}`)
+        return axios.delete(`/user/${id}`);
+    }
+
+    create(data) {
+        return axios.post(`/user`, data);
     }
 
 

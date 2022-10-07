@@ -9,11 +9,6 @@ import Cookies from 'js-cookie';
 export default function Login(){
 
         const navigate = useNavigate();
-
-        const idk = {
-            _id: Cookies.get('_id')
-        }
-        
         const handleLoginSubmit = e => {
 
         e.preventDefault();
@@ -24,6 +19,7 @@ export default function Login(){
         AuthDataService.login(formData).then((response) =>
         {
             if (response.status === 200){
+                Cookies.set('name', response.data['name'])
                 navigate(`/user`);
             }
             if (response.status === 400){
@@ -34,7 +30,7 @@ export default function Login(){
         return (
             <Body >
             <Form onSubmit={handleLoginSubmit}>
-            
+                <h3>Login to be authenticated and access the portal.</h3>
                 <Form.Group className="mb-1" controlId="formLoginEmail">
                 <Form.Label>Email</Form.Label>
                 <Form.Control

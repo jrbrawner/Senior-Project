@@ -17,26 +17,14 @@ from api import user_datastore
 from flask_login import login_required
 from flask_security.utils import verify_password
 from flask_jwt_extended import create_access_token, get_jwt, jwt_required, unset_jwt_cookies
-
+from functools import wraps
 
 auth_bp = Blueprint("auth_bp", __name__)
-sign_up = SignUp
-log_in = Login
 
 
-@auth_bp.post("/api/signup")
-def signup():
-    """
-    Account sign up route.
-    """
-    """
-    Sign-Up Form:
-    name = Patientname associated with new account.
-    email = Patient email associated with new account.
-    password = Password associated with new account.
-    """
-
-    return sign_up.signup_user(request)
+#@auth_bp.post("/api/signup")
+#def signup():
+ #   return sign_up.signup_user(request)
 
 
 @auth_bp.post("/api/login")
@@ -47,7 +35,7 @@ def login():
     ###REMOVE THIS
     logout_user()
     ########
-
+    data = {}
     if current_user.is_authenticated:
             return WebHelpers.EasyResponse(
                 current_user.name + " already logged in.", 400
@@ -63,8 +51,12 @@ def login():
         login_user(user)
         user.set_last_login()
         logging.debug(f" User with id {user.id} logged in.")
-        
-        return WebHelpers.EasyResponse(user.name + " logged in.", 200)
+
+        data['name'] = user.name
+        resp = jsonify(data)
+        resp.status_code = 200
+    
+        return resp
     return WebHelpers.EasyResponse(
         "Invalid email/password combination.", 405
     )
@@ -144,3 +136,43 @@ def troubleshoot():
         "testing": test
     }
     return data
+
+def admin_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if "Admin" or "Super Admin" in [x.name for x in current_user.roles]:
+            return f(*args, **kwargs)
+        else:
+            return f'"You need to be an admin to use this route."'
+
+    return wrap
+
+
+def physician_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        login_type = session.get("login_type")
+        if login_type == "physician" or login_type == "admin":
+            return f(*args, **kwargs)
+        else:
+            return f'"You need to be a physician or admin to use this route."'
+
+    return wrap
+
+
+def employee_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        login_type = session.get("admin")
+        if (
+            login_type == "admin"
+            or login_type == "physician"
+            or login_type == "employee"
+        ):
+            return f(*args, **kwargs)
+        else:
+            return (
+                f'"You need to be an employee, physician, or admin to use this route."'
+            )
+
+    return wrap

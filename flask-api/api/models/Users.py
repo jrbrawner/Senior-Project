@@ -50,8 +50,8 @@ class User(UserMixin, db.Model):
     )
 
     profile_pic = db.Column(db.String(), index=False, unique=False, nullable=True)
-    location_id = db.Column(db.ForeignKey('Location.id'), nullable=True)
-    organization_id = db.Column(db.ForeignKey('Organization.id'), nullable=True)
+    location_id = db.Column(db.ForeignKey('Location.id'), nullable=False)
+    organization_id = db.Column(db.ForeignKey('Organization.id'), nullable=False)
     phone_number = db.Column(db.String(20), unique=True, nullable=True)
 
     messages_sent = db.relationship(

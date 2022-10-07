@@ -5,8 +5,15 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import React from 'react';
+import Cookies from 'js-cookie';
 
 export default function NavigationBar(){
+
+    const state = {
+      username: Cookies.get('name')
+    }
+
+
   return (
     <Navbar bg="light" expand="sm">
       <Container>
@@ -33,7 +40,8 @@ export default function NavigationBar(){
             <Button variant="outline-success">Search</Button>
           </Form>
           <Navbar.Text>
-            Signed in as: <a href="/logout">Logout</a>
+            Signed in as: <a href="/logout"> {state.username}
+              </a>
           </Navbar.Text>
       </Container>
     </Navbar>

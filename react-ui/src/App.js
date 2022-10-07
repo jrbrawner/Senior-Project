@@ -8,6 +8,7 @@ import UsersPage from './pages/UserPage';
 import EditUserPage from './pages/EditUserPage';
 import LoginPage from './pages/LoginPage';
 import LogoutPage from './pages/LogoutPage';
+import NewUserPage from './pages/NewUserPage';
 
 export default function App(){
 
@@ -27,6 +28,7 @@ export default function App(){
             
             <Route path="/user" element={<UsersPage />} />
             <Route path="/user/:userId" element={<EditUserPage/>} />
+            <Route path="/user/create" element={<NewUserPage/>} />
 
           </Routes>
         </BrowserRouter>

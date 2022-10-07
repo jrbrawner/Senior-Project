@@ -11,7 +11,11 @@ export default function App() {
   React.useEffect(() => {
     LocationDataService.getAll().then((response) => {
       setLocations(response.data);
-    });
+    }).catch(error => {
+      if (error.response.status === 401){
+        navigate(`/login`);
+        console.log('Not authenticated.');
+      }});
   }, []);
 
   function editLocation(id) {
