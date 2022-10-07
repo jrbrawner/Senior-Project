@@ -4,11 +4,15 @@ import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import React, { useState} from 'react';
+import React from 'react';
+import Cookies from 'js-cookie';
 
-export default function NavigationBar() {
+export default function NavigationBar(){
 
-  const [user, setUser] = useState(0);
+    const state = {
+      username: Cookies.get('name')
+    }
+
 
   return (
     <Navbar bg="light" expand="sm">
@@ -32,13 +36,15 @@ export default function NavigationBar() {
               placeholder="Search"
               className="me-2"
               aria-label="Search"
-            />
+              />
             <Button variant="outline-success">Search</Button>
           </Form>
           <Navbar.Text>
-            Signed in as: <a href="">{user}</a>
+            Signed in as: <a href="/logout"> {state.username}
+              </a>
           </Navbar.Text>
       </Container>
     </Navbar>
   );
 }
+

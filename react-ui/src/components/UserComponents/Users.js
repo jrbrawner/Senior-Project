@@ -5,13 +5,18 @@ import Button from 'react-bootstrap/Button';
 import {useNavigate} from 'react-router-dom';
 
 export default function App() {
+  
   const [users, setUsers] = React.useState(null);
   const navigate = useNavigate();
   
   React.useEffect(() => {
     UserDataService.getAll().then((response) => {
       setUsers(response.data);
-    });
+    }).catch(error => {
+      if (error.response.status === 401){
+        navigate(`/login`);
+        console.log('Not authenticated.');
+      }});
   }, []);
 
   function editUser(id) {

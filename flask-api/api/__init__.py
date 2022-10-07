@@ -9,9 +9,11 @@ from flask_security import SQLAlchemyUserDatastore, Security
 from api.models.Users import User, Role
 from api.models.db import db
 from flask_login import LoginManager
+from flask_jwt_extended import JWTManager
 
 UPLOADS = "api/uploads"
 login_manager = LoginManager()
+
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 def create_app(config):
@@ -27,11 +29,14 @@ def create_app(config):
         # change to prod for deployment
         app.config.from_object("config.DevConfig")
 
+    app.config["JWT_SECRET_KEY"] = "please-remember-to-change-me"
+
     # Initialize Plugins
     db.init_app(app)
-    Session(app)
+    #Session(app)
     security = Security(app, user_datastore)
     login_manager.init_app(app)
+    
 
     # Set up logging
     logging.basicConfig(

@@ -11,7 +11,7 @@ from flask_security.utils import hash_password
 
 
 class SignUp:
-    def signup_user(request):
+    def create_user(request):
         name = request.form["name"]
         email = request.form["email"]
         password = request.form["password"]

@@ -3,38 +3,34 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import AuthDataService from '../services/auth.service';
 import { useNavigate } from 'react-router-dom';
-import React, { useState } from 'react';
+import React from 'react';
+import Cookies from 'js-cookie';
 
-export default function LoginPage(){
-    
-    const [user, setUser] = useState(0);
+export default function Login(){
 
-    const navigate = useNavigate(); 
-    
-    const handleLoginSubmit = e => {
-        
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const formDataObj = Object.fromEntries(formData.entries());
-    console.log(formDataObj);
+        const navigate = useNavigate();
+        const handleLoginSubmit = e => {
 
-    AuthDataService.login(formData).then((response) =>
-    {
-        if (response.status === 200){
-            navigate(`/user`);
-            setUser(user = "YES");
-        }
-        if (response.status === 400){
-            alert("Error");
-        }
-        
-    });
-}
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        //const formDataObj = Object.fromEntries(formData.entries());
+        //console.log(formDataObj);
 
-    return (
-        <Body >
+        AuthDataService.login(formData).then((response) =>
+        {
+            if (response.status === 200){
+                Cookies.set('name', response.data['name'])
+                navigate(`/user`);
+            }
+            if (response.status === 400){
+                alert("Error");
+            }
+        });
+    }
+        return (
+            <Body >
             <Form onSubmit={handleLoginSubmit}>
-            
+                <h3>Login to be authenticated and access the portal.</h3>
                 <Form.Group className="mb-1" controlId="formLoginEmail">
                 <Form.Label>Email</Form.Label>
                 <Form.Control
@@ -58,4 +54,5 @@ export default function LoginPage(){
             </Form>
         </Body>
     );
+    
 }

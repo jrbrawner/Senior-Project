@@ -1,5 +1,4 @@
 from flask import Blueprint, request, send_from_directory, session
-
 # from .. import login_manager
 from flask_login import logout_user, login_required
 from sqlalchemy import create_engine, MetaData
@@ -14,6 +13,8 @@ from flask_login import current_user
 from api.services.twilio.TwilioClient import TwilioClient
 from api.models.OrganizationModels import Location, Organization
 from api import user_datastore
+from flask_security.utils import hash_password
+from flask_security import roles_accepted
 
 user_bp = Blueprint("user_bp", __name__)
 
@@ -50,8 +51,8 @@ def get_user(id):
 
     return resp
 
-
-@user_bp.route("/api/user/<int:id>", methods=["PUT"])
+@user_bp.put("/api/user/<int:id>")
+@roles_accepted('Super Admin', 'Admin')
 @login_required
 @cross_origin()
 def update_user(id):
@@ -81,9 +82,40 @@ def update_user(id):
     return WebHelpers.EasyResponse(f"user with that id does not exist.", 404)
 
 
+@user_bp.post('/api/user')
 @login_required
 @cross_origin()
+def create_user():
+
+    name = request.form["name"]
+    email = request.form["email"]
+    password = request.form["password"]
+    role = request.form['role']
+    phone_number = request.form['phoneNumber']
+    location_id = request.form['locationId']
+    organization_id = Location.query.get(location_id).organization_id
+
+    user = user_datastore.find_user(email=email)
+    if user is None:
+        password = hash_password(password)
+        user = user_datastore.create_user(
+            email=email,
+            name=name,
+            password=password,
+            phone_number=phone_number,
+            location_id=location_id,
+            organization_id=organization_id)
+
+        user_datastore.add_role_to_user(user, role)
+        db.session.commit()
+        logging.debug(f"New user {email} created.).")
+        return WebHelpers.EasyResponse(f"New user {user.name} created.", 201)
+    return WebHelpers.EasyResponse(f"User with that email already exists.", 400)
+
+
 @user_bp.delete("/api/user/<int:id>")
+@login_required
+@cross_origin()
 def delete_user(id):
     """
     DELETE: Deletes specified user.

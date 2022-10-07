@@ -6,18 +6,20 @@ from ..services.WebHelpers import WebHelpers
 import logging
 from flask_cors import cross_origin
 from flask_login import login_required, current_user
+from api.routes.auth import admin_required
+from flask_security import roles_accepted
 
 organization_bp = Blueprint("organization_bp", __name__)
 
 @organization_bp.get("/api/organization")
 @login_required
+@roles_accepted('Super Admin', 'Admin')
 @cross_origin()
 def get_Organizations():
     """
     GET: Returns all Organizations.
     """
     organizations = Organization.query.all()
-
     resp = jsonify([x.serialize() for x in organizations])
     resp.status_code = 200
     #logging.info(f"User id {current_user.id} accessed all organizations")
