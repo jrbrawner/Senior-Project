@@ -149,8 +149,8 @@ def seed_db():
     if Organization.query.count() == 0:
         organization = Organization(
             name = 'Healthcare Inc',
-            twilio_account_id = 'AC7a914eac1184b21ab730290493c44e8a',
-            twilio_auth_token = 'a2bbbe8a858f7e2f4c92ca096c45470c'
+            twilio_account_id = '',
+            twilio_auth_token = ''
         )
         db.session.add(organization)
         db.session.commit()
