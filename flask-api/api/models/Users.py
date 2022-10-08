@@ -8,7 +8,8 @@ from api.models.Messages import Message
 from .Notifications import Notification
 import json
 from sqlalchemy import insert
-
+from api.permissions import Permissions
+from flask import session
 
 roles_users = db.Table(
     "roles_users",
@@ -16,14 +17,14 @@ roles_users = db.Table(
     db.Column("role_id", db.Integer(), db.ForeignKey("Role.id")),
 )
 
-roles_sysfunctions = db.Table(
-    "roles_sysfunctions",
-    db.Column("sysfunction_id", db.Integer(), db.ForeignKey("SysFunction.id")),
+roles_permissions = db.Table(
+    "roles_permissions",
+    db.Column("permission_id", db.Integer(), db.ForeignKey("Permission.id")),
     db.Column("role_id", db.Integer(), db.ForeignKey("Role.id"))
 )
 
-class SysFunction(db.Model):
-    __tablename__ = "SysFunction"
+class Permission(db.Model):
+    __tablename__ = "Permission"
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String())
     description = db.Column(db.String(255))
@@ -41,7 +42,7 @@ class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
-    system_functions = db.relationship("SysFunction", secondary=roles_sysfunctions, backref=db.backref("system_functions", uselist=False))
+    permissions = db.relationship("Permission", secondary=roles_permissions, backref=db.backref("roles"))
 
     def serialize(self):
         return {"id": self.id, "name": self.name, "description": self.description}
@@ -49,10 +50,10 @@ class Role(db.Model, RoleMixin):
     def serialize_name(self):
         return {"name": self.name}
     
-    def add_sysfunction(self, role_id, sysfunction_id):
+    def add_permission(self, role_id, permission_id):
         stmt = (
-            insert(roles_sysfunctions).
-            values(role_id=role_id, sysfunction_id=sysfunction_id)
+            insert(roles_permissions).
+            values(role_id=role_id, permission_id=permission_id)
         )
         db.session.execute(stmt)
         db.session.commit()
@@ -133,6 +134,21 @@ class User(UserMixin, db.Model):
         db.session.add(n)
         return n
 
+    def has_permission(self, permission):
+
+        ###DATABASE WAY
+        #all roles that have the permission to do this action
+        #roles_allowed = Role.query.join(Role.permissions, aliased=True)\
+        #            .filter_by(id=permission.value).all()
+       
+        #for x in self.roles:
+        #    if x in roles_allowed:
+        #        return True
+
+        #session way
+        if permission.value in session['permissions']:
+            return True
+        
     def serialize(self):
         return {
             "id": self.id,

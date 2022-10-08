@@ -2,35 +2,23 @@ from flask import (
     Blueprint,
     request,
     session,
+    abort
 )
-from flask_login import login_user, logout_user, current_user
+from flask_login import current_user
 from ..models.Users import User
 from ..models.db import db
 from flask import current_app as app, jsonify
-from api import login_manager
 from ..services.WebHelpers import WebHelpers
 import logging
-from ..services.auth.signup import SignUp
-from ..services.auth.login import Login
 from ..models.Users import User
 from api import user_datastore
 from flask_login import login_required
 from flask_security.utils import verify_password
-from flask_jwt_extended import (
-    create_access_token,
-    get_jwt,
-    jwt_required,
-    unset_jwt_cookies,
-)
 from functools import wraps
+from flask_security import login_required, logout_user, login_user
 
 auth_bp = Blueprint("auth_bp", __name__)
-
-
-# @auth_bp.post("/api/signup")
-# def signup():
-#   return sign_up.signup_user(request)
-
+login_manager = app.login_manager
 
 @auth_bp.post("/api/login")
 def login():
@@ -58,6 +46,11 @@ def login():
         data["name"] = user.name
         resp = jsonify(data)
         resp.status_code = 200
+
+        permissions = [permission.id for x in current_user.roles for permission in x.permissions]
+        
+        session['permissions'] = [*set(permissions)]
+        
 
         return resp
     return WebHelpers.EasyResponse("Invalid email/password combination.", 405)
@@ -147,43 +140,14 @@ def troubleshoot():
     data = {"testing": test}
     return data
 
+def requires_permission(permission):
+    def wrapper(func):
+        @wraps(func)
+        def inner(*args, **kwargs):
+            if current_user.has_permission(permission):
+                return func(*args, **kwargs)
+            else:
+                abort(403)
+        return inner
+    return wrapper
 
-def admin_required(f):
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        if "Admin" or "Super Admin" in [x.name for x in current_user.roles]:
-            return f(*args, **kwargs)
-        else:
-            return f'"You need to be an admin to use this route."'
-
-    return wrap
-
-
-def physician_required(f):
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        login_type = session.get("login_type")
-        if login_type == "physician" or login_type == "admin":
-            return f(*args, **kwargs)
-        else:
-            return f'"You need to be a physician or admin to use this route."'
-
-    return wrap
-
-
-def employee_required(f):
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        login_type = session.get("admin")
-        if (
-            login_type == "admin"
-            or login_type == "physician"
-            or login_type == "employee"
-        ):
-            return f(*args, **kwargs)
-        else:
-            return (
-                f'"You need to be an employee, physician, or admin to use this route."'
-            )
-
-    return wrap

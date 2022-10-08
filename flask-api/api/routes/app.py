@@ -1,14 +1,10 @@
 from tracemalloc import start
 from flask import Blueprint
-from flask import current_app as app, jsonify
+from flask import current_app as app
 import time
-import logging
-from flask_security.decorators import login_required, roles_required
-from flask_security.utils import hash_password
-from ..models.Users import User, Role
-from api import user_datastore
-from ..models.db import db
+from flask_security.decorators import login_required
 from api.services.DB_Startup import seed_db
+
 
 
 app_bp = Blueprint("app_bp", __name__)
@@ -18,7 +14,6 @@ app_bp = Blueprint("app_bp", __name__)
 def start_up():
     seed_db()
 
-
 @app_bp.route("/", methods=["GET"])
 @login_required
 def index():
@@ -26,6 +21,5 @@ def index():
 
 
 @app_bp.route("/api/time", methods=["GET"])
-@roles_required("Super Admin")
 def get_time():
     return {"time": time.time()}

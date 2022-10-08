@@ -1,10 +1,10 @@
-from api.models.Users import User, Role, SysFunction
+from api.models.Users import User, Role, Permission
 from api.models.db import db
 from api import user_datastore
 from flask_security.utils import hash_password
 import logging
 from api.models.OrganizationModels import Organization, Location
-
+from api.permissions import Permissions
 
 def seed_db():
     """Initial seeding of database on application start up."""
@@ -56,15 +56,15 @@ def seed_db():
         db.session.commit()
         logging.warning(f"No roles found, default roles created.")
 
-        view_all_organizations = SysFunction(
-            id=1,
-            name="View All Organizations",
+        view_all_organizations = Permission(
+            id=Permissions.VIEW_ALL_ORGANIZATIONS.value,
+            name=Permissions.VIEW_ALL_ORGANIZATIONS.name,
             description="Allows the role to view all organization data."
         )
 
-        view_user_organizations = SysFunction(
-            id=2,
-            name="View Current Organization",
+        view_user_organizations = Permission(
+            id=Permissions.VIEW_CURRENT_ORGANIZATION.value,
+            name=Permissions.VIEW_CURRENT_ORGANIZATION.name,
             description="Allows the role to view the organization they belong to."
         )
 
@@ -72,8 +72,8 @@ def seed_db():
         db.session.add(view_user_organizations)
         db.session.commit()
 
-        super_admin_role.add_sysfunction(super_admin_role.id, view_all_organizations.id)
-        admin_role.add_sysfunction(admin_role.id, view_user_organizations.id)
+        super_admin_role.add_permission(super_admin_role.id, Permissions.VIEW_ALL_ORGANIZATIONS.value)
+        admin_role.add_permission(admin_role.id, Permissions.VIEW_CURRENT_ORGANIZATION.value)
 
 
     if User.query.count() == 0:

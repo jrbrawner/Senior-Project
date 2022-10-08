@@ -5,34 +5,30 @@ from api.models.db import db
 from ..services.WebHelpers import WebHelpers
 import logging
 from flask_cors import cross_origin
-from flask_login import login_required, current_user
-from api.routes.auth import admin_required
-from flask_security import roles_accepted
+from flask_security import login_required, current_user
+from api.permissions import Permissions
+from flask import session
 
 organization_bp = Blueprint("organization_bp", __name__)
 
 
 @organization_bp.get("/api/organization")
 @login_required
-#@roles_accepted("Super Admin", "Admin")
 @cross_origin()
-def get_Organizations():
+def get_organizations():
     """
     GET: Returns organizations depending on user role.
     Super Admin - All organizations.
     Admin - Only organization the admin belongs to.
     """
-    
-    #if "Super Admin" in [x.name for x in current_user.roles]:
-    if 1 in [x.id for x in current_user.roles[0].system_functions]:
+    if current_user.has_permission(Permissions.VIEW_ALL_ORGANIZATIONS):
         organizations = Organization.query.all()
         resp = jsonify([x.serialize() for x in organizations])
         resp.status_code = 200
         logging.info(f"User id {current_user.id} accessed all organizations")
         return resp
 
-    #elif "Admin" in [x.name for x in current_user.roles]:
-    if 2 in [x.id for x in current_user.roles[0].system_functions]:
+    if current_user.has_permission(Permissions.VIEW_CURRENT_ORGANIZATION):
         organization_id = current_user.organization_id
         organization = Organization.query.get(organization_id)
         logging.info(f"User id ({current_user.id}) accessed their organization.")
