@@ -17,13 +17,30 @@ organization_bp = Blueprint("organization_bp", __name__)
 @cross_origin()
 def get_Organizations():
     """
-    GET: Returns all Organizations.
+    GET: Returns organizations depending on user role.
+    Super Admin - All organizations.
+    Admin - Only organization the admin belongs to.
     """
-    organizations = Organization.query.all()
-    resp = jsonify([x.serialize() for x in organizations])
-    resp.status_code = 200
-    #logging.info(f"User id {current_user.id} accessed all organizations")
+    if 'Super Admin' in [x.name for x in current_user.roles]: 
+        organizations = Organization.query.all()
+        resp = jsonify([x.serialize() for x in organizations])
+        resp.status_code = 200
+        logging.info(f"User id {current_user.id} accessed all organizations")
+        return resp
 
+    elif 'Admin' in [x.name for x in current_user.roles]:
+        organization_id = current_user.organization_id
+        organization = Organization.query.get(organization_id)
+        logging.info(f"User id ({current_user.id}) accessed their organization.")
+        #javascript is expecting a list, only one element returned will return a dictionary instead of the list needed
+        format = []
+        format.append(organization.serialize())
+        resp = jsonify(format)
+        resp.status_code = 200
+        return resp
+
+    resp = 'You do not have the required role for this page.'
+    resp.status_code = 403
     return resp
 
 

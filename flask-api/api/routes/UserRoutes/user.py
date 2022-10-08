@@ -20,18 +20,22 @@ user_bp = Blueprint("user_bp", __name__)
 
 @user_bp.get("/api/user")
 @login_required
+@roles_accepted('Super Admin', 'Admin', 'Physician', 'Employee')
 @cross_origin()
 def get_users():
     """
     GET: Returns all users.
     """
+    data = []
+    if 'Super Admin' in [x.name for x in current_user.roles]:
+        users = User.query.all()
+        resp = jsonify([x.serialize() for x in users])
+        resp.status_code = 200
+        logging.info(f"User id - {current_user.id} - accessed all users.")
+        return resp
+    
 
-    users = User.query.all()
-    resp = jsonify([x.serialize() for x in users])
-    resp.status_code = 200
-    #logging.info(f"User id - {current_user.id} - accessed all users.")
-
-    return resp
+    
 
 
 @user_bp.get("/api/user/<int:id>")

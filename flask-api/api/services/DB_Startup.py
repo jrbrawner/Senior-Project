@@ -58,7 +58,11 @@ def seed_db():
     if User.query.count() == 0:
         password = hash_password("password")
         admin = user_datastore.create_user(
-            name="admin", email="admin@email.com", password=password
+            name="admin",
+            email="admin@email.com",
+            password=password,
+            organization_id=0,
+            location_id=0,
         )
         user_datastore.add_role_to_user(admin, "Super Admin")
         db.session.add(admin)
@@ -75,6 +79,7 @@ def seed_db():
         user = user_datastore.create_user(
             name="TestPatient",
             email="testpatient@email.com",
+            organization_id=1,
             location_id=1,
             password=password,
             phone_number="+18124536789"
@@ -89,6 +94,7 @@ def seed_db():
         user = user_datastore.create_user(
             name="TestDoctor",
             email="TestDoctor@email.com",
+            organization_id=1,
             location_id=1,
             password=password,
             phone_number="+18124533801"
@@ -102,6 +108,7 @@ def seed_db():
         user = user_datastore.create_user(
             name="TestAdmin",
             email="TestAdmin@email.com",
+            organization_id=1,
             location_id=1,
             password=password,
             phone_number="+18127831029"
@@ -110,11 +117,13 @@ def seed_db():
         db.session.commit()
         user_datastore.add_role_to_user(user, 'Admin')
         user_datastore.commit()
+
     if User.query.count() == 4:
         password = hash_password("password")
         user = user_datastore.create_user(
             name="TestEmployee",
             email="TestEmployee@email.com",
+            organization_id=1,
             location_id=1,
             password=password,
             phone_number="+18124581234"
@@ -128,6 +137,7 @@ def seed_db():
         user = user_datastore.create_user(
             name="Test1Admin",
             email="Test1Admin@email.com",
+            organization_id=2,
             location_id=2,
             password=password,
             phone_number="+1812"
@@ -139,8 +149,8 @@ def seed_db():
     if Organization.query.count() == 0:
         organization = Organization(
             name = 'Healthcare Inc',
-            twilio_account_id = '',
-            twilio_auth_token = ''
+            twilio_account_id = 'AC7a914eac1184b21ab730290493c44e8a',
+            twilio_auth_token = 'a2bbbe8a858f7e2f4c92ca096c45470c'
         )
         db.session.add(organization)
         db.session.commit()
