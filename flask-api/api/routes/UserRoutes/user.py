@@ -1,4 +1,5 @@
 from flask import Blueprint, request, send_from_directory, session
+
 # from .. import login_manager
 from flask_login import logout_user, login_required
 from sqlalchemy import create_engine, MetaData
@@ -18,24 +19,22 @@ from flask_security import roles_accepted
 
 user_bp = Blueprint("user_bp", __name__)
 
+
 @user_bp.get("/api/user")
 @login_required
-@roles_accepted('Super Admin', 'Admin', 'Physician', 'Employee')
+@roles_accepted("Super Admin", "Admin", "Physician", "Employee")
 @cross_origin()
 def get_users():
     """
     GET: Returns all users.
     """
     data = []
-    if 'Super Admin' in [x.name for x in current_user.roles]:
+    if "Super Admin" in [x.name for x in current_user.roles]:
         users = User.query.all()
         resp = jsonify([x.serialize() for x in users])
         resp.status_code = 200
         logging.info(f"User id - {current_user.id} - accessed all users.")
         return resp
-    
-
-    
 
 
 @user_bp.get("/api/user/<int:id>")
@@ -51,12 +50,13 @@ def get_user(id):
 
     resp = jsonify(user.serialize())
     resp.status_code = 200
-    #logging.info(f"User id - {current_user.id} - accessed patient with id of {id}.")
+    # logging.info(f"User id - {current_user.id} - accessed patient with id of {id}.")
 
     return resp
 
+
 @user_bp.put("/api/user/<int:id>")
-@roles_accepted('Super Admin', 'Admin')
+@roles_accepted("Super Admin", "Admin")
 @login_required
 @cross_origin()
 def update_user(id):
@@ -76,17 +76,17 @@ def update_user(id):
         user.name = name
         user.email = email
         user.location_id = location_id
-        #user.roles = roles 
+        # user.roles = roles
         user.phone_number = phone_number
         db.session.commit()
-        #logging.warning(
+        # logging.warning(
         #    f"User id - {current_user.id} - updated user with id - {user.id} -"
-        #)
+        # )
         return WebHelpers.EasyResponse(f"Name updated.", 200)
     return WebHelpers.EasyResponse(f"user with that id does not exist.", 404)
 
 
-@user_bp.post('/api/user')
+@user_bp.post("/api/user")
 @login_required
 @cross_origin()
 def create_user():
@@ -94,9 +94,9 @@ def create_user():
     name = request.form["name"]
     email = request.form["email"]
     password = request.form["password"]
-    role = request.form['role']
-    phone_number = request.form['phoneNumber']
-    location_id = request.form['locationId']
+    role = request.form["role"]
+    phone_number = request.form["phoneNumber"]
+    location_id = request.form["locationId"]
     organization_id = Location.query.get(location_id).organization_id
 
     user = user_datastore.find_user(email=email)
@@ -108,7 +108,8 @@ def create_user():
             password=password,
             phone_number=phone_number,
             location_id=location_id,
-            organization_id=organization_id)
+            organization_id=organization_id,
+        )
 
         user_datastore.add_role_to_user(user, role)
         db.session.commit()
@@ -131,9 +132,9 @@ def delete_user(id):
 
         db.session.delete(user)
         db.session.commit()
-        #logging.warning(
+        # logging.warning(
         #    f"User id - {current_user.id} - deleted user with id {user_id} and name of {user_name}."
-        #)
+        # )
         return WebHelpers.EasyResponse(f"{user.name} deleted.", 200)
 
     return WebHelpers.EasyResponse(f"user with that id does not exist.", 404)
@@ -146,17 +147,18 @@ def get_new_users():
 
     # get all pending users
     # 6 is role id for pending patient, could look it up but its faster if we keep id's the same
-    #pending_patient = Role.query.filter_by(name='Pending Patient').first()
-    #new_users = User.query.filter(User.roles.any(id=pending_patient)).all() 
+    # pending_patient = Role.query.filter_by(name='Pending Patient').first()
+    # new_users = User.query.filter(User.roles.any(id=pending_patient)).all()
 
-    new_users = User.query.filter(User.roles.any(id=6)).all() 
+    new_users = User.query.filter(User.roles.any(id=6)).all()
 
     resp = jsonify([x.serialize() for x in new_users])
     resp.status_code = 200
     logging.info(f"User id ({current_user.id}) accessed all new users.")
 
     return resp
-                    
+
+
 @login_required
 @cross_origin()
 @user_bp.put("/api/user/new/accept/<int:id>")
@@ -172,11 +174,13 @@ def accept_new_user(id):
         organization.twilio_account_id, organization.twilio_auth_token
     )
 
-    if user and 'Pending Patient' in user.roles:
+    if user and "Pending Patient" in user.roles:
 
-        user_datastore.remove_role_from_user(user, 'Pending Patient')
-        user_datastore.add_role_to_user(user, 'Patient')
-        logging.warning(f" User id ({current_user.id}) accepted {user.id} as a patient.")
+        user_datastore.remove_role_from_user(user, "Pending Patient")
+        user_datastore.add_role_to_user(user, "Patient")
+        logging.warning(
+            f" User id ({current_user.id}) accepted {user.id} as a patient."
+        )
         db.session.commit()
         twilioClient.send_message(
             location.phone_number,
@@ -186,7 +190,7 @@ def accept_new_user(id):
         return WebHelpers.EasyResponse("Success.", 200)
 
     return WebHelpers.EasyResponse(f"User with that id does not exist.", 404)
-    
+
 
 @login_required
 @cross_origin()
@@ -199,7 +203,9 @@ def decline_new_user(id):
 
         user_datastore.delete_user(user)
         db.session.commit()
-        logging.warning(f"User id ({current_user.id}) declined {user_name} as a patient.")
+        logging.warning(
+            f"User id ({current_user.id}) declined {user_name} as a patient."
+        )
         return WebHelpers.EasyResponse(
             f"{current_user.name} declined {user_name} as a patient.", 200
         )
@@ -210,7 +216,6 @@ def decline_new_user(id):
 @cross_origin()
 @user_bp.get("/api/user/<int:id>/messages")
 def get_user_msgs(id):
-
 
     user = user_datastore.find_user(id=id)
     if user:

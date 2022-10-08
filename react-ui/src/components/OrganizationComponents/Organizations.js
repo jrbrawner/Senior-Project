@@ -10,10 +10,16 @@ export default function App() {
     OrganizationDataService.getAll().then((response) => {
       setOrganizations(response.data);
     }).catch(error => {
-      if (error.response.status === 401){
+      if (error.response.status === 401)
+      {
         navigate(`/login`);
         console.log('Not authenticated.');
-      }});
+      }
+      if (error.response.status === 403)
+      {
+        alert('You are not authenticated for this page.');
+      }
+    });
   }, []);
 
 

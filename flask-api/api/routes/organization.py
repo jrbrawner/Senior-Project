@@ -11,9 +11,10 @@ from flask_security import roles_accepted
 
 organization_bp = Blueprint("organization_bp", __name__)
 
+
 @organization_bp.get("/api/organization")
 @login_required
-@roles_accepted('Super Admin', 'Admin')
+#@roles_accepted("Super Admin", "Admin")
 @cross_origin()
 def get_Organizations():
     """
@@ -21,27 +22,28 @@ def get_Organizations():
     Super Admin - All organizations.
     Admin - Only organization the admin belongs to.
     """
-    if 'Super Admin' in [x.name for x in current_user.roles]: 
+    
+    #if "Super Admin" in [x.name for x in current_user.roles]:
+    if 1 in [x.id for x in current_user.roles[0].system_functions]:
         organizations = Organization.query.all()
         resp = jsonify([x.serialize() for x in organizations])
         resp.status_code = 200
         logging.info(f"User id {current_user.id} accessed all organizations")
         return resp
 
-    elif 'Admin' in [x.name for x in current_user.roles]:
+    #elif "Admin" in [x.name for x in current_user.roles]:
+    if 2 in [x.id for x in current_user.roles[0].system_functions]:
         organization_id = current_user.organization_id
         organization = Organization.query.get(organization_id)
         logging.info(f"User id ({current_user.id}) accessed their organization.")
-        #javascript is expecting a list, only one element returned will return a dictionary instead of the list needed
+        # javascript is expecting a list, only one element returned will return a dictionary instead of the list needed
         format = []
         format.append(organization.serialize())
         resp = jsonify(format)
         resp.status_code = 200
         return resp
-
-    resp = 'You do not have the required role for this page.'
-    resp.status_code = 403
-    return resp
+    else:
+        return WebHelpers.EasyResponse('You are not authenticated for this functionality.', 403)
 
 
 @organization_bp.get("/api/organization/<int:id>")
@@ -54,10 +56,7 @@ def get_organization(id):
     organization = Organization.query.get(id)
 
     if organization is None:
-        return WebHelpers.EasyResponse(
-            "Organization with that id does not exist.", 404
-        )
-
+        return WebHelpers.EasyResponse("Organization with that id does not exist.", 404)
 
     resp = jsonify(organization.serialize())
     resp.status_code = 200
@@ -84,7 +83,9 @@ def create_organization():
 
     db.session.add(organization)
     db.session.commit()
-    logging.debug(f"User id {current_user.id} created new organization id - {organization.id} -")
+    logging.debug(
+        f"User id {current_user.id} created new organization id - {organization.id} -"
+    )
 
     return WebHelpers.EasyResponse(
         f"New organization {organization.name} created.", 201
@@ -98,18 +99,17 @@ def update_organization():
     PUT: Updates specified organization.
     """
     name = request.form["name"]
-    org_id = request.form['id']
+    org_id = request.form["id"]
 
     organization = Organization.query.filter_by(id=org_id).first()
-    
+
     if organization:
         organization.name = name
         db.session.commit()
         logging.info(f"User id {current_user.id} updated organization id - {org_id} -")
         return WebHelpers.EasyResponse(f"{name} updated.", 200)
-    return WebHelpers.EasyResponse(
-        f"Organization with that id does not exist.", 404
-    )
+    return WebHelpers.EasyResponse(f"Organization with that id does not exist.", 404)
+
 
 @organization_bp.delete("/api/organization/<int:id>")
 def delete_organization(id):
@@ -120,9 +120,7 @@ def delete_organization(id):
         db.session.commit()
         logging.info(f"User id {current_user.id} deleted org id - {id} -")
         return WebHelpers.EasyResponse(f"Organization deleted.", 200)
-    return WebHelpers.EasyResponse(
-        f"Organization with that id does not exist.", 404
-    )
+    return WebHelpers.EasyResponse(f"Organization with that id does not exist.", 404)
 
 
 @organization_bp.get("/api/organization/<int:id>/locations")

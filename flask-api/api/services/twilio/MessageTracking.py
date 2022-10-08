@@ -4,6 +4,7 @@ from ...models.db import db
 import logging
 from api import user_datastore
 
+
 class MessageTracking:
     @staticmethod
     def create_new_message_patient(phone_number, body):

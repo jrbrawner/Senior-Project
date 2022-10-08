@@ -16,6 +16,8 @@ login_manager = LoginManager()
 
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+
+
 def create_app(config):
     """Construct the core app object."""
     app = Flask(__name__)
@@ -33,10 +35,9 @@ def create_app(config):
 
     # Initialize Plugins
     db.init_app(app)
-    #Session(app)
+    # Session(app)
     security = Security(app, user_datastore)
     login_manager.init_app(app)
-    
 
     # Set up logging
     logging.basicConfig(

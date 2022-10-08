@@ -7,6 +7,7 @@ from flask import current_app as app
 from api.models.Messages import Message
 from .Notifications import Notification
 import json
+from sqlalchemy import insert
 
 
 roles_users = db.Table(
@@ -15,18 +16,46 @@ roles_users = db.Table(
     db.Column("role_id", db.Integer(), db.ForeignKey("Role.id")),
 )
 
+roles_sysfunctions = db.Table(
+    "roles_sysfunctions",
+    db.Column("sysfunction_id", db.Integer(), db.ForeignKey("SysFunction.id")),
+    db.Column("role_id", db.Integer(), db.ForeignKey("Role.id"))
+)
 
-class Role(db.Model, RoleMixin):
-    __tablename__ = "Role"
+class SysFunction(db.Model):
+    __tablename__ = "SysFunction"
     id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(80), unique=True)
+    name = db.Column(db.String())
     description = db.Column(db.String(255))
 
     def serialize(self):
         return {"id": self.id, "name": self.name, "description": self.description}
 
     def serialize_name(self):
-        return {'name': self.name}
+        return {"name": self.name}
+    
+    
+    
+class Role(db.Model, RoleMixin):
+    __tablename__ = "Role"
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
+    system_functions = db.relationship("SysFunction", secondary=roles_sysfunctions, backref=db.backref("system_functions", uselist=False))
+
+    def serialize(self):
+        return {"id": self.id, "name": self.name, "description": self.description}
+
+    def serialize_name(self):
+        return {"name": self.name}
+    
+    def add_sysfunction(self, role_id, sysfunction_id):
+        stmt = (
+            insert(roles_sysfunctions).
+            values(role_id=role_id, sysfunction_id=sysfunction_id)
+        )
+        db.session.execute(stmt)
+        db.session.commit()
 
 
 class User(UserMixin, db.Model):
@@ -50,8 +79,8 @@ class User(UserMixin, db.Model):
     )
 
     profile_pic = db.Column(db.String(), index=False, unique=False, nullable=True)
-    location_id = db.Column(db.ForeignKey('Location.id'), nullable=False)
-    organization_id = db.Column(db.ForeignKey('Organization.id'), nullable=False)
+    location_id = db.Column(db.ForeignKey("Location.id"), nullable=False)
+    organization_id = db.Column(db.ForeignKey("Organization.id"), nullable=False)
     phone_number = db.Column(db.String(20), unique=True, nullable=True)
 
     messages_sent = db.relationship(
@@ -106,9 +135,10 @@ class User(UserMixin, db.Model):
 
     def serialize(self):
         return {
-        "id": self.id,
-        "name": self.name,
-        'roles': [x.serialize_name() for x in self.roles],
-        'location_id': self.location_id,
-        'email': self.email,
-        'phone_number': self.phone_number}
+            "id": self.id,
+            "name": self.name,
+            "roles": [x.serialize_name() for x in self.roles],
+            "location_id": self.location_id,
+            "email": self.email,
+            "phone_number": self.phone_number,
+        }

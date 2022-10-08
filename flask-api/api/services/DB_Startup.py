@@ -1,9 +1,10 @@
-from api.models.Users import User, Role
+from api.models.Users import User, Role, SysFunction
 from api.models.db import db
 from api import user_datastore
 from flask_security.utils import hash_password
 import logging
 from api.models.OrganizationModels import Organization, Location
+
 
 def seed_db():
     """Initial seeding of database on application start up."""
@@ -55,6 +56,26 @@ def seed_db():
         db.session.commit()
         logging.warning(f"No roles found, default roles created.")
 
+        view_all_organizations = SysFunction(
+            id=1,
+            name="View All Organizations",
+            description="Allows the role to view all organization data."
+        )
+
+        view_user_organizations = SysFunction(
+            id=2,
+            name="View Current Organization",
+            description="Allows the role to view the organization they belong to."
+        )
+
+        db.session.add(view_all_organizations)
+        db.session.add(view_user_organizations)
+        db.session.commit()
+
+        super_admin_role.add_sysfunction(super_admin_role.id, view_all_organizations.id)
+        admin_role.add_sysfunction(admin_role.id, view_user_organizations.id)
+
+
     if User.query.count() == 0:
         password = hash_password("password")
         admin = user_datastore.create_user(
@@ -70,9 +91,9 @@ def seed_db():
         logging.warning(
             f"No admin found, default admin account made. Make sure default credentials are changed."
         )
-        
-    #everything past here is extra for testing purposes
-        
+
+    # everything past here is extra for testing purposes
+
     if User.query.count() == 1:
 
         password = hash_password("password")
@@ -82,11 +103,11 @@ def seed_db():
             organization_id=1,
             location_id=1,
             password=password,
-            phone_number="+18124536789"
+            phone_number="+18124536789",
         )
         db.session.add(user)
         db.session.commit()
-        user_datastore.add_role_to_user(user, 'Patient')
+        user_datastore.add_role_to_user(user, "Patient")
         user_datastore.commit()
     if User.query.count() == 2:
 
@@ -97,11 +118,11 @@ def seed_db():
             organization_id=1,
             location_id=1,
             password=password,
-            phone_number="+18124533801"
+            phone_number="+18124533801",
         )
         db.session.add(user)
         db.session.commit()
-        user_datastore.add_role_to_user(user, 'Physician')
+        user_datastore.add_role_to_user(user, "Physician")
         user_datastore.commit()
     if User.query.count() == 3:
         password = hash_password("password")
@@ -111,11 +132,11 @@ def seed_db():
             organization_id=1,
             location_id=1,
             password=password,
-            phone_number="+18127831029"
+            phone_number="+18127831029",
         )
         db.session.add(user)
         db.session.commit()
-        user_datastore.add_role_to_user(user, 'Admin')
+        user_datastore.add_role_to_user(user, "Admin")
         user_datastore.commit()
 
     if User.query.count() == 4:
@@ -126,11 +147,11 @@ def seed_db():
             organization_id=1,
             location_id=1,
             password=password,
-            phone_number="+18124581234"
+            phone_number="+18124581234",
         )
         db.session.add(user)
         db.session.commit()
-        user_datastore.add_role_to_user(user, 'Employee')
+        user_datastore.add_role_to_user(user, "Employee")
         user_datastore.commit()
     if User.query.count() == 5:
         password = hash_password("password")
@@ -140,52 +161,50 @@ def seed_db():
             organization_id=2,
             location_id=2,
             password=password,
-            phone_number="+1812"
+            phone_number="+1812",
         )
         db.session.add(user)
         db.session.commit()
-        user_datastore.add_role_to_user(user, 'Admin')
+        user_datastore.add_role_to_user(user, "Admin")
         user_datastore.commit()
     if Organization.query.count() == 0:
         organization = Organization(
-            name = 'Healthcare Inc',
-            twilio_account_id = 'AC7a914eac1184b21ab730290493c44e8a',
-            twilio_auth_token = 'a2bbbe8a858f7e2f4c92ca096c45470c'
+            name="Healthcare Inc",
+            twilio_account_id="AC7a914eac1184b21ab730290493c44e8a",
+            twilio_auth_token="a2bbbe8a858f7e2f4c92ca096c45470c",
         )
         db.session.add(organization)
         db.session.commit()
     if Organization.query.count() == 1:
         organization1 = Organization(
-            name = 'Healthcare Overlords',
-            twilio_account_id = '',
-            twilio_auth_token = ''
+            name="Healthcare Overlords", twilio_account_id="", twilio_auth_token=""
         )
         db.session.add(organization1)
         db.session.commit()
 
     if Location.query.count() == 0:
         location = Location(
-            name = 'Clean Eyes',
-            phone_number = '+18155510787',
-            address = '1001 Banana Republic',
-            city = 'Evansville',
-            state = 'Indiana',
-            zip_code = '47720',
-            organization_id = '1'
+            name="Clean Eyes",
+            phone_number="+18155510787",
+            address="1001 Banana Republic",
+            city="Evansville",
+            state="Indiana",
+            zip_code="47720",
+            organization_id="1",
         )
         db.session.add(location)
         db.session.commit()
 
     if Location.query.count() == 1:
         location1 = Location(
-            name = 'Sweet Water Healthcare',
-            phone_number = '+18126789028',
-            address = '1000 Test Avenue',
-            city = 'Testville',
-            state = 'Kentucky',
-            zip_code = '47714',
-            organization_id = '2'
-            )
+            name="Sweet Water Healthcare",
+            phone_number="+18126789028",
+            address="1000 Test Avenue",
+            city="Testville",
+            state="Kentucky",
+            zip_code="47714",
+            organization_id="2",
+        )
         db.session.add(location1)
         db.session.commit()
 
