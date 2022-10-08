@@ -7,19 +7,15 @@ export default function App() {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    OrganizationDataService.getAll().then((response) => 
-    {
-      if(response.status === 200){
-        setOrganizations(response.data);
-        
-      }
+    OrganizationDataService.getAll().then((response) => {
+      setOrganizations(response.data);
     }).catch(error => {
       if (error.response.status === 401){
         navigate(`/login`);
         console.log('Not authenticated.');
       }});
-
   }, []);
+
 
   if (!organizations) return <p>No data.</p>;
 
