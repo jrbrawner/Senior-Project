@@ -17,7 +17,7 @@ organization_bp = Blueprint("organization_bp", __name__)
 @cross_origin()
 def get_organizations():
     """
-    GET: Returns organizations depending on user role.
+    GET: Returns organizations depending on user role.\n
     Super Admin - All organizations.
     Admin - Only organization the admin belongs to.
     """
@@ -39,7 +39,7 @@ def get_organizations():
         resp.status_code = 200
         return resp
     else:
-        return WebHelpers.EasyResponse('You are not authenticated for this functionality.', 403)
+        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
 
 
 @organization_bp.get("/api/organization/<int:id>")

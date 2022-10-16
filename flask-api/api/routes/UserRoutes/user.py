@@ -16,25 +16,67 @@ from api.models.OrganizationModels import Location, Organization
 from api import user_datastore
 from flask_security.utils import hash_password
 from flask_security import roles_accepted
+from api.permissions import Permissions
 
 user_bp = Blueprint("user_bp", __name__)
 
 
 @user_bp.get("/api/user")
 @login_required
-@roles_accepted("Super Admin", "Admin", "Physician", "Employee")
 @cross_origin()
 def get_users():
     """
     GET: Returns all users.
+
+    Super Admin: View All People
+    Admin: View All People in Their Organization
+    Physician: View All Employees & Patients
+    Employee: View All Patients
     """
     data = []
-    if "Super Admin" in [x.name for x in current_user.roles]:
+
+    #Super Admin
+    if current_user.has_permission(Permissions.VIEW_ALL_PEOPLE):
         users = User.query.all()
         resp = jsonify([x.serialize() for x in users])
         resp.status_code = 200
         logging.info(f"User id - {current_user.id} - accessed all users.")
         return resp
+    #Admin
+    if current_user.has_permission(Permissions.VIEW_ALL_CURRENT_ORG_PEOPLE):
+        users = User.query.filter_by(organization_id = current_user.organization_id).all()
+        resp = jsonify([x.serialize() for x in users])
+        resp.status_code = 200
+        logging.info(f"User id - {current_user.id} - accessed all current users.")
+        return resp
+    #Physician
+    if current_user.has_permission(Permissions.VIEW_ALL_CURRENT_ORG_EMPLOYEE):
+        users = User.query.filter_by(organization_id = current_user.organization_id).all()
+        # Only grab users with employee or patient in their roles
+        resp_users = []
+        for x in users:
+            if 'Employee' or 'Patient' or 'Pending Patient' in x.roles:
+                resp_users.append(x)
+        resp = jsonify([x.serialize() for x in resp_users])
+        resp.status_code = 200
+        logging.info(f"User id - {current_user.id} - accessed all current employees & patients.")
+        return resp
+    #Employee
+    if current_user.has_permission(Permissions.VIEW_ALL_CURRENT_ORG_PATIENTS):
+        users = User.query.filter_by(organization_id = current_user.organization_id).all()
+        resp_users = []
+        
+        for x in users:
+            if 'Patient' or 'Pending Patient' in x.roles:
+                resp_users.append(x)
+
+        resp = jsonify([x.serialize() for x in resp_users])
+        resp.status_code = 200
+        logging.info(f"User id - {current_user.id} - accessed all current patients.")
+        return resp
+    else:
+        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+        
 
 
 @user_bp.get("/api/user/<int:id>")
