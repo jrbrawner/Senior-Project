@@ -5,7 +5,7 @@ from flask_login import logout_user, login_required
 from sqlalchemy import create_engine, MetaData
 import json
 from flask import current_app as app, jsonify
-from api.models.Users import User, Role
+from api.models.Users import User, Role, roles_users
 from api.models.db import db
 from api.services.WebHelpers import WebHelpers
 import logging
@@ -51,12 +51,15 @@ def get_users():
         return resp
     #Physician
     if current_user.has_permission(Permissions.VIEW_ALL_CURRENT_ORG_EMPLOYEE):
+
         users = User.query.filter_by(organization_id = current_user.organization_id).all()
-        # Only grab users with employee or patient in their roles
         resp_users = []
+        #Only grab users with employee or patient in their roles
         for x in users:
-            if 'Employee' or 'Patient' or 'Pending Patient' in x.roles:
+            user_roles = [z.name for z in x.roles]
+            if 'Patient' in user_roles or 'Employee' in user_roles or 'Pending Patient' in user_roles:
                 resp_users.append(x)
+
         resp = jsonify([x.serialize() for x in resp_users])
         resp.status_code = 200
         logging.info(f"User id - {current_user.id} - accessed all current employees & patients.")
@@ -67,7 +70,8 @@ def get_users():
         resp_users = []
         
         for x in users:
-            if 'Patient' or 'Pending Patient' in x.roles:
+            user_roles = [z.name for z in x.roles]
+            if 'Patient' in user_roles or 'Pending Patient' in user_roles:
                 resp_users.append(x)
 
         resp = jsonify([x.serialize() for x in resp_users])
