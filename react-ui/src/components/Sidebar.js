@@ -1,81 +1,37 @@
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faHome,
-  faBriefcase,
-  faPaperPlane,
-  faQuestion,
-  faImage,
-  faCopy,
-  faTimes
-} from "@fortawesome/free-solid-svg-icons";
-import SubMenu from "./SubMenu";
-import { Nav, Button } from "react-bootstrap";
-import classNames from "classnames";
+import { Button, Badge, ListGroup, Stack } from "react-bootstrap";
 
-class SideBar extends React.Component {
-  render() {
+export default function Sidebar() {
+
+  const alertClicked = () => {
+    alert('You clicked the third ListGroupItem');
+  };
+
+   
     return (
-      <div className={classNames("sidebar", { "is-open": this.props.isOpen })}>
-        <div className="sidebar-header">
-          <Button
-            variant="link"
-            onClick={this.props.toggle}
-            style={{ color: "#fff" }}
-            className="mt-4"
-          >
-            <FontAwesomeIcon icon={faTimes} pull="right" size="xs" />
-          </Button>
-          <h3>react-bootstrap sidebar</h3>
-        </div>
-
-        <Nav className="flex-column pt-2">
-          <p className="ml-3">Heading</p>
-
-          <Nav.Item className="active">
-            <Nav.Link href="/">
-              <FontAwesomeIcon icon={faHome} className="mr-2" />
-              Home
-            </Nav.Link>
-          </Nav.Item>
-
-          <SubMenu
-            title="Pages"
-            icon={faCopy}
-            items={["Link", "Link2", "Active"]}
-          />
-
-          <Nav.Item>
-            <Nav.Link href="/">
-              <FontAwesomeIcon icon={faBriefcase} className="mr-2" />
-              About
-            </Nav.Link>
-          </Nav.Item>
-
-          <Nav.Item>
-            <Nav.Link href="/">
-              <FontAwesomeIcon icon={faImage} className="mr-2" />
-              Portfolio
-            </Nav.Link>
-          </Nav.Item>
-
-          <Nav.Item>
-            <Nav.Link href="/">
-              <FontAwesomeIcon icon={faQuestion} className="mr-2" />
-              FAQ
-            </Nav.Link>
-          </Nav.Item>
-
-          <Nav.Item>
-            <Nav.Link href="/">
-              <FontAwesomeIcon icon={faPaperPlane} className="mr-2" />
-              Contact
-            </Nav.Link>
-          </Nav.Item>
-        </Nav>
-      </div>
+      <Stack gap={3}>
+            <div className="dfdf">
+              <h5>Locations</h5>
+              <ListGroup defaultActiveKey="#link1">
+                  <ListGroup.Item variant="light" action href="#link1">
+                    Location 1<Badge bg="success">2</Badge>
+                  </ListGroup.Item>
+                  <ListGroup.Item action href="#link2">
+                    Location 2
+                  </ListGroup.Item>
+            </ListGroup>
+          </div>
+            <div>
+              <h5>Patients</h5>
+              <ListGroup defaultActiveKey="#link1">
+                  <ListGroup.Item variant="light" action href="#link1">
+                    John Gotti<Badge bg="success">2</Badge>
+                  </ListGroup.Item>
+                  <ListGroup.Item action href="#link2">
+                    This one is a button
+                  </ListGroup.Item>
+            </ListGroup>
+          </div>
+    </Stack>
     );
   }
-}
-
-export default SideBar;

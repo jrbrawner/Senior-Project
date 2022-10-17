@@ -6,7 +6,11 @@ import ToastContainer from 'react-bootstrap/ToastContainer';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-
+import Form from 'react-bootstrap/Form';
+import Stack from 'react-bootstrap/Stack';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import ListGroup from 'react-bootstrap/ListGroup';
 
 export default function App(){
 
@@ -42,39 +46,60 @@ export default function App(){
 
     return(
       <div>
-          <div>
-            {messages.map((message) => (
-              <ul key={message.id}>
-                <li>Sender ID{message.sender_id}</li>
-                <li>Recipient ID {message.recipient_id}</li>
-                <li>Body {message.body}</li>
-                <li>Timestamp {message.timestamp}</li>
-              </ul>
-          ))}
-          </div>
-          <Container>
-              <Row>
-                <Col sm={4}>
-                  Stuff over
-                </Col>
-                <Col sm={8}>
-                        <ToastContainer className="p-3">
-                        <Toast>
-                          <Toast.Header closeButton={false}>
-                            <strong className="me-auto">Bootstrap</strong>
-                            <small>11 mins ago</small>
-                          </Toast.Header>
-                          <Toast.Body>
-                            Hello, world! This is a toast message.
-                            </Toast.Body>
-                        </Toast>
-                      </ToastContainer>
-                </Col>
-              </Row>
-          </Container>
-            
-    </div>
+        <Stack>
+              <Stack style={{ height: '700px', overflowY: 'auto' }}>
+
+                {messages.map((message) => {
+                  if (message.sender_id === 7){
+                    return (<Card
+                      key={message.id}
+                      style={{ width: '30%'}}
+                      bg="success"
+                      text="white">
+                    <Card.Header>
+                      {message.sender_id}
+                      <small className="float-end" >{message.timestamp}</small>
+                    </Card.Header>
+                    <ListGroup variant="flush">
+                      <ListGroup.Item>{message.body}</ListGroup.Item>
+                    </ListGroup>
+                  </Card>
+                  )
+                }
+                return (
+                <Card
+                key={message.id}
+                style={{ width: '30%' }}
+                className="float-end"
+                bg="primary"
+                text="white">
+                  <Card.Header>
+                    {message.sender_id}
+                    <small className="float-end" >{message.timestamp}</small>
+                  </Card.Header>
+                  <ListGroup variant="flush">
+                    <ListGroup.Item>{message.body}</ListGroup.Item>
+                  </ListGroup>
+                </Card>
+                )
+              })}
+              
+              </Stack>
+              
+
+
+              <Stack direction="horizontal" gap={3}>
+                <Form.Control className="me-auto" placeholder="Insert message..." />
+                <Button variant="outline-success">Send Message</Button>
+                <div className="vr" />
+                <Button variant="outline-danger">Clear</Button>
+              </Stack>
+
+
+
+          </Stack>
         
+      </div>
     
     );
 }
