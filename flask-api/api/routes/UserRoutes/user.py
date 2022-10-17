@@ -228,10 +228,11 @@ def accept_new_user(id):
             f" User id ({current_user.id}) accepted {user.id} as a patient."
         )
         db.session.commit()
-        twilioClient.send_message(
+        twilioClient.send_automated_message(
             location.phone_number,
             user.phone_number,
             f"{user.name}, your physician has accepted your registration.",
+            location_id=location_id
         )
         return WebHelpers.EasyResponse("Success.", 200)
 

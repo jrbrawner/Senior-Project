@@ -4,6 +4,7 @@ from api import user_datastore
 from flask_security.utils import hash_password
 import logging
 from api.models.OrganizationModels import Organization, Location
+from api.models.Messages import Message
 from api.permissions import Permissions
 
 def seed_db():
@@ -123,7 +124,23 @@ def seed_db():
             description="Allows the role to view all the patients and pending patients that belong to their organization."
         )
 
+        view_all_messages = Permission(
+            id=Permissions.VIEW_ALL_MESSAGES.value,
+            name=Permissions.VIEW_ALL_MESSAGES.name,
+            description="Allows the role to view all messages sent & received on the platform."
+        )
 
+        view_all_current_org_messages = Permission(
+            id=Permissions.VIEW_ALL_CURRENT_ORG_MESSAGES.value,
+            name=Permissions.VIEW_ALL_CURRENT_ORG_MESSAGES.name,
+            description="Allows the role to view all messages sent & received by their current organization."
+        )
+
+        view_all_current_location_messages = Permission(
+            id=Permissions.VIEW_ALL_CURRENT_LOCATION_MESSAGES.value,
+            name=Permissions.VIEW_ALL_CURRENT_LOCATION_MESSAGES.name,
+            description="Allows the role to view all the messages sent & received by their current location."
+        )
 
         db.session.add(view_all_organizations)
         db.session.add(view_user_organizations)
@@ -136,6 +153,9 @@ def seed_db():
         db.session.add(view_all_current_org_employee)
         db.session.add(view_all_current_org_people)
         db.session.add(view_all_current_org_patients)
+        db.session.add(view_all_messages)
+        db.session.add(view_all_current_org_messages)
+        db.session.add(view_all_current_location_messages)
         db.session.commit()
         ###ADD PERMISSIONS TO APPROPRIATE ROLES
         #MAKE SURE TO SAVE THIS PART
@@ -143,13 +163,16 @@ def seed_db():
         #SUPERADMIN ROLE
         super_admin_role.add_permission(super_admin_role.id, Permissions.VIEW_ALL_ORGANIZATIONS.value)
         super_admin_role.add_permission(super_admin_role.id, Permissions.VIEW_ALL_PEOPLE.value)
+        super_admin_role.add_permission(super_admin_role.id, Permissions.VIEW_ALL_MESSAGES.value)
         #ADMIN ROLE
         admin_role.add_permission(admin_role.id, Permissions.VIEW_CURRENT_ORGANIZATION.value)
         admin_role.add_permission(admin_role.id, Permissions.VIEW_ALL_CURRENT_ORG_PEOPLE.value)
         #PHYSICIAN ROLE
         physician_role.add_permission(physician_role.id, Permissions.VIEW_ALL_CURRENT_ORG_EMPLOYEE.value)
+        physician_role.add_permission(physician_role.id, Permissions.VIEW_ALL_CURRENT_ORG_MESSAGES.value)
         #EMPLOYEE ROLE
         employee_role.add_permission(employee_role.id, Permissions.VIEW_ALL_CURRENT_ORG_PATIENTS.value)
+        employee_role.add_permission(employee_role.id, Permissions.VIEW_ALL_CURRENT_LOCATION_MESSAGES.value)
 
 
 
@@ -290,3 +313,4 @@ def seed_db():
         db.session.commit()
 
         logging.warning(f"Database seeded.")
+

@@ -18,6 +18,7 @@ from ..services.twilio.TwilioClient import TwilioClient
 from twilio.base.exceptions import TwilioRestException
 from ..services.twilio.MessageTracking import MessageTracking
 from ..models.OrganizationModels import Location, Organization
+from api.permissions import Permissions
 
 
 message_bp = Blueprint("message", __name__)
@@ -30,15 +31,15 @@ def get_messages():
     """
     GET: Returns all messages.
     """
-
-    if request.method == "GET":
-
-        messages = Message.query.filter_by(recipient_id = current_user.location_id).all()
+    if current_user.has_permission(Permissions.VIEW_ALL_MESSAGES):
+        messages = Message.query.all()
 
         resp = jsonify([x.serialize() for x in messages])
         resp.status_code = 200
 
         return resp
+    else:
+        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
 
 
 @message_bp.get("/api/message/<int:id>")
@@ -84,12 +85,13 @@ def create_message():
         if user_status == "Accepted":
             status_msg = f"Your physician has received your message."
             MessageTracking.create_new_message_patient(
-                phone_number=phone_number, body=body
+                phone_number=phone_number, body=body, location_id=location.id
             )
-            twilioClient.send_message(
+            twilioClient.send_automated_message(
                 location.phone_number,
                 phone_number,
                 status_msg,
+                location_id=location.id
             )
             return WebHelpers.EasyResponse("Success.", 200)
 
@@ -98,8 +100,8 @@ def create_message():
             status_msg = TwilioSignUpHelpers.InitiateUserSignUp(
                 phone_number, location, organization, body
             )
-            twilioClient.send_message(
-                location.phone_number, phone_number, text=status_msg
+            twilioClient.send_automated_message(
+                location.phone_number, phone_number, text=status_msg, location_id=location.id
             )
             return WebHelpers.EasyResponse("Success.", 200)
 
@@ -108,8 +110,8 @@ def create_message():
             status_msg = (
                 f"Your physician is in the process of accepting your registration."
             )
-            twilioClient.send_message(
-                location.phone_number, phone_number, text=status_msg
+            twilioClient.send_automated_message(
+                location.phone_number, phone_number, text=status_msg, location_id=location.id
             )
             return WebHelpers.EasyResponse("Success.", 200)
 
@@ -118,8 +120,9 @@ def create_message():
             status_msg = TwilioSignUpHelpers.CompleteUserSignUp(
                 phone_number=phone_number, msg=body
             )
-            twilioClient.send_message(location.phone_number, phone_number, status_msg)
+            twilioClient.send_automated_message(location.phone_number, phone_number, status_msg, location_id=location.id)
             return WebHelpers.EasyResponse("Success.", 200)
+            
     except TwilioRestException as e:
         logging.warning(e)
         return WebHelpers.EasyResponse("Error", 400)

@@ -3,11 +3,12 @@ from ...models.Users import User
 from ...models.db import db
 import logging
 from api import user_datastore
+from flask_security import current_user
 
 
 class MessageTracking:
     @staticmethod
-    def create_new_message_patient(phone_number, body):
+    def create_new_message_patient(phone_number, body, location_id):
         """
         Standard function for creating messages between a patient and physician.
         """
@@ -17,8 +18,9 @@ class MessageTracking:
         if user:
             message = Message(
                 sender_id=user.id,
-                recipient_id=user.location_id,
+                recipient_id=None,
                 body=body,
+                location_id=location_id
             )
 
             db.session.add(message)
@@ -30,9 +32,9 @@ class MessageTracking:
             return False
 
     @staticmethod
-    def create_new_message_before_signup(user_id, body):
+    def create_new_message_before_signup(user_id, body, location_id):
 
-        message = Message(body=body, sender_id=user_id)
+        message = Message(body=body, sender_id=user_id, location_id=location_id)
 
         db.session.add(message)
         db.session.commit()
@@ -42,23 +44,23 @@ class MessageTracking:
         return True
 
     @staticmethod
-    def create_new_message_physician_to_patient(physician_id, patient_number, body):
+    def create_new_message_physician_to_patient(sender_id, patient_number, body, location_id):
 
-        user = User.query.filter_by(phone_number=patient_number).first()
+        patient = User.query.filter_by(phone_number=patient_number).first()
 
-        if user:
+        if patient:
             message = Message(
-                physician_sender_id=physician_id,
-                patient_recipient_id=user.id,
+                sender_id=sender_id,
+                recipient_id=patient.id,
                 body=body,
-                patient_phone_number=patient_number,
+                location_id=location_id
             )
 
             db.session.add(message)
             db.session.commit()
 
             logging.warning(
-                f"New message created from {physician_id} to their patient {user.name}"
+                f"New message created from {sender_id} to their patient {patient.id}"
             )
             return True
         else:

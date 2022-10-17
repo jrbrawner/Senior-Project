@@ -54,7 +54,7 @@ class TwilioSignUpHelpers:
         user_datastore.commit()
 
         MessageTracking.create_new_message_before_signup(
-            user_id=new_patient.id, body=msg
+            user_id=new_patient.id, body=msg, location_id=location.id
         )
 
         logging.warning(
@@ -89,7 +89,7 @@ class TwilioSignUpHelpers:
             db.session.commit()
 
             MessageTracking.create_new_message_before_signup(
-                user_id=phone_number_user.id, body=msg
+                user_id=phone_number_user.id, body=msg, location_id=phone_number_user.location_id
             )
 
             logging.warning(
