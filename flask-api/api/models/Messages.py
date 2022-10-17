@@ -12,6 +12,7 @@ class Message(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     sender_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=True)
+    location_id = db.Column(db.Integer, db.ForeignKey("Location.id"), nullable=False)
     recipient_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=True)
 
     body = db.Column(EncryptedType(db.String, __key), nullable=True)

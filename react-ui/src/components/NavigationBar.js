@@ -12,7 +12,7 @@ export default function NavigationBar(){
     const state = {
       username: Cookies.get('name')
     }
-
+    
 
   return (
     <Navbar bg="light" expand="sm">
@@ -23,7 +23,8 @@ export default function NavigationBar(){
             <Nav.Link href="/location">Locations</Nav.Link>
             <Nav.Link href="/user">People</Nav.Link>
             <NavDropdown title="Messages" id="navbarScrollingDropdown">
-              <NavDropdown.Item href="#messages">Messages</NavDropdown.Item>
+
+              <NavDropdown.Item href="/messages">Messages</NavDropdown.Item>
               <NavDropdown.Item href="#action5">
                 Something else here
               </NavDropdown.Item>
