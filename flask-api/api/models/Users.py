@@ -7,7 +7,9 @@ from flask import current_app as app
 from api.models.Messages import Message
 from .Notifications import Notification
 import json
-
+from sqlalchemy import insert
+from api.permissions import Permissions
+from flask import session
 
 roles_users = db.Table(
     "roles_users",
@@ -15,18 +17,46 @@ roles_users = db.Table(
     db.Column("role_id", db.Integer(), db.ForeignKey("Role.id")),
 )
 
+roles_permissions = db.Table(
+    "roles_permissions",
+    db.Column("permission_id", db.Integer(), db.ForeignKey("Permission.id")),
+    db.Column("role_id", db.Integer(), db.ForeignKey("Role.id"))
+)
 
-class Role(db.Model, RoleMixin):
-    __tablename__ = "Role"
+class Permission(db.Model):
+    __tablename__ = "Permission"
     id = db.Column(db.Integer(), primary_key=True)
-    name = db.Column(db.String(80), unique=True)
+    name = db.Column(db.String())
     description = db.Column(db.String(255))
 
     def serialize(self):
         return {"id": self.id, "name": self.name, "description": self.description}
 
     def serialize_name(self):
-        return {'name': self.name}
+        return {"name": self.name}
+    
+    
+    
+class Role(db.Model, RoleMixin):
+    __tablename__ = "Role"
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(80), unique=True)
+    description = db.Column(db.String(255))
+    permissions = db.relationship("Permission", secondary=roles_permissions, backref=db.backref("roles"))
+
+    def serialize(self):
+        return {"id": self.id, "name": self.name, "description": self.description}
+
+    def serialize_name(self):
+        return {"name": self.name}
+    
+    def add_permission(self, role_id, permission_id):
+        stmt = (
+            insert(roles_permissions).
+            values(role_id=role_id, permission_id=permission_id)
+        )
+        db.session.execute(stmt)
+        db.session.commit()
 
 
 class User(UserMixin, db.Model):
@@ -50,8 +80,8 @@ class User(UserMixin, db.Model):
     )
 
     profile_pic = db.Column(db.String(), index=False, unique=False, nullable=True)
-    location_id = db.Column(db.ForeignKey('Location.id'), nullable=False)
-    organization_id = db.Column(db.ForeignKey('Organization.id'), nullable=False)
+    location_id = db.Column(db.ForeignKey("Location.id"), nullable=False)
+    organization_id = db.Column(db.ForeignKey("Organization.id"), nullable=False)
     phone_number = db.Column(db.String(20), unique=True, nullable=True)
 
     messages_sent = db.relationship(
@@ -104,11 +134,27 @@ class User(UserMixin, db.Model):
         db.session.add(n)
         return n
 
+    def has_permission(self, permission):
+
+        ###DATABASE WAY
+        #all roles that have the permission to do this action
+        #roles_allowed = Role.query.join(Role.permissions, aliased=True)\
+        #            .filter_by(id=permission.value).all()
+       
+        #for x in self.roles:
+        #    if x in roles_allowed:
+        #        return True
+
+        #session way
+        if permission.value in session['permissions']:
+            return True
+        
     def serialize(self):
         return {
-        "id": self.id,
-        "name": self.name,
-        'roles': [x.serialize_name() for x in self.roles],
-        'location_id': self.location_id,
-        'email': self.email,
-        'phone_number': self.phone_number}
+            "id": self.id,
+            "name": self.name,
+            "roles": [x.serialize_name() for x in self.roles],
+            "location_id": self.location_id,
+            "email": self.email,
+            "phone_number": self.phone_number,
+        }

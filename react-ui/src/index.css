@@ -53,21 +53,10 @@ code {
   margin-top: 10px;
 }
 
-.Provider {
-  align-items: start;
-  padding-top: 5px;
-  border-bottom: 1px solid #eee;
+.toast-header {
+  opacity: 1;
 }
 
-.Provider:hover {
-  background-color: #f8f8f8;
-}
+.toast-body { opacity: 1; }
 
-.Provider a {
-  color: #14c;
-  text-decoration: none;
-}
-
-.Provider a:visited {
-  color: #14c;
-}
+.toast { background-color: #eee; }

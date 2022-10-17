@@ -18,13 +18,11 @@ class Organization(db.Model):
         return {
             "id": self.id,
             "name": self.name,
-            #"Locations": [x.serialize() for x in self.locations],
+            # "Locations": [x.serialize() for x in self.locations],
             "twilio_account_id": self.twilio_account_id,
             "twilio_auth_token": self.twilio_auth_token
             #'Locations': jsonify([x.serialize() for x in self.Locations])
         }
-
-        
 
 
 class Location(db.Model):

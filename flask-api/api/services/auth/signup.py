@@ -15,7 +15,7 @@ class SignUp:
         name = request.form["name"]
         email = request.form["email"]
         password = request.form["password"]
-        role = request.form['role']
+        role = request.form["role"]
 
         user = user_datastore.find_user(email=email)
 

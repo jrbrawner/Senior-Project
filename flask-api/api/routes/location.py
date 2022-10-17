@@ -1,5 +1,6 @@
 from audioop import add
 from flask import Blueprint, request, send_from_directory
+
 # from .. import login_manager
 from flask_login import logout_user, login_required
 from sqlalchemy import create_engine, MetaData
@@ -75,7 +76,9 @@ def create_Location():
 
     db.session.add(location)
     db.session.commit()
-    logging.debug(f"User id - {current_user.id} - created new location id - {location.id} -")
+    logging.debug(
+        f"User id - {current_user.id} - created new location id - {location.id} -"
+    )
 
     return WebHelpers.EasyResponse(f"New location {location.name} created.", 201)
 
@@ -109,8 +112,8 @@ def update_Location(id):
         location.organization_id = organization_id
 
         db.session.commit()
-        #logging.info(f"User id - {current_user.id} - updated location id - {location.id} -")
-        return url_for('location_bp.get_locations')
+        # logging.info(f"User id - {current_user.id} - updated location id - {location.id} -")
+        return url_for("location_bp.get_locations")
 
 
 @location_bp.delete("/api/location/<int:id>")

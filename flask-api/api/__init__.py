@@ -10,12 +10,15 @@ from api.models.Users import User, Role
 from api.models.db import db
 from flask_login import LoginManager
 from flask_jwt_extended import JWTManager
+from flask import abort
 
 UPLOADS = "api/uploads"
-login_manager = LoginManager()
+#login_manager = LoginManager()
 
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
+security = Security()
+
 def create_app(config):
     """Construct the core app object."""
     app = Flask(__name__)
@@ -29,14 +32,19 @@ def create_app(config):
         # change to prod for deployment
         app.config.from_object("config.DevConfig")
 
-    app.config["JWT_SECRET_KEY"] = "please-remember-to-change-me"
-
+    
     # Initialize Plugins
     db.init_app(app)
     #Session(app)
-    security = Security(app, user_datastore)
-    login_manager.init_app(app)
-    
+    security_ctx = security.init_app(app, user_datastore)
+
+    #disable security default views
+    @security_ctx.context_processor
+    def security_context_processor():
+        return abort(404)
+
+    #login_manager.init_app(app)
+
 
     # Set up logging
     logging.basicConfig(

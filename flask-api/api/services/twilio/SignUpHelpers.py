@@ -23,21 +23,21 @@ class TwilioSignUpHelpers:
         user = user_datastore.find_user(phone_number=phone_number)
         # user exists,
         if user:
-            #see if they have role assigned
+            # see if they have role assigned
             role_status = user.roles
-            #have been accepted as a patient
-            if 'Patient' in role_status:
-                result = 'Accepted'
+            # have been accepted as a patient
+            if "Patient" in role_status:
+                result = "Accepted"
                 return result
-            #have completed sign up, but not accepted yet
-            elif 'Pending Patient' in role_status:
-                result = 'Pending'
+            # have completed sign up, but not accepted yet
+            elif "Pending Patient" in role_status:
+                result = "Pending"
                 return result
-            elif 'Pending Patient' and 'Patient' not in role_status:
-                result = 'Signup'
+            elif "Pending Patient" and "Patient" not in role_status:
+                result = "Signup"
                 return result
-        #brand new, no account started
-        result = 'New'
+        # brand new, no account started
+        result = "New"
         logging.warning(f"New phone number {phone_number} recognized.")
         return result
 
@@ -47,13 +47,14 @@ class TwilioSignUpHelpers:
         Creates new user to be a pending patient.
         """
         new_patient = user_datastore.create_user(
-            phone_number = phone_number,
-            location_id = location.id,
-            organization_id = organization.id)
+            phone_number=phone_number,
+            location_id=location.id,
+            organization_id=organization.id,
+        )
         user_datastore.commit()
-        
+
         MessageTracking.create_new_message_before_signup(
-            user_id=new_patient.id, body=msg
+            user_id=new_patient.id, body=msg, location_id=location.id
         )
 
         logging.warning(
@@ -66,8 +67,12 @@ class TwilioSignUpHelpers:
     def CompleteUserSignUp(phone_number, msg):
 
         phone_number_user = user_datastore.find_user(phone_number=phone_number)
-        
-        if phone_number_user and 'Pending Patient' not in phone_number_user.roles and 'Patient' not in phone_number_user.roles:
+
+        if (
+            phone_number_user
+            and "Pending Patient" not in phone_number_user.roles
+            and "Patient" not in phone_number_user.roles
+        ):
             """
             Basic example form to have user send in, seperate fields with '.' in message:
             Name.Email.
@@ -80,11 +85,11 @@ class TwilioSignUpHelpers:
             phone_number_user.name = name
             phone_number_user.email = email
 
-            user_datastore.add_role_to_user(phone_number_user, 'Pending Patient')
+            user_datastore.add_role_to_user(phone_number_user, "Pending Patient")
             db.session.commit()
 
             MessageTracking.create_new_message_before_signup(
-                user_id=phone_number_user.id, body=msg
+                user_id=phone_number_user.id, body=msg, location_id=phone_number_user.location_id
             )
 
             logging.warning(
