@@ -33,7 +33,7 @@ def get_messages():
 
     if request.method == "GET":
 
-        messages = Message.query.all()
+        messages = Message.query.filter_by(recipient_id = current_user.location_id).all()
 
         resp = jsonify([x.serialize() for x in messages])
         resp.status_code = 200
