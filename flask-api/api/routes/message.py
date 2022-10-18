@@ -170,3 +170,34 @@ def physician_message(id):
             return WebHelpers.EasyResponse(f"Message sent.", 200)
 
         return WebHelpers.EasyResponse(f"User with id {id} does not exist.", 404)
+
+@login_required
+@cross_origin()
+@message_bp.get("/api/user/locations")
+def get_message_sidebar_locations():
+
+    if current_user.has_permission(Permissions.VIEW_ALL_MESSAGES):
+
+        organization = 1
+        locations = Location.query.filter_by(organization_id=organization)
+        return [x.serialize() for x in locations]
+
+    if current_user.has_permission(Permissions.VIEW_ALL_CURRENT_LOCATION_MESSAGES):
+
+        location_id = current_user.location_id
+        location = Location.query.get(location_id)
+        resp_locations = []
+        resp_locations.append(location.serialize())
+        return resp_locations
+
+    else:
+        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+
+@login_required
+@cross_origin()
+@message_bp.get("/api/location/<int:id>/users")
+def get_message_sidebar_users(id):
+
+    users = User.query.filter_by(location_id=id)
+    return [x.serialize() for x in users]
+    
