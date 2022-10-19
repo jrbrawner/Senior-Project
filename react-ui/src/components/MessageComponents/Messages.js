@@ -15,12 +15,56 @@ export default function App(){
 
     const [messages, setMessages] = React.useState(0);
     const [locations, setLocations] = React.useState(0);
-    const [people, setPeople] = React.useState(0);
+    const [users, setUsers ] = React.useState(0);
     
     const navigate = useNavigate();
 
+    const selectedUserMessages = (userId) => {
+      MessageDataService.getUserMessages(userId).then((response) => {
+        setMessages(response.data);
+          
+        }).catch(function (error) {
+        if (error.response)
+        {
+            if (error.response.status === 401)
+            {
+              navigate(`/login`);
+              console.log('Not authenticated.');
+    
+            }
+            if (error.response.status === 403)
+            {
+              alert('You are not authenticated for this page.');
+            }
+        }
+        });
+    }
 
-    React.useEffect(() => {
+    const loadPeople = (id) => {
+
+      MessageDataService.getUsers(id).then((response) => {
+      setUsers(response.data);
+        
+      var firstLocationId = locations[0].name;
+  
+      }).catch(function (error) {
+      if (error.response)
+      {
+          if (error.response.status === 401)
+          {
+            navigate(`/login`);
+            console.log('Not authenticated.');
+  
+          }
+          if (error.response.status === 403)
+          {
+            alert('You are not authenticated for this page.');
+          }
+      }
+      });
+    }
+
+    /*React.useEffect(() => {
 
         MessageDataService.getAll().then((response) => {
             setMessages(response.data);
@@ -36,7 +80,7 @@ export default function App(){
             }
             });
         
-        }, []);
+        }, []);*/
     
         React.useEffect(() => {
           MessageDataService.getLocations().then((response) => {
@@ -55,8 +99,17 @@ export default function App(){
           
           }, []);
 
+    if (!messages && !locations) return <p>Loading</p>
 
-    if (!messages && !locations) return <p>No data.</p>
+    if (!messages) return(
+        <Container>
+          <Row>
+            <Col sm={2}>
+              <MessageSidebar locations={locations} selectedUserMessages={selectedUserMessages} loadPeople={loadPeople} users={users} />
+            </Col>
+          </Row>
+        </Container>
+      ); 
 
     return(
       <div>
@@ -64,7 +117,7 @@ export default function App(){
           <Row>
             
             <Col sm={2}>
-              <MessageSidebar locations={locations}/>
+              <MessageSidebar locations={locations} selectedUserMessages={selectedUserMessages} loadPeople={loadPeople} users={users} />
               </Col>
             
             <Col>
@@ -121,5 +174,7 @@ export default function App(){
         
       </div>
     
-    );
+    )
+    
+    
 }

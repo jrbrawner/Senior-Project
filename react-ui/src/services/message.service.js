@@ -14,6 +14,10 @@ class MessageDataService {
         return axios.get(`/location/${id}/users`)
     }
 
+    getUserMessages(id){
+        return axios.get(`/user/${id}/messages`)
+    }
+
 }
 
 export default new MessageDataService();

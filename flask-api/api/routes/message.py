@@ -180,7 +180,8 @@ def get_message_sidebar_locations():
 
         organization = 1
         locations = Location.query.filter_by(organization_id=organization)
-        return [x.serialize() for x in locations]
+        
+        return jsonify([x.serialize() for x in locations])
 
     if current_user.has_permission(Permissions.VIEW_ALL_CURRENT_LOCATION_MESSAGES):
 
@@ -198,6 +199,13 @@ def get_message_sidebar_locations():
 @message_bp.get("/api/location/<int:id>/users")
 def get_message_sidebar_users(id):
 
-    users = User.query.filter_by(location_id=id)
-    return [x.serialize() for x in users]
+    users = User.query.filter(User.location_id==id).filter(User.roles.any(name='Patient')).all()
+    return jsonify([x.serialize() for x in users])
+
+
+@login_required
+@cross_origin()
+@message_bp.get('/api/user/<int:id>/messages')
+def get_user_messages(id):
+    pass
     
