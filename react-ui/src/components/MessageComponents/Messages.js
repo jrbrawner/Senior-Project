@@ -16,13 +16,36 @@ export default function App(){
     const [messages, setMessages] = React.useState(0);
     const [locations, setLocations] = React.useState(0);
     const [users, setUsers ] = React.useState(0);
+    const [currentUser, setCurrentUser] = React.useState(0);
     
     const navigate = useNavigate();
+
+    React.useEffect(() => {
+      MessageDataService.getLocations().then((response) => {
+          setLocations(response.data);
+          }).catch(function (error) {
+            if (error.response)
+            {
+                if (error.response.status === 401)
+                {
+                  navigate(`/login`);
+                  console.log('Not authenticated.');
+        
+                }
+                if (error.response.status === 403)
+                {
+                  alert('You are not authenticated for this page.');
+                }
+            }
+            });
+      
+      }, []);
 
     const selectedUserMessages = (userId) => {
 
       MessageDataService.getUserMessages(userId).then((response) => {
       setMessages(response.data);
+      setCurrentUser(userId);
           
         }).catch(function (error) {
         if (error.response)
@@ -65,40 +88,37 @@ export default function App(){
       });
     }
 
-    /*React.useEffect(() => {
+    const sendMessage = e => {
+        
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      console.log(currentUser);
+      console.log("Message sent")
+      
+      MessageDataService.sendMessage(currentUser, formData).then((response) => {
 
-        MessageDataService.getAll().then((response) => {
-            setMessages(response.data);
-            }).catch(error => {
+        document.getElementById("msgBox").value = "";
+
+    
+        }).catch(function (error) {
+        if (error.response)
+        {
             if (error.response.status === 401)
             {
-                navigate(`/login`);
-                console.log('Not authenticated.');
+              navigate(`/login`);
+              console.log('Not authenticated.');
+    
             }
             if (error.response.status === 403)
             {
-                alert('You are not authenticated for this page.');
+              alert('You are not authenticated for this page.');
             }
-            });
-        
-        }, []);*/
+        }
+        });
+
+    }
     
-        React.useEffect(() => {
-          MessageDataService.getLocations().then((response) => {
-              setLocations(response.data);
-              }).catch(error => {
-              if (error.response.status === 401)
-              {
-                  navigate(`/login`);
-                  console.log('Not authenticated.');
-              }
-              if (error.response.status === 403)
-              {
-                  alert('You are not authenticated for this page.');
-              }
-              });
-          
-          }, []);
+        
 
     if (!messages && !locations) return <p>Loading</p>
 
@@ -123,42 +143,83 @@ export default function App(){
             
             <Col>
             
-              <Stack style={{ height: '700px', overflowY: 'auto' }}>
+              <Stack gap={2} style={{ height: '700px', overflowY: 'auto', width:'' }}>
+              
 
                 {messages.map((message) => {
                   
-                return (
-                  <Card
-                  key={message.id}
-                  style={{ width: '30%' }}
-                  className="float-end"
-                  bg="danger"
-                  text="white">
-                  <Card.Header>
-                    {message.sender_id}
-                    <small className="float-end" >{message.timestamp}</small>
-                  </Card.Header>
-                  <ListGroup variant="flush">
-                    <ListGroup.Item>{message.body}</ListGroup.Item>
-                  </ListGroup>
-                </Card>
-                )
-              })}
+                if(message.sender_id != null ){
+                    return (
+                      <Card
+                      key={message.id}
+                      style={{ width: '25%' }}
+                      className="ms-5"
+                      bg="primary"
+                      text="white">
+                      <Card.Header>
+                        {message.sender_id}
+                        <small className="float-end" >{message.timestamp}</small>
+                      </Card.Header>
+                      <ListGroup variant="flush">
+                        <ListGroup.Item>{message.body}</ListGroup.Item>
+                      </ListGroup>
+                    </Card>
+                    )}
+                    
+                    else{
+                      
+                      return (
+                        <Card
+                        key={message.id}
+                        style={{ width: '25%' }}
+                        className="ms-auto me-5"
+                        bg="success"
+                        text="white">
+                    <Card.Header>
+                      {message.sender_id}
+                      <small className="float-end" >{message.timestamp}</small>
+                    </Card.Header>
+                    <ListGroup variant="flush">
+                      <ListGroup.Item>{message.body}</ListGroup.Item>
+                    </ListGroup>
+                  </Card>
+                  )}
+                  
+                })}
+  
+                
               
               </Stack>
               
-              <Stack direction="horizontal" gap={3}>
-                <Form.Control className="me-auto" placeholder="Insert message..." />
-                <Button variant="outline-success">Send Message</Button>
-                <div className="vr" />
-                <Button variant="outline-danger">Clear</Button>
-              </Stack>
-              </Col>
+              
+
+                <Form onSubmit={sendMessage}>
+                  <Row>
+                    <Col xs={9}>
+                    <Form.Group className="mt-2">
+                      <Form.Control required type="text" id="msgBox" name="msg" placeholder="Insert message..." />
+                    </Form.Group>
+                    </Col>
+
+                  <Col>
+                  <div className="mt-2">
+                    <Button variant="outline-success" type="submit">Send Message</Button>
+                    <div className="vr" />
+                    <Button variant="outline-danger">Clear</Button>
+                  </div>
+                  </Col>
+                  </Row>
+
+                </Form>
+                
+              
+
+              </Col>  
 
             </Row>
           </Container>
+        </div>
         
-      </div>
     
     )
     

@@ -145,53 +145,33 @@ def delete_message(id):
         return WebHelpers.EasyResponse(f"message with that id does not exist.", 404)
 
 
-@message_bp.route("/api/message/<int:id>", methods=["POST"])
-def physician_message(id):
 
-    user = Patient.query.get(id)
-    message = request.form["msg"]
-    Location_id = current_user.Location_id
-    Location = Location.query.get(Location_id)
-    Organization_id = Location.Organization_id
-    Organization = Organization.query.get(Organization_id)
-    twilioClient = TwilioClient(
-        Organization.twilio_account_id, Organization.twilio_auth_token
-    )
-
-    if user:
-        twilioClient.send_message(Location.phone_number, user.phone_number, message)
-        MessageTracking.create_new_message_physician_to_patient(
-            current_user.id, user.phone_number, message
-        )
-        logging.warning(
-            f"{current_user.name} sent a message to patient with id ({user.id})"
-        )
-        return WebHelpers.EasyResponse(f"Message sent.", 200)
-
-    return WebHelpers.EasyResponse(f"User with id {id} does not exist.", 404)
 
 @login_required
 @cross_origin()
 @message_bp.get("/api/user/locations")
 def get_message_sidebar_locations():
 
-    if current_user.has_permission(Permissions.VIEW_ALL_MESSAGES):
+    if current_user:
+        if current_user.has_permission(Permissions.VIEW_ALL_MESSAGES):
 
-        organization = 1
-        locations = Location.query.filter_by(organization_id=organization)
-        
-        return jsonify([x.serialize() for x in locations])
+            organization = 1
+            locations = Location.query.filter_by(organization_id=organization)
+            
+            return jsonify([x.serialize() for x in locations])
 
-    if current_user.has_permission(Permissions.VIEW_ALL_CURRENT_LOCATION_MESSAGES):
+        if current_user.has_permission(Permissions.VIEW_ALL_CURRENT_LOCATION_MESSAGES):
 
-        location_id = current_user.location_id
-        location = Location.query.get(location_id)
-        resp_locations = []
-        resp_locations.append(location.serialize())
-        return resp_locations
+            location_id = current_user.location_id
+            location = Location.query.get(location_id)
+            resp_locations = []
+            resp_locations.append(location.serialize())
+            return resp_locations
 
+        else:
+            return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
     else:
-        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+        return WebHelpers.EasyResponse("You must login to view this page", 401)
 
 @login_required
 @cross_origin()
@@ -209,12 +189,38 @@ def get_user_messages(id):
     
     user = User.query.get(id)
 
-    all_messages = Message.query.order_by(Message.timestamp.desc()).filter((Message.recipient_id==id) | (Message.sender_id==id)).all() 
+    all_messages = Message.query.order_by(Message.timestamp.asc()).filter((Message.recipient_id==id) | (Message.sender_id==id)).all() 
 
     return jsonify([x.serialize() for x in all_messages])
 
 
 @login_required
-@cross_orgin()
-@message_bp.get('/api/')
+@cross_origin()
+@message_bp.post('/api/message/user/<int:id>')
+def message_user(id):
+
+    user = User.query.get(id)
+    message = request.form["msg"]
+    #location_id = current_user.location_id
+    location_id = 1
+    location = Location.query.get(location_id)
+    organization_id = location.organization_id
+    organization = Organization.query.get(organization_id)
+
+    twilioClient = TwilioClient(
+        organization.twilio_account_id, organization.twilio_auth_token
+    )
+
+    if user:
+
+        twilioClient.send_automated_message(location.phone_number, user.phone_number, message, location.id)
+
+        logging.warning(
+            f"{current_user.name} sent a message to patient with id ({user.id})"
+        )
+        return WebHelpers.EasyResponse(f"Message sent.", 200)
+
+    return WebHelpers.EasyResponse(f"User with id {id} does not exist.", 404)
+
+
 
