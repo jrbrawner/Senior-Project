@@ -50,7 +50,7 @@ export default function Sidebar(props) {
 
       <h5>Patients</h5>
 
-      <ListGroup defaultActiveKey="">
+      <ListGroup>
 
       {users.map((user) =>(
         <ListGroup.Item key={user.id} variant="light" action href={() => selectedUserMessages(user.id)}>

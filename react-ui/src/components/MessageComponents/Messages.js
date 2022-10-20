@@ -20,8 +20,9 @@ export default function App(){
     const navigate = useNavigate();
 
     const selectedUserMessages = (userId) => {
+
       MessageDataService.getUserMessages(userId).then((response) => {
-        setMessages(response.data);
+      setMessages(response.data);
           
         }).catch(function (error) {
         if (error.response)
@@ -125,28 +126,13 @@ export default function App(){
               <Stack style={{ height: '700px', overflowY: 'auto' }}>
 
                 {messages.map((message) => {
-                  if (message.sender_id === 7){
-                    return (<Card
-                      key={message.id}
-                      style={{ width: '30%'}}
-                      bg="success"
-                      text="white">
-                    <Card.Header>
-                      {message.sender_id}
-                      <small className="float-end" >{message.timestamp}</small>
-                    </Card.Header>
-                    <ListGroup variant="flush">
-                      <ListGroup.Item>{message.body}</ListGroup.Item>
-                    </ListGroup>
-                  </Card>
-                  )
-                }
+                  
                 return (
                   <Card
                   key={message.id}
                   style={{ width: '30%' }}
                   className="float-end"
-                  bg="primary"
+                  bg="danger"
                   text="white">
                   <Card.Header>
                     {message.sender_id}
