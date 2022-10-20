@@ -148,28 +148,27 @@ def delete_message(id):
 @message_bp.route("/api/message/<int:id>", methods=["POST"])
 def physician_message(id):
 
-    if session["login_type"] == "physician":
-        user = Patient.query.get(id)
-        message = request.form["msg"]
-        Location_id = current_user.Location_id
-        Location = Location.query.get(Location_id)
-        Organization_id = Location.Organization_id
-        Organization = Organization.query.get(Organization_id)
-        twilioClient = TwilioClient(
-            Organization.twilio_account_id, Organization.twilio_auth_token
+    user = Patient.query.get(id)
+    message = request.form["msg"]
+    Location_id = current_user.Location_id
+    Location = Location.query.get(Location_id)
+    Organization_id = Location.Organization_id
+    Organization = Organization.query.get(Organization_id)
+    twilioClient = TwilioClient(
+        Organization.twilio_account_id, Organization.twilio_auth_token
+    )
+
+    if user:
+        twilioClient.send_message(Location.phone_number, user.phone_number, message)
+        MessageTracking.create_new_message_physician_to_patient(
+            current_user.id, user.phone_number, message
         )
+        logging.warning(
+            f"{current_user.name} sent a message to patient with id ({user.id})"
+        )
+        return WebHelpers.EasyResponse(f"Message sent.", 200)
 
-        if user:
-            twilioClient.send_message(Location.phone_number, user.phone_number, message)
-            MessageTracking.create_new_message_physician_to_patient(
-                current_user.id, user.phone_number, message
-            )
-            logging.warning(
-                f"{current_user.name} sent a message to patient with id ({user.id})"
-            )
-            return WebHelpers.EasyResponse(f"Message sent.", 200)
-
-        return WebHelpers.EasyResponse(f"User with id {id} does not exist.", 404)
+    return WebHelpers.EasyResponse(f"User with id {id} does not exist.", 404)
 
 @login_required
 @cross_origin()
@@ -207,5 +206,15 @@ def get_message_sidebar_users(id):
 @cross_origin()
 @message_bp.get('/api/user/<int:id>/messages')
 def get_user_messages(id):
-    pass
     
+    user = User.query.get(id)
+
+    all_messages = Message.query.order_by(Message.timestamp.desc()).filter((Message.recipient_id==id) | (Message.sender_id==id)).all() 
+
+    return jsonify([x.serialize() for x in all_messages])
+
+
+@login_required
+@cross_orgin()
+@message_bp.get('/api/')
+
