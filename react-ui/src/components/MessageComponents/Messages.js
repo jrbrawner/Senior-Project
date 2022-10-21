@@ -68,9 +68,10 @@ export default function App(){
 
       MessageDataService.getUsers(id).then((response) => {
       setUsers(response.data);
-        
+      
       var firstLocationId = locations[0].name;
-  
+        console.log(firstLocationId);
+        
       }).catch(function (error) {
       if (error.response)
       {
@@ -116,7 +117,12 @@ export default function App(){
         }
         });
 
-    }
+        
+      }
+      function ClearTextBox() {
+        document.getElementById("msgBox").value = "";
+
+      }
     
         
 
@@ -205,7 +211,7 @@ export default function App(){
                   <div className="mt-2">
                     <Button variant="outline-success" type="submit">Send Message</Button>
                     <div className="vr" />
-                    <Button variant="outline-danger">Clear</Button>
+                    <Button variant="outline-danger" onClick={() => ClearTextBox()}>Clear</Button>
                   </div>
                   </Col>
                   </Row>
