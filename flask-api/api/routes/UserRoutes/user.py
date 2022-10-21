@@ -258,6 +258,7 @@ def decline_new_user(id):
         )
     return WebHelpers.EasyResponse(f"user with that id does not exist.", 404)
 
+"""
 
 @login_required
 @cross_origin()
@@ -270,3 +271,6 @@ def get_user_msgs(id):
         resp.status_code = 200
 
         return resp
+"""
+
+

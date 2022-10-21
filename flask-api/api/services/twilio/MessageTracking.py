@@ -50,7 +50,7 @@ class MessageTracking:
 
         if patient:
             message = Message(
-                sender_id=sender_id,
+                sender_id=None,
                 recipient_id=patient.id,
                 body=body,
                 location_id=location_id
@@ -60,7 +60,7 @@ class MessageTracking:
             db.session.commit()
 
             logging.warning(
-                f"New message created from {sender_id} to their patient {patient.id}"
+                f"New message created from {sender_id} to patient {patient.id}"
             )
             return True
         else:

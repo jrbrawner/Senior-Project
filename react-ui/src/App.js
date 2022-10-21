@@ -10,6 +10,7 @@ import LoginPage from './pages/LoginPage';
 import LogoutPage from './pages/LogoutPage';
 import NewUserPage from './pages/NewUserPage';
 import MessagesPage from './pages/MessagesPage';
+import PendingUsersPage from './pages/PendingUsersPage';
 
 export default function App(){
 
@@ -30,6 +31,7 @@ export default function App(){
             <Route path="/user" element={<UsersPage />} />
             <Route path="/user/:userId" element={<EditUserPage/>} />
             <Route path="/user/create" element={<NewUserPage/>} />
+            <Route path="/user/new" element={<PendingUsersPage/>} />
 
             <Route path="/messages" element={<MessagesPage/>} />
 

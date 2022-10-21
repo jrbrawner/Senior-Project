@@ -43,8 +43,7 @@ class Location(db.Model):
     # physicians = db.relationship("Physician", backref="physicians", lazy=True)
 
     def serialize(self):
-
-        data = {
+        return {
             "id": self.id,
             "name": self.name,
             "phone_number": self.phone_number,
@@ -55,5 +54,5 @@ class Location(db.Model):
             "zip_code": self.zip_code
             #'physicians': jsonify([x.serialize() for x in self.physicians])
         }
-
-        return data
+         
+    

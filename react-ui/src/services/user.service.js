@@ -22,6 +22,18 @@ class UserDataService {
         return axios.post(`/user`, data);
     }
 
+    getPending() {
+        return axios.get(`/user/new`);
+    }
+
+    acceptPending(id) {
+        return axios.put(`/user/new/accept/${id}`);
+    }
+
+    declinePending(id) {
+        return axios.delete(`/user/new/decline/${id}`);
+    }
+
 
 }
 

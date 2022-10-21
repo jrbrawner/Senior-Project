@@ -92,7 +92,6 @@ export default function App() {
           />
       </Form.Group>
 
-      
       <Button variant="primary" type="submit">
         Edit User
       </Button>

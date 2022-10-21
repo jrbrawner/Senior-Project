@@ -21,14 +21,14 @@ export default function NavigationBar(){
 
             <Nav.Link href="/organization">Organizations</Nav.Link>
             <Nav.Link href="/location">Locations</Nav.Link>
-            <Nav.Link href="/user">People</Nav.Link>
-            <NavDropdown title="Messages" id="navbarScrollingDropdown">
 
-              <NavDropdown.Item href="/messages">Messages</NavDropdown.Item>
-              <NavDropdown.Item href="#action5">
-                Something else here
-              </NavDropdown.Item>
+            <NavDropdown title="People">
+              <NavDropdown.Item href="/user">People</NavDropdown.Item> 
+              <NavDropdown.Item href="/user/new">Pending Users</NavDropdown.Item>
             </NavDropdown>
+
+            <Nav.Link href="/messages">Messages</Nav.Link>
+            
         </Nav>
             
           <Form className="d-flex">
