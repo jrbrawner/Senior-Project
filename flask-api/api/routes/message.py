@@ -154,12 +154,22 @@ def get_message_sidebar_locations():
 
     if current_user:
         if current_user.has_permission(Permissions.VIEW_ALL_MESSAGES):
-
-            organization = 1
-            locations = Location.query.filter_by(organization_id=organization)
             
+            orgs = Organization.query.all()
+
+            locations = Location.query.all()
+
             return jsonify([x.serialize() for x in locations])
 
+        if current_user.has_permission(Permissions.VIEW_ALL_CURRENT_ORG_MESSAGES):
+
+            organization_id = current_user.organization_id
+
+            locations = Location.query.filter_by(organization_id = organization_id).all()
+
+            return jsonify([x.serialize() for x in locations])
+
+        
         if current_user.has_permission(Permissions.VIEW_ALL_CURRENT_LOCATION_MESSAGES):
 
             location_id = current_user.location_id
@@ -201,8 +211,8 @@ def message_user(id):
 
     user = User.query.get(id)
     message = request.form["msg"]
-    #location_id = current_user.location_id
-    location_id = 1
+    location_id = current_user.location_id
+    #location_id = 1
     location = Location.query.get(location_id)
     organization_id = location.organization_id
     organization = Organization.query.get(organization_id)

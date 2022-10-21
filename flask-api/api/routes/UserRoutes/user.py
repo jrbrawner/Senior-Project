@@ -38,14 +38,14 @@ def get_users():
     #Super Admin
     if current_user.has_permission(Permissions.VIEW_ALL_PEOPLE):
         users = User.query.all()
-        resp = jsonify([x.serialize() for x in users])
+        resp = jsonify([x.serialize_user_display() for x in users])
         resp.status_code = 200
         logging.info(f"User id - {current_user.id} - accessed all users.")
         return resp
     #Admin
     if current_user.has_permission(Permissions.VIEW_ALL_CURRENT_ORG_PEOPLE):
         users = User.query.filter_by(organization_id = current_user.organization_id).all()
-        resp = jsonify([x.serialize() for x in users])
+        resp = jsonify([x.serialize_user_display() for x in users])
         resp.status_code = 200
         logging.info(f"User id - {current_user.id} - accessed all current users.")
         return resp
@@ -60,7 +60,7 @@ def get_users():
             if 'Patient' in user_roles or 'Employee' in user_roles or 'Pending Patient' in user_roles:
                 resp_users.append(x)
 
-        resp = jsonify([x.serialize() for x in resp_users])
+        resp = jsonify([x.serialize_user_display() for x in resp_users])
         resp.status_code = 200
         logging.info(f"User id - {current_user.id} - accessed all current employees & patients.")
         return resp
@@ -74,7 +74,7 @@ def get_users():
             if 'Patient' in user_roles or 'Pending Patient' in user_roles:
                 resp_users.append(x)
 
-        resp = jsonify([x.serialize() for x in resp_users])
+        resp = jsonify([x.serialize_user_display() for x in resp_users])
         resp.status_code = 200
         logging.info(f"User id - {current_user.id} - accessed all current patients.")
         return resp

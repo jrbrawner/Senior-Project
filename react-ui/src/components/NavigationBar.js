@@ -40,8 +40,11 @@ export default function NavigationBar(){
               />
             <Button variant="outline-success">Search</Button>
           </Form>
+          <Nav className="">
+            <Nav.Link>Notifications</Nav.Link>
+          </Nav>
           <Navbar.Text>
-            Signed in as: <a href="/logout"> {state.username}
+            <a href="/logout"> {state.username}
               </a>
           </Navbar.Text>
       </Container>

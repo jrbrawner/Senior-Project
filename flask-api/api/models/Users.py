@@ -10,6 +10,7 @@ import json
 from sqlalchemy import insert
 from api.permissions import Permissions
 from flask import session
+from api.models.OrganizationModels import Location
 
 roles_users = db.Table(
     "roles_users",
@@ -155,6 +156,20 @@ class User(UserMixin, db.Model):
             "name": self.name,
             "roles": [x.serialize_name() for x in self.roles],
             "location_id": self.location_id,
+            "email": self.email,
+            "phone_number": self.phone_number,
+        }
+
+    def serialize_user_display(self):
+
+        location = Location.query.get(self.location_id)
+        
+
+        return {
+            "id": self.id,
+            "name": self.name,
+            "roles": [x.serialize_name() for x in self.roles],
+            "location_id": location.name,
             "email": self.email,
             "phone_number": self.phone_number,
         }
