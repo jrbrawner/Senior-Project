@@ -1,6 +1,8 @@
+from email import message
 from .db import db
 from flask import jsonify
-
+from api.models.Messages import Message
+from api.models.Users import User
 
 class Organization(db.Model):
     """Model class for Organization. (Organization)"""
@@ -51,8 +53,21 @@ class Location(db.Model):
             "city": self.city,
             "state": self.state,
             "organization_id": self.organization_id,
-            "zip_code": self.zip_code
+            "zip_code": self.zip_code,
+            "messages_no_response": self.get_messages_with_no_response()
             #'physicians': jsonify([x.serialize() for x in self.physicians])
         }
-         
-    
+
+    def get_messages_with_no_response(self):
+        #this could be slow but can be improved later
+        
+        unresponded = 0
+        users = User.query.filter(User.location_id==self.id).filter(User.roles.any(name='Patient')).all()
+        
+        if users is not None:
+            for i in users:
+                message_history = Message.query.order_by(Message.timestamp.desc()).filter((Message.recipient_id==i.id) | (Message.sender_id==i.id)).first()
+                if message_history.sender_id == i.id:
+                    unresponded += 1
+
+        return unresponded

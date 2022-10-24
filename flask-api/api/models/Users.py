@@ -11,6 +11,7 @@ from sqlalchemy import insert
 from api.permissions import Permissions
 from flask import session
 
+
 roles_users = db.Table(
     "roles_users",
     db.Column("user_id", db.Integer(), db.ForeignKey("User.id")),
@@ -120,10 +121,15 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return "<User {}>".format(self.name)
 
+    def unread_messages(self):
+        message_history = Message.query.order_by(Message.timestamp.desc()).filter((Message.recipient_id==self.id) | (Message.sender_id==self.id)).first()
+        if message_history.sender_id == self.id:
+            return 1
+
     def new_messages(self):
         last_read_time = self.last_message_read_time or datetime(1900, 1, 1)
         return (
-            Message.query.filter_by(recipient=self)
+            Message.query.filter_by(recipient_id=self.id)
             .filter(Message.timestamp > last_read_time)
             .count()
         )
@@ -157,4 +163,24 @@ class User(UserMixin, db.Model):
             "location_id": self.location_id,
             "email": self.email,
             "phone_number": self.phone_number,
+        }
+
+    def serialize_user_display(self):
+
+        #location = Location.query.get(self.location_id)
+        
+        return {
+            "id": self.id,
+            "name": self.name,
+            "roles": [x.serialize_name() for x in self.roles],
+            "location_id": 'banana',
+            "email": self.email,
+            "phone_number": self.phone_number,
+        }
+
+    def serialize_msg_sidebar(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "unread_msg": self.unread_messages()
         }
