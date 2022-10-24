@@ -10,6 +10,7 @@ import MessageSidebar from '../MessageSidebar';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import {useEffect, useRef, useState} from 'react';
 
 export default function App(){
 
@@ -17,6 +18,7 @@ export default function App(){
     const [locations, setLocations] = React.useState(0);
     const [users, setUsers ] = React.useState(0);
     const [currentUser, setCurrentUser] = React.useState(0);
+    const bottomRef = useRef(null);
     
     const navigate = useNavigate();
 
@@ -43,9 +45,9 @@ export default function App(){
 
     const selectedUserMessages = (userId) => {
 
-      MessageDataService.getUserMessages(userId).then((response) => {
-      setMessages(response.data);
-      setCurrentUser(userId);
+        MessageDataService.getUserMessages(userId).then((response) => {
+        setMessages(response.data);
+        setCurrentUser(userId);
           
         }).catch(function (error) {
         if (error.response)
@@ -99,6 +101,7 @@ export default function App(){
       MessageDataService.sendMessage(currentUser, formData).then((response) => {
 
         document.getElementById("msgBox").value = "";
+        MessageDataService.getUserMessages(currentUser);
 
     
         }).catch(function (error) {
@@ -123,6 +126,13 @@ export default function App(){
         document.getElementById("msgBox").value = "";
 
       }
+
+      useEffect(() => {
+        // 👇️ scroll to bottom every time messages change
+        bottomRef.current?.scrollIntoView({behavior: 'smooth'});
+      }, [messages]);
+
+      
     
         
 
@@ -156,9 +166,11 @@ export default function App(){
                   
                 if(message.sender_id != null ){
                     return (
+                      
+
                       <Card
                       key={message.id}
-                      style={{ width: '25%' }}
+                      style={{ width: '16rem' }}
                       className="ms-5"
                       bg="primary"
                       text="white">
@@ -170,14 +182,17 @@ export default function App(){
                         <ListGroup.Item>{message.body}</ListGroup.Item>
                       </ListGroup>
                     </Card>
+                    
                     )}
                     
                     else{
                       
                       return (
+                        
+
                         <Card
                         key={message.id}
-                        style={{ width: '25%' }}
+                        style={{ width: '16rem' }}
                         className="ms-auto me-5"
                         bg="success"
                         text="white">
@@ -189,21 +204,24 @@ export default function App(){
                       <ListGroup.Item>{message.body}</ListGroup.Item>
                     </ListGroup>
                   </Card>
+                    
+                  
                   )}
                   
                 })}
   
+                  
+              <div ref={bottomRef}/>
+                
                 
               
               </Stack>
               
-              
-
                 <Form onSubmit={sendMessage}>
                   <Row>
                     <Col xs={9}>
                     <Form.Group className="mt-2">
-                      <Form.Control required type="text" id="msgBox" name="msg" placeholder="Insert message..." />
+                      <Form.Control required type="text" id="msgBox" name="msg" autoComplete="off" placeholder="Insert message..." />
                     </Form.Group>
                     </Col>
 

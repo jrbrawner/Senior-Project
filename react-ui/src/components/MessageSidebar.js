@@ -23,7 +23,7 @@ export default function Sidebar(props) {
             {locations.map((location) => (
               
               <ListGroup.Item key={location.id} variant="light" action href={() => loadPeople(location.id)}>
-                {location.name} <Badge bg="success">2</Badge>
+                {location.name} <Badge bg="success">{location.messages_no_response}</Badge>
               </ListGroup.Item>
   
   ))}
@@ -42,7 +42,7 @@ export default function Sidebar(props) {
         {locations.map((location) => (
           
           <ListGroup.Item key={location.id} variant="light" action href={() => loadPeople(location.id)}>
-            {location.name} <Badge bg="success">2</Badge>
+            {location.name} <Badge bg="success">{location.messages_no_response}</Badge>
           </ListGroup.Item>
 
 ))}
@@ -52,11 +52,26 @@ export default function Sidebar(props) {
 
       <ListGroup>
 
-      {users.map((user) =>(
+      {users.map((user) => {
+
+        if (user.unread_msg === 0){
+          
+          return (
         <ListGroup.Item key={user.id} variant="light" action href={() => selectedUserMessages(user.id)}>
           {user.name}
         </ListGroup.Item>
-        ))}
+        )}
+
+        else{
+
+          return (
+          <ListGroup.Item key={user.id} variant="light" action href={() => selectedUserMessages(user.id)}>
+          {user.name} <Badge bg="success">{user.unread_msg}</Badge>
+        </ListGroup.Item>
+
+        )}
+
+        })}
 
       </ListGroup>
 

@@ -87,12 +87,13 @@ def create_message():
             MessageTracking.create_new_message_patient(
                 phone_number=phone_number, body=body, location_id=location.id
             )
-            twilioClient.send_automated_message(
-                location.phone_number,
-                phone_number,
-                status_msg,
-                location_id=location.id
-            )
+            #automated response when user is fully accepted
+            #twilioClient.send_automated_message(
+            #    location.phone_number,
+            #    phone_number,
+            #    status_msg,
+            #    location_id=location.id
+            #)
             return WebHelpers.EasyResponse("Success.", 200)
 
         # if new, prepare db table for new account registration
@@ -189,7 +190,8 @@ def get_message_sidebar_locations():
 def get_message_sidebar_users(id):
 
     users = User.query.filter(User.location_id==id).filter(User.roles.any(name='Patient')).all()
-    return jsonify([x.serialize() for x in users])
+
+    return jsonify([x.serialize_msg_sidebar() for x in users])
 
 
 @login_required
@@ -208,6 +210,8 @@ def get_user_messages(id):
 @cross_origin()
 @message_bp.post('/api/message/user/<int:id>')
 def message_user(id):
+
+    #
 
     user = User.query.get(id)
     message = request.form["msg"]

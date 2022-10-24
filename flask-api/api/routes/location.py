@@ -26,6 +26,7 @@ def get_locations():
     Locations = Location.query.all()
 
     resp = jsonify([x.serialize() for x in Locations])
+    
     resp.status_code = 200
 
     return resp

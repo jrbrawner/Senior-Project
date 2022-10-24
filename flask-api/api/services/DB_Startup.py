@@ -211,7 +211,7 @@ def seed_db():
             city="Evansville",
             state="Indiana",
             zip_code="47720",
-            organization_id="1",
+            organization_id=1,
         )
         db.session.add(location)
         db.session.commit()
@@ -226,6 +226,13 @@ def seed_db():
         db.session.add(organization1)
         db.session.commit()
 
+    if Organization.query.count() == 2:
+        organization2 = Organization(
+            name="Organzation 2", twilio_account_id="blablabla", twilio_auth_token="blablabla"
+        )
+        db.session.add(organization2)
+        db.session.commit()
+
     if Location.query.count() == 1:
         location = Location(
             name="Clean Eyes",
@@ -234,7 +241,7 @@ def seed_db():
             city="Evansville",
             state="Indiana",
             zip_code="47720",
-            organization_id="1",
+            organization_id=2,
         )
         db.session.add(location)
         db.session.commit()
@@ -247,26 +254,26 @@ def seed_db():
             city="Testville",
             state="Kentucky",
             zip_code="47714",
-            organization_id="2",
+            organization_id=3,
         )
         db.session.add(location1)
         db.session.commit()
 
-    if User.query.count() == 1:
-
-        password = hash_password("password")
-        user = user_datastore.create_user(
-            name="testpatient",
-            email="testpatient@email.com",
-            organization_id=2,
-            location_id=2,
-            password=password,
-            phone_number="+18124536789",
-        )
-        db.session.add(user)
-        db.session.commit()
-        user_datastore.add_role_to_user(user, "Patient")
-        user_datastore.commit()
+    #if User.query.count() == 1:
+    #
+    #    password = hash_password("password")
+    #    user = user_datastore.create_user(
+    #        name="testpatient",
+    #        email="testpatient@email.com",
+    #        organization_id=2,
+    #        location_id=2,
+    #        password=password,
+    #        phone_number="+18124536789",
+    #    )
+    #    db.session.add(user)
+    #    db.session.commit()
+    #    user_datastore.add_role_to_user(user, "Patient")
+    #    user_datastore.commit()
     if User.query.count() == 2:
 
         password = hash_password("password")
