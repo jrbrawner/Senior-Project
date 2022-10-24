@@ -1,41 +1,82 @@
 import React from 'react';
-import OrganizationDataService from '../../services/organization.service'
-import { useNavigate } from 'react-router-dom';
+import UserDataService from '../../services/user.service';
+import Table from 'react-bootstrap/Table';
+import Button from 'react-bootstrap/Button';
+import {useNavigate} from 'react-router-dom';
 
 export default function App() {
-  const [organizations, setOrganizations] = React.useState(null);
+  
+  const [users, setUsers] = React.useState(null);
   const navigate = useNavigate();
-
+  
   React.useEffect(() => {
-    OrganizationDataService.getAll().then((response) => {
-      setOrganizations(response.data);
+    UserDataService.getAll().then((response) => {
+      setUsers(response.data);
     }).catch(error => {
       if (error.response.status === 401)
       {
         navigate(`/login`);
         console.log('Not authenticated.');
       }
-      if (error.response.status === 403)
-      {
-        alert('You are not authenticated for this page.');
-      }
     });
   }, []);
 
+  function editUser(id) {
+      navigate(`/user/${id}`);
+    }
+  function newUser() {
+    navigate(`/user/create`);
+  }
 
-  if (!organizations) return <p>No data.</p>;
+  function deleteUser(userId) {
+    UserDataService.delete(userId).then((response) =>
+    {
+      if (response.status === 200){
+          navigate(0);
+      }
+      else{
+        alert("Error");
+      }
+      
+    })
+  }
+
+  if (!users) return <p>Loading</p>;
 
   return (
     <div>
-      {organizations.map((organization) => (
-        <ul key={organization.id}>
-          <h2>{organization.name}</h2>
-          
-          <li>Twilio Account ID {organization.twilio_account_id}</li>
-          <li>Twilio Auth Token {organization.twilio_auth_token}</li>
-        </ul>
-        
-      ))}
+      <div className="mb-1" >
+        <Button variant="outline-success" onClick={() => newUser()}>Create New User</Button>
+      </div>
+
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+                <th>User Name</th>
+                <th>User Email</th>
+                <th>User Location</th>
+                <th>User Roles</th>
+                <th>Phone Number</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+          </thead>
+            <tbody>
+            {users.map((user) => (
+            <tr key={user.id}>
+                <td>{user.name}</td>
+                <td>{user.email}</td>
+                <td>{user.location_id}</td>
+                <td>{user.roles.map((role) => (
+                        role.name))}</td>
+                <td>{user.phone_number}</td>
+                <td><Button variant="primary" onClick={() => editUser(user.id)}>Edit</Button>{' '}</td>
+                <td><Button variant="danger" onClick={() => deleteUser(user.id)}>Delete</Button>{' '}</td>
+            </tr>
+                ))}
+            </tbody>
+      </Table>
+      
     </div>
   );
 }

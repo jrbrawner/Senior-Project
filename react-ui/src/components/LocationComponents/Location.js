@@ -1,112 +1,82 @@
 import React from 'react';
-import LocationDataService from '../../services/location.service'
-import { useParams } from 'react-router-dom';
+import UserDataService from '../../services/user.service';
+import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
-
+import {useNavigate} from 'react-router-dom';
 
 export default function App() {
-  const [location, setLocation] = React.useState(null);
-
-  const params = useParams();
-  const navigate = useNavigate(); 
-
+  
+  const [users, setUsers] = React.useState(null);
+  const navigate = useNavigate();
+  
   React.useEffect(() => {
-    LocationDataService.get(params.locationId).then((response) => {
-      setLocation(response.data);
+    UserDataService.getAll().then((response) => {
+      setUsers(response.data);
+    }).catch(error => {
+      if (error.response.status === 401)
+      {
+        navigate(`/login`);
+        console.log('Not authenticated.');
+      }
     });
   }, []);
 
-  
+  function editUser(id) {
+      navigate(`/user/${id}`);
+    }
+  function newUser() {
+    navigate(`/user/create`);
+  }
 
-  const handleSubmit = e => {
-    e.preventDefault()
-    const formData = new FormData(e.target);
-    formData.append('organizationId', location.organization_id);
-    const formDataObj = Object.fromEntries(formData.entries());
-    console.log(formDataObj);
-    LocationDataService.update(params.locationId, formData).then((response) =>
+  function deleteUser(userId) {
+    UserDataService.delete(userId).then((response) =>
     {
-      if (response.status == 200){
-          navigate('/location');
+      if (response.status === 200){
+          navigate(0);
       }
       else{
-        alert('Error');
+        alert("Error");
       }
       
     })
   }
 
-  if (!location) return null;
+  if (!users) return <p>Loading</p>;
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <Form.Group className="mb-3" controlId="formLocationName">
-        <Form.Label>Location Name</Form.Label>
-        <Form.Control
-            required
-            type="text"
-            name="name"
-            defaultValue={location.name}
-          />
-      </Form.Group>
+    <div>
+      <div className="mb-1" >
+        <Button variant="outline-success" onClick={() => newUser()}>Create New User</Button>
+      </div>
 
-      <Form.Group className="mb-3" controlId="formLocationAddress">
-        <Form.Label>Address</Form.Label>
-        <Form.Control
-            required
-            type="text"
-            name="address"
-            defaultValue={location.address}
-          />
-      </Form.Group>
-
-      <Form.Group className="mb-3" controlId="formLocationCity">
-        <Form.Label>City</Form.Label>
-        <Form.Control
-            required
-            type="text"
-            name="city"
-            defaultValue={location.city}
-          />
-      </Form.Group>
-
-      <Form.Group className="mb-3" controlId="formLocationState">
-        <Form.Label>State</Form.Label>
-        <Form.Control
-            required
-            type="text"
-            name="state"
-            defaultValue={location.state}
-          />
-      </Form.Group>
-
-      <Form.Group className="mb-3" controlId="formLocationZipCode">
-        <Form.Label>Zip Code</Form.Label>
-        <Form.Control
-            required
-            type="text"
-            name="zipCode"
-            defaultValue={location.zip_code}
-          />
-      </Form.Group>
-
-      <Form.Group className="mb-3" controlId="formLocationPhoneNumber">
-        <Form.Label>Phone Number</Form.Label>
-        <Form.Control
-            required
-            type="text"
-            name="phoneNumber"
-            defaultValue={location.phone_number}
-          />
-      </Form.Group>
-      <Button variant="primary" type="submit">
-        Edit location
-      </Button>
-    </Form>
-  )
-  
-
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+                <th>User Name</th>
+                <th>User Email</th>
+                <th>User Location</th>
+                <th>User Roles</th>
+                <th>Phone Number</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+          </thead>
+            <tbody>
+            {users.map((user) => (
+            <tr key={user.id}>
+                <td>{user.name}</td>
+                <td>{user.email}</td>
+                <td>{user.location_id}</td>
+                <td>{user.roles.map((role) => (
+                        role.name))}</td>
+                <td>{user.phone_number}</td>
+                <td><Button variant="primary" onClick={() => editUser(user.id)}>Edit</Button>{' '}</td>
+                <td><Button variant="danger" onClick={() => deleteUser(user.id)}>Delete</Button>{' '}</td>
+            </tr>
+                ))}
+            </tbody>
+      </Table>
+      
+    </div>
+  );
 }
