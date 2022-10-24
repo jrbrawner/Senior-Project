@@ -182,9 +182,10 @@ def seed_db():
             name="admin",
             email="admin@email.com",
             password=password,
-            organization_id=0,
-            location_id=0,
+            organization_id=1,
+            location_id=1,
         )
+
         user_datastore.add_role_to_user(admin, "Super Admin")
         db.session.add(admin)
         db.session.commit()
@@ -192,7 +193,64 @@ def seed_db():
             f"No admin found, default admin account made. Make sure default credentials are changed."
         )
 
+
+    if Organization.query.count() == 0:
+        organization = Organization(
+            name="Platform Owner",
+            twilio_account_id="",
+            twilio_auth_token="",
+        )
+        db.session.add(organization)
+        db.session.commit()
+
+    if Location.query.count() == 0:
+        location = Location(
+            name="Corporate HQ",
+            phone_number="+18124671234",
+            address="1234 Corporate Lane",
+            city="Evansville",
+            state="Indiana",
+            zip_code="47720",
+            organization_id="1",
+        )
+        db.session.add(location)
+        db.session.commit()
+
+
+
     # everything past here is extra for testing purposes
+    if Organization.query.count() == 1:
+        organization1 = Organization(
+            name="Healthcare Overlords", twilio_account_id="", twilio_auth_token=""
+        )
+        db.session.add(organization1)
+        db.session.commit()
+
+    if Location.query.count() == 1:
+        location = Location(
+            name="Clean Eyes",
+            phone_number="+18155510787",
+            address="1001 Banana Republic",
+            city="Evansville",
+            state="Indiana",
+            zip_code="47720",
+            organization_id="1",
+        )
+        db.session.add(location)
+        db.session.commit()
+
+    if Location.query.count() == 2:
+        location1 = Location(
+            name="Sweet Water Healthcare",
+            phone_number="+18126789028",
+            address="1000 Test Avenue",
+            city="Testville",
+            state="Kentucky",
+            zip_code="47714",
+            organization_id="2",
+        )
+        db.session.add(location1)
+        db.session.commit()
 
     if User.query.count() == 1:
 
@@ -200,8 +258,8 @@ def seed_db():
         user = user_datastore.create_user(
             name="testpatient",
             email="testpatient@email.com",
-            organization_id=1,
-            location_id=1,
+            organization_id=2,
+            location_id=2,
             password=password,
             phone_number="+18124536789",
         )
@@ -215,8 +273,8 @@ def seed_db():
         user = user_datastore.create_user(
             name="TestDoctor",
             email="testdoctor@email.com",
-            organization_id=1,
-            location_id=1,
+            organization_id=2,
+            location_id=2,
             password=password,
             phone_number="+18124533801",
         )
@@ -231,8 +289,8 @@ def seed_db():
         user = user_datastore.create_user(
             name="TestAdmin",
             email="testadmin@email.com",
-            organization_id=1,
-            location_id=1,
+            organization_id=2,
+            location_id=2,
             password=password,
             phone_number="+18127831029",
         )
@@ -246,8 +304,8 @@ def seed_db():
         user = user_datastore.create_user(
             name="TestEmployee",
             email="testemployee@email.com",
-            organization_id=1,
-            location_id=1,
+            organization_id=2,
+            location_id=2,
             password=password,
             phone_number="+18124581234",
         )
@@ -261,7 +319,7 @@ def seed_db():
             name="Test1Admin",
             email="test1admin@email.com",
             organization_id=2,
-            location_id=2,
+            location_id=3,
             password=password,
             phone_number="+1812",
         )
@@ -270,47 +328,6 @@ def seed_db():
         user_datastore.add_role_to_user(user, "Admin")
         user_datastore.commit()
 
-
-    if Organization.query.count() == 0:
-        organization = Organization(
-            name="Healthcare Inc",
-            twilio_account_id="",
-            twilio_auth_token="",
-        )
-        db.session.add(organization)
-        db.session.commit()
-    if Organization.query.count() == 1:
-        organization1 = Organization(
-            name="Healthcare Overlords", twilio_account_id="", twilio_auth_token=""
-        )
-        db.session.add(organization1)
-        db.session.commit()
-
-    if Location.query.count() == 0:
-        location = Location(
-            name="Clean Eyes",
-            phone_number="+18155510787",
-            address="1001 Banana Republic",
-            city="Evansville",
-            state="Indiana",
-            zip_code="47720",
-            organization_id="1",
-        )
-        db.session.add(location)
-        db.session.commit()
-
-    if Location.query.count() == 1:
-        location1 = Location(
-            name="Sweet Water Healthcare",
-            phone_number="+18126789028",
-            address="1000 Test Avenue",
-            city="Testville",
-            state="Kentucky",
-            zip_code="47714",
-            organization_id="2",
-        )
-        db.session.add(location1)
-        db.session.commit()
 
         logging.warning(f"Database seeded.")
 

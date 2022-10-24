@@ -164,7 +164,6 @@ class User(UserMixin, db.Model):
 
         location = Location.query.get(self.location_id)
         
-
         return {
             "id": self.id,
             "name": self.name,

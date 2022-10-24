@@ -3,6 +3,7 @@ import UserDataService from '../../services/user.service';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import {useNavigate} from 'react-router-dom';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 export default function App() {
   
@@ -62,18 +63,49 @@ export default function App() {
             </tr>
           </thead>
             <tbody>
-            {users.map((user) => (
-            <tr key={user.id}>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>{user.location_id}</td>
-                <td>{user.roles.map((role) => (
-                        role.name))}</td>
-                <td>{user.phone_number}</td>
-                <td><Button variant="primary" onClick={() => editUser(user.id)}>Edit</Button>{' '}</td>
-                <td><Button variant="danger" onClick={() => deleteUser(user.id)}>Delete</Button>{' '}</td>
-            </tr>
-                ))}
+
+            {users.map((user) => {
+
+            if (user.roles.length == 1){
+              return(
+                  <tr key={user.id}>
+                    <td>{user.name}</td>
+                    <td>{user.email}</td>
+                    <td>{user.location_id}</td>
+                    <td>{user.roles.map((role) => (
+                      role.name))}</td>
+                    <td>{user.phone_number}</td>
+                    <td><Button variant="primary" onClick={() => editUser(user.id)}>Edit</Button>{' '}</td>
+                    <td><Button variant="danger" onClick={() => deleteUser(user.id)}>Delete</Button>{' '}</td>
+                </tr>
+                )}
+
+            else{
+                return(
+                  <tr key={user.id}>
+                    <td>{user.name}</td>
+                    <td>{user.email}</td>
+                    <td>{user.location_id}</td>
+
+                    <Dropdown>
+                    <Dropdown.Toggle variant="" id="dropdown-basic">
+                      Roles
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      {user.roles.map((role) => (
+                        <Dropdown.Item>{role.name}</Dropdown.Item>
+                      ))}
+                    </Dropdown.Menu>
+                  </Dropdown>
+
+                    <td>{user.phone_number}</td>
+                    <td><Button variant="primary" onClick={() => editUser(user.id)}>Edit</Button>{' '}</td>
+                    <td><Button variant="danger" onClick={() => deleteUser(user.id)}>Delete</Button>{' '}</td>
+                </tr>
+                )}
+
+            })}
+                
             </tbody>
       </Table>
       
