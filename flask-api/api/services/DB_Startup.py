@@ -6,6 +6,7 @@ import logging
 from api.models.OrganizationModels import Organization, Location
 from api.models.Messages import Message
 from api.permissions import Permissions
+from datetime import datetime
 
 def seed_db():
     """Initial seeding of database on application start up."""
@@ -274,7 +275,7 @@ def seed_db():
     #    db.session.commit()
     #    user_datastore.add_role_to_user(user, "Patient")
     #    user_datastore.commit()
-    if User.query.count() == 2:
+    if User.query.count() != 20:
 
         password = hash_password("password")
         user = user_datastore.create_user(
@@ -291,7 +292,7 @@ def seed_db():
         user_datastore.commit()
 
 
-    if User.query.count() == 3:
+    if User.query.count() != 20:
         password = hash_password("password")
         user = user_datastore.create_user(
             name="TestAdmin",
@@ -306,7 +307,7 @@ def seed_db():
         user_datastore.add_role_to_user(user, "Admin")
         user_datastore.commit()
 
-    if User.query.count() == 4:
+    if User.query.count() != 20:
         password = hash_password("password")
         user = user_datastore.create_user(
             name="TestEmployee",
@@ -320,7 +321,7 @@ def seed_db():
         db.session.commit()
         user_datastore.add_role_to_user(user, "Employee")
         user_datastore.commit()
-    if User.query.count() == 5:
+    if User.query.count() != 20:
         password = hash_password("password")
         user = user_datastore.create_user(
             name="Test1Admin",
@@ -337,4 +338,1358 @@ def seed_db():
 
 
         logging.warning(f"Database seeded.")
+
+    #Messages for testing
+    
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=25,
+        name="Test P25",
+        email="testpati3ent25@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99925",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1003,
+        sender_id=25,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1004,
+        sender_id=None,
+        location_id=2,
+        recipient_id=25,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=26,
+        name="Test P26",
+        email="testpati3ent26@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99926",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1005,
+        sender_id=26,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1006,
+        sender_id=None,
+        location_id=2,
+        recipient_id=26,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=27,
+        name="Test P27",
+        email="testpati3ent27@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99927",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1007,
+        sender_id=27,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1008,
+        sender_id=None,
+        location_id=2,
+        recipient_id=27,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=28,
+        name="Test P28",
+        email="testpati3ent28@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99928",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1009,
+        sender_id=28,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1010,
+        sender_id=None,
+        location_id=2,
+        recipient_id=28,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=29,
+        name="Test P29",
+        email="testpati3ent29@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99929",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1011,
+        sender_id=29,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1012,
+        sender_id=None,
+        location_id=2,
+        recipient_id=29,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=30,
+        name="Test P30",
+        email="testpati3ent30@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99930",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1013,
+        sender_id=30,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1014,
+        sender_id=None,
+        location_id=2,
+        recipient_id=30,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=31,
+        name="Test P31",
+        email="testpati3ent31@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99931",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1015,
+        sender_id=31,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1016,
+        sender_id=None,
+        location_id=2,
+        recipient_id=31,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=32,
+        name="Test P32",
+        email="testpati3ent32@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99932",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1017,
+        sender_id=32,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1018,
+        sender_id=None,
+        location_id=2,
+        recipient_id=32,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=33,
+        name="Test P33",
+        email="testpati3ent33@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99933",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1019,
+        sender_id=33,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1020,
+        sender_id=None,
+        location_id=2,
+        recipient_id=33,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=34,
+        name="Test P34",
+        email="testpati3ent34@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99934",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1021,
+        sender_id=34,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1022,
+        sender_id=None,
+        location_id=2,
+        recipient_id=34,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=35,
+        name="Test P35",
+        email="testpati3ent35@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99935",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1023,
+        sender_id=35,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1024,
+        sender_id=None,
+        location_id=2,
+        recipient_id=35,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=36,
+        name="Test P36",
+        email="testpati3ent36@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99936",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1025,
+        sender_id=36,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1026,
+        sender_id=None,
+        location_id=2,
+        recipient_id=36,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=37,
+        name="Test P37",
+        email="testpati3ent37@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99937",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1027,
+        sender_id=37,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1028,
+        sender_id=None,
+        location_id=2,
+        recipient_id=37,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=38,
+        name="Test P38",
+        email="testpati3ent38@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99938",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1029,
+        sender_id=38,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1030,
+        sender_id=None,
+        location_id=2,
+        recipient_id=38,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=39,
+        name="Test P39",
+        email="testpati3ent39@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99939",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1031,
+        sender_id=39,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1032,
+        sender_id=None,
+        location_id=2,
+        recipient_id=39,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=40,
+        name="Test P40",
+        email="testpati3ent40@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99940",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1033,
+        sender_id=40,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1034,
+        sender_id=None,
+        location_id=2,
+        recipient_id=40,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=41,
+        name="Test P41",
+        email="testpati3ent41@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99941",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1035,
+        sender_id=41,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1036,
+        sender_id=None,
+        location_id=2,
+        recipient_id=41,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=42,
+        name="Test P42",
+        email="testpati3ent42@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99942",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1037,
+        sender_id=42,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1038,
+        sender_id=None,
+        location_id=2,
+        recipient_id=42,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=43,
+        name="Test P43",
+        email="testpati3ent43@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99943",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1039,
+        sender_id=43,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1040,
+        sender_id=None,
+        location_id=2,
+        recipient_id=43,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=44,
+        name="Test P44",
+        email="testpati3ent44@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99944",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1041,
+        sender_id=44,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1042,
+        sender_id=None,
+        location_id=2,
+        recipient_id=44,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=45,
+        name="Test P45",
+        email="testpati3ent45@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99945",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1043,
+        sender_id=45,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1044,
+        sender_id=None,
+        location_id=2,
+        recipient_id=45,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=46,
+        name="Test P46",
+        email="testpati3ent46@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99946",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1045,
+        sender_id=46,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1046,
+        sender_id=None,
+        location_id=2,
+        recipient_id=46,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=47,
+        name="Test P47",
+        email="testpati3ent47@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99947",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1047,
+        sender_id=47,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1048,
+        sender_id=None,
+        location_id=2,
+        recipient_id=47,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=48,
+        name="Test P48",
+        email="testpati3ent48@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99948",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1049,
+        sender_id=48,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1050,
+        sender_id=None,
+        location_id=2,
+        recipient_id=48,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=49,
+        name="Test P49",
+        email="testpati3ent49@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99949",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1051,
+        sender_id=49,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1052,
+        sender_id=None,
+        location_id=2,
+        recipient_id=49,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=50,
+        name="Test P50",
+        email="testpati3ent50@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99950",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1053,
+        sender_id=50,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1054,
+        sender_id=None,
+        location_id=2,
+        recipient_id=50,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=51,
+        name="Test P51",
+        email="testpati3ent51@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99951",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1055,
+        sender_id=51,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1056,
+        sender_id=None,
+        location_id=2,
+        recipient_id=51,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=52,
+        name="Test P52",
+        email="testpati3ent52@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99952",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1057,
+        sender_id=52,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1058,
+        sender_id=None,
+        location_id=2,
+        recipient_id=52,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=53,
+        name="Test P53",
+        email="testpati3ent53@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99953",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1059,
+        sender_id=53,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1060,
+        sender_id=None,
+        location_id=2,
+        recipient_id=53,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+    timestamp = datetime.utcnow()
+
+    password = hash_password("password")
+    user = user_datastore.create_user(
+        id=54,
+        name="Test P54",
+        email="testpati3ent54@email.com",
+        organization_id=2,
+        location_id=2,
+        password=password,
+        phone_number="+99954",
+    )
+
+    db.session.add(user)
+    db.session.commit()
+    user_datastore.add_role_to_user(user, "Patient")
+    user_datastore.commit()
+
+    message1 = Message(
+        id=1061,
+        sender_id=54,
+        location_id=2,
+        recipient_id=None,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message1)
+    db.session.commit()
+    timestamp = datetime.utcnow()
+
+    message2 = Message(
+        id=1062,
+        sender_id=None,
+        location_id=2,
+        recipient_id=54,
+        body="Blalala",
+        timestamp=timestamp
+    )
+
+    db.session.add(message2)
+    db.session.commit()
+
+    
+
+
 

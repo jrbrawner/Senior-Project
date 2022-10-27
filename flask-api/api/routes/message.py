@@ -211,8 +211,6 @@ def get_user_messages(id):
 @message_bp.post('/api/message/user/<int:id>')
 def message_user(id):
 
-    #
-
     user = User.query.get(id)
     message = request.form["msg"]
     location_id = current_user.location_id
