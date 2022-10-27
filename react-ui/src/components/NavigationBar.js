@@ -41,7 +41,7 @@ export default function NavigationBar(){
             <Button variant="outline-success">Search</Button>
           </Form>
           <Nav className="">
-            <Nav.Link>Notifications</Nav.Link>
+            <Nav.Link href="/notifications">Notifications</Nav.Link>
           </Nav>
           <Navbar.Text>
             <a href="/logout"> {state.username}

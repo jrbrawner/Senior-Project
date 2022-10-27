@@ -11,6 +11,8 @@ import LogoutPage from './pages/LogoutPage';
 import NewUserPage from './pages/NewUserPage';
 import MessagesPage from './pages/MessagesPage';
 import PendingUsersPage from './pages/PendingUsersPage';
+import NotificationPage from './pages/NotificationPage';
+
 
 export default function App(){
 
@@ -34,6 +36,8 @@ export default function App(){
             <Route path="/user/new" element={<PendingUsersPage/>} />
 
             <Route path="/messages" element={<MessagesPage/>} />
+
+            <Route path="/notifications" element={<NotificationPage/>} />
 
           </Routes>
         </BrowserRouter>

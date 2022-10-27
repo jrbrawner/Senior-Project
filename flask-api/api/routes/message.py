@@ -189,6 +189,8 @@ def get_message_sidebar_locations():
 @message_bp.get("/api/location/<int:id>/users")
 def get_message_sidebar_users(id):
 
+    page = request.args.get('page')
+    #users = User.query.filter(User.location_id==id).filter(User.roles.any(name='Patient')).paginate(page=page, per_page=10, error_out=False)
     users = User.query.filter(User.location_id==id).filter(User.roles.any(name='Patient')).all()
 
     return jsonify([x.serialize_msg_sidebar() for x in users])
