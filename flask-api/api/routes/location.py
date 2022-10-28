@@ -1,7 +1,5 @@
 from audioop import add
 from flask import Blueprint, request, send_from_directory
-
-# from .. import login_manager
 from flask_login import logout_user, login_required
 from sqlalchemy import create_engine, MetaData
 import json
@@ -11,6 +9,7 @@ from api.models.db import db
 from ..services.WebHelpers import WebHelpers
 import logging
 from flask_security import current_user
+from api.permissions import Permissions
 
 
 location_bp = Blueprint("location_bp", __name__)
@@ -21,15 +20,40 @@ location_bp = Blueprint("location_bp", __name__)
 def get_locations():
     """
     GET: Returns all Locations.
+
+    Super Admin: View All Locations
+    Admin: View All Locations in their Organization
+    Physician: View Current Locations
+    Employee: None at the moment
+
     """
 
-    Locations = Location.query.all()
+    #Super Admin
+    if current_user.has_permission(Permissions.VIEW_ALL_LOCATIONS):
+        locations = Location.query.all()
+        resp = jsonify([x.serialize() for x in locations])
+        resp.status_code = 200
+        logging.info(f"User id - {current_user.id} - accessed all locations.")
+        return resp
+    #Admin
+    if current_user.has_permission(Permissions.VIEW_ALL_CURRENT_ORG_LOCATIONS):
+        locations = Location.query.filter_by(organization_id = current_user.organization_id).all()
+        resp = jsonify([x.serialize() for x in locations])
+        resp.status_code = 200
+        logging.info(f"User id - {current_user.id} - accessed all current users.")
+        return resp
+    #Physician
+    if current_user.has_permission(Permissions.VIEW_CURRENT_LOCATION):
+        locations = Location.query.filter_by(id = current_user.location_id).all()
+        resp = jsonify([x.serialize() for x in locations])
+        resp.status_code = 200
+        logging.info(f"User id - {current_user.id} - accessed all current employees & patients.")
+        return resp
+    else:
+        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
 
-    resp = jsonify([x.serialize() for x in Locations])
-    
-    resp.status_code = 200
 
-    return resp
+
 
 
 @location_bp.get("/api/location/<int:id>")
