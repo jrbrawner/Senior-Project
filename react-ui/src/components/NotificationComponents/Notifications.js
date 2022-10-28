@@ -40,7 +40,7 @@ const columns = [
   }
 ];
 
-class App extends Component {
+export default class Notifications extends Component {
   render() {
     return (
       <div className="App">

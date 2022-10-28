@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Pagination as BsPagination } from "react-bootstrap";
+import { default as BsPagination } from "react-bootstrap/Pagination";
 import classnames from "classnames";
 
-class Pagination extends Component {
+export default class Pagination extends Component {
   handleOnSelect = page => this.props.onPageClick(page);
 
   handleViewAllPages = e => {
@@ -63,5 +63,3 @@ Pagination.propTypes = {
 Pagination.defaultProps = {
   maxButtons: 10
 };
-
-export default Pagination;
