@@ -36,25 +36,26 @@ def login():
     password = request.form["password"]
 
     user = user_datastore.find_user(email=email)
-    password_matches = verify_password(password, user.password)
 
-    if user and password_matches:
-        login_user(user)
-        user.set_last_login()
-        logging.debug(f" User with id {user.id} logged in.")
+    if user:
+        password_matches = verify_password(password, user.password)
+        if password_matches:
+            login_user(user)
+            user.set_last_login()
+            logging.debug(f" User with id {user.id} logged in.")
 
-        data["name"] = user.name
-        resp = jsonify(data)
-        resp.status_code = 200
+            data["name"] = user.name
+            resp = jsonify(data)
+            resp.status_code = 200
 
-        permissions = [permission.id for x in current_user.roles for permission in x.permissions]
+            permissions = [permission.id for x in current_user.roles for permission in x.permissions]
+            
+            session['permissions'] = [*set(permissions)]
         
-        session['permissions'] = [*set(permissions)]
-        
 
-        return resp
+            return resp
+        return WebHelpers.EasyResponse("Invalid email/password combination.", 405)
     return WebHelpers.EasyResponse("Invalid email/password combination.", 405)
-
 
 @auth_bp.post("/api/grant_role")
 def grant_role():

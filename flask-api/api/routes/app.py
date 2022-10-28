@@ -12,7 +12,8 @@ app_bp = Blueprint("app_bp", __name__)
 
 @app.before_first_request
 def start_up():
-    seed_db()
+    #seed_db()
+    pass
 
 @app_bp.route("/", methods=["GET"])
 @login_required
