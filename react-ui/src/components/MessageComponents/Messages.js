@@ -13,14 +13,17 @@ import Col from 'react-bootstrap/Col';
 import {useEffect, useRef, useState} from 'react';
 
 export default function App(){
-
-    const [messages, setMessages] = React.useState(0);
-    const [locations, setLocations] = React.useState(0);
-    const [users, setUsers ] = React.useState(0);
-    const [currentUser, setCurrentUser] = React.useState(0);
-    const bottomRef = useRef(null);
-    const [pageCount, setPageCount] = React.useState(0);
-    const itemsPerPage = 11;
+  
+  const [messages, setMessages] = React.useState(0);
+  const [locations, setLocations] = React.useState(0);
+  const [users, setUsers ] = React.useState(0);
+  const [currentUser, setCurrentUser] = React.useState(0);
+  const bottomRef = useRef(null);
+  const [pageCount, setPageCount] = React.useState(0);
+  const [itemOffset, setItemOffset] = React.useState(0);
+  const [currentItems, setCurrentItems] = React.useState(0);
+  const itemsPerPage = 11;
+  const endOffset = itemOffset + itemsPerPage;
     
     const navigate = useNavigate();
 
@@ -75,9 +78,8 @@ export default function App(){
       
       //var firstLocationId = locations[0].name;
       setPageCount(Math.ceil(response.data.length / itemsPerPage));
+      setCurrentItems(response.data.slice(itemOffset, endOffset));
       
-      
-        
       }).catch(function (error) {
       if (error.response)
       {
@@ -99,7 +101,6 @@ export default function App(){
         
       e.preventDefault();
       const formData = new FormData(e.target);
-      console.log(currentUser);
       console.log("Message sent")
       
       MessageDataService.sendMessage(currentUser, formData).then((response) => {
@@ -114,7 +115,6 @@ export default function App(){
             {
               navigate(`/login`);
               console.log('Not authenticated.');
-    
             }
             if (error.response.status === 403)
             {
@@ -134,10 +134,14 @@ export default function App(){
         bottomRef.current?.scrollIntoView();
       }, [messages]);
 
-      
-    
-        
+      const handlePageClick = (event) => {
+        const newOffset = event.selected * itemsPerPage % users.length;
+        console.log(`User requested page number ${event.selected}, which is offset ${newOffset}`);
+        setItemOffset(newOffset);
+        setCurrentItems(users.slice(itemOffset, endOffset));
+      };
 
+      
     if (!messages && !locations) return <p>Loading</p>
 
 
@@ -146,7 +150,8 @@ export default function App(){
           <Row>
             <Col sm={2}>
               <MessageSidebar locations={locations} selectedUserMessages={selectedUserMessages}
-               loadPeople={loadPeople} users={users} itemsPerPage={itemsPerPage} pageCount={pageCount}/>
+               loadPeople={loadPeople} users={users} itemsPerPage={itemsPerPage} pageCount={pageCount}
+               handlePageClick={handlePageClick} itemOffset={itemOffset} currentItems={currentItems}/>
             </Col>
           </Row>
         </Container>
@@ -159,7 +164,8 @@ export default function App(){
             
             <Col sm={2}>
               <MessageSidebar locations={locations} selectedUserMessages={selectedUserMessages}
-               loadPeople={loadPeople} users={users} itemsPerPage={itemsPerPage} pageCount={pageCount}/>
+               loadPeople={loadPeople} users={users} itemsPerPage={itemsPerPage} pageCount={pageCount}
+               handlePageClick={handlePageClick} itemOffset={itemOffset} currentItems={currentItems}/>
               </Col>
             
             <Col>

@@ -14,37 +14,27 @@ export default function Sidebar(props) {
   const loadPeople = props.loadPeople;
   const itemsPerPage = props.itemsPerPage;
   const pageCount = props.pageCount;
-  //const currentItems = props.currentItems;
+  const handlePageClick = props.handlePageClick;
+  const itemOffset = props.itemOffset;
+  var currentItems = props.currentItems;
 
-  // We start with an empty list of items.
-  const [currentItems, setCurrentItems] = React.useState(null);
-  // Here we use item offsets; we could also use page offsets
-  // following the API or data you're working with.
-  const [itemOffset, setItemOffset] = React.useState(0);
-
-
-  const handlePageClick = (event) => {
-    const newOffset = event.selected * itemsPerPage % users.length;
-    console.log(`User requested page number ${event.selected}, which is offset ${newOffset}`);
-    setItemOffset(newOffset);
-  };
-
-  React.useEffect(() => {
+  
+  //React.useEffect(() => {
     // Fetch items from another resources.
-    const endOffset = itemOffset + itemsPerPage;
-    console.log(`Loading items from ${itemOffset} to ${endOffset}`);
+    //const endOffset = itemOffset + itemsPerPage;
+    //console.log(`Loading items from ${itemOffset} to ${endOffset}`);
     
-    
-    if ((Array.isArray(users))){
-      setCurrentItems(users.slice(itemOffset, endOffset));
-      console.log(pageCount);
-    }
-    console.log(pageCount);
+    //if ((Array.isArray(users))){
+    //  currentItems = users.slice(itemOffset, endOffset)
+    //  console.log(pageCount);
+    //}
+    //}
+    //console.log(pageCount);
     //setCurrentItems(users.slice(itemOffset, endOffset));
     //setCurrentItems(Array.isArray(users) ? users.slice(itemOffset, endOffset) : []);
     //setPageCount(Math.ceil(users.length / itemsPerPage));
 
-  }, [itemOffset, itemsPerPage]);
+  //}, [itemOffset, itemsPerPage]);
 
   function UsersNoMsg({ currentUsers }) {
     return (
@@ -117,7 +107,7 @@ export default function Sidebar(props) {
       <ReactPaginate
         nextLabel=">"
         onPageChange={handlePageClick}
-        pageRangeDisplayed={1}
+        pageRangeDisplayed={2}
         marginPagesDisplayed={1}
         pageCount={pageCount}
         initialPage={0}
