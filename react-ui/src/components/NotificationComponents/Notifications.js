@@ -4,6 +4,7 @@ import React, {
   useState
 } from "react";
 import MessageDataService from '../../services/message.service';
+import {Stack, ListGroup} from 'react-bootstrap';
 
 const items = [...Array(33).keys()];
 
@@ -11,15 +12,18 @@ function Items({ currentItems }) {
   return (
     <div className="items">
     {currentItems && currentItems.map((item) => (
-      <div>
-        <h3>{item.name}</h3>
-      </div>
+      <Stack>
+        <ListGroup>
+          <ListGroup.Item key={item.id} action href={`#${item.id}`}>{item.name}</ListGroup.Item>
+        </ListGroup>
+      </Stack>
+      
     ))}
       </div>
   );
 }
 
-export default function PaginatedItems({ itemsPerPage }) {
+export default function Notifications({ itemsPerPage }) {
   // We start with an empty list of items.
   const [currentItems, setCurrentItems] = useState(null);
   const [pageCount, setPageCount] = useState(0);
@@ -28,6 +32,8 @@ export default function PaginatedItems({ itemsPerPage }) {
   const [itemOffset, setItemOffset] = useState(0);
   const [users, setUsers] = useState(null);
 
+  const filterText = "";
+
   React.useEffect(() => {
     MessageDataService.getUsers(2).then((response) => {
       setUsers(response.data);
@@ -35,6 +41,8 @@ export default function PaginatedItems({ itemsPerPage }) {
       const endOffset = itemOffset + itemsPerPage;
       setCurrentItems(users.slice(itemOffset, endOffset));
       setPageCount(Math.ceil(users.length / itemsPerPage));
+      
+
     }).catch(error => {
     });
   }, [itemOffset, itemsPerPage]);
@@ -46,9 +54,16 @@ export default function PaginatedItems({ itemsPerPage }) {
     setItemOffset(newOffset);
   };
 
+  const handleFilterTextChange = (event) => {
+
+  }
+
+  
   return (
-    <>
+    <div id="container">
+      
       <Items currentItems={currentItems} />
+      
       <ReactPaginate
         nextLabel=">"
         onPageChange={handlePageClick}
@@ -68,7 +83,7 @@ export default function PaginatedItems({ itemsPerPage }) {
         containerClassName="pagination"
         activeClassName="active"
         renderOnZeroPageCount={null}
-      />
-    </>
-  );
+        />
+      </div>
+  )
 }
