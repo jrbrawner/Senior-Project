@@ -2,9 +2,6 @@ import React from "react";
 import { Button, Badge, ListGroup, Stack } from "react-bootstrap";
 import MessageDataService from '../services/message.service';
 import { useNavigate } from 'react-router-dom';
-import Pagination from 'react-bootstrap/Pagination';
-import Pager from '../components/PagingComponents/Pager';
-import BootstrapTable from "react-bootstrap-table-next";
 
 export default function Sidebar(props) {
 
@@ -16,17 +13,6 @@ export default function Sidebar(props) {
   const users = props.users;
   const loadPeople = props.loadPeople;
 
-  
-
-  const columns = [
-    {
-      dataField: "name",
-      text: "name",
-      sort: true
-    },
-  ];
-
-  
     if (!users){
       return (
       <Stack gap={3}>

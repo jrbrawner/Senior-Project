@@ -1,70 +1,74 @@
-import React, { Component } from "react";
-import BootstrapTable from "react-bootstrap-table-next";
-import Pager from "../PagingComponents/Pager";
+import ReactPaginate from "react-paginate";
+import React, {
+  useEffect,
+  useState
+} from "react";
+import MessageDataService from '../../services/message.service';
 
-const generateData = (quantity = 5) => {
-  return Array.from({ length: quantity }, (value, index) => ({
-    id: index,
-    name: `Item name ${index}`,
-    price: 2100 + index,
-    date: `August 29th 2018`,
-    phone: `1-800-111-1117`
-  }));
-};
+const items = [...Array(33).keys()];
 
-const columns = [
-  {
-    dataField: "id",
-    text: "ID",
-    sort: true
-  },
-  {
-    dataField: "name",
-    text: "Name",
-    sort: true
-  },
-  {
-    dataField: "price",
-    text: "Price",
-    sort: true
-  },
-  {
-    dataField: "date",
-    text: "Date",
-    sort: true
-  },
-  {
-    dataField: "phone",
-    text: "Phone",
-    sort: true
-  }
-];
-
-export default class Notifications extends Component {
-  render() {
-    return (
-      <div className="App">
-        <h1>Hello CodeSandbox</h1>
-        <h2>Start editing to see some magic happen!</h2>
-        <Pager
-          items={generateData(20)}
-          itemsPerPage={5}
-          top
-          render={(items) => (
-            <BootstrapTable
-              keyField="id"
-              data={items}
-              columns={columns}
-              condensed
-              striped
-              hover
-              bordered={false}
-            />
-          )}
-        />
+function Items({ currentItems }) {
+  return (
+    <div className="items">
+    {currentItems && currentItems.map((item) => (
+      <div>
+        <h3>{item.name}</h3>
       </div>
-    );
-  }
+    ))}
+      </div>
+  );
 }
 
+export default function PaginatedItems({ itemsPerPage }) {
+  // We start with an empty list of items.
+  const [currentItems, setCurrentItems] = useState(null);
+  const [pageCount, setPageCount] = useState(0);
+  // Here we use item offsets; we could also use page offsets
+  // following the API or data you're working with.
+  const [itemOffset, setItemOffset] = useState(0);
+  const [users, setUsers] = useState(null);
 
+  React.useEffect(() => {
+    MessageDataService.getUsers(2).then((response) => {
+      setUsers(response.data);
+
+      const endOffset = itemOffset + itemsPerPage;
+      setCurrentItems(users.slice(itemOffset, endOffset));
+      setPageCount(Math.ceil(users.length / itemsPerPage));
+    }).catch(error => {
+    });
+  }, [itemOffset, itemsPerPage]);
+
+  // Invoke when user click to request another page.
+  const handlePageClick = (event) => {
+    const newOffset = event.selected * itemsPerPage % items.length;
+    console.log(`User requested page number ${event.selected}, which is offset ${newOffset}`);
+    setItemOffset(newOffset);
+  };
+
+  return (
+    <>
+      <Items currentItems={currentItems} />
+      <ReactPaginate
+        nextLabel=">"
+        onPageChange={handlePageClick}
+        pageRangeDisplayed={3}
+        marginPagesDisplayed={2}
+        pageCount={pageCount}
+        previousLabel="<"
+        pageClassName="page-item"
+        pageLinkClassName="page-link"
+        previousClassName="page-item"
+        previousLinkClassName="page-link"
+        nextClassName="page-item"
+        nextLinkClassName="page-link"
+        breakLabel="..."
+        breakClassName="page-item"
+        breakLinkClassName="page-link"
+        containerClassName="pagination"
+        activeClassName="active"
+        renderOnZeroPageCount={null}
+      />
+    </>
+  );
+}
