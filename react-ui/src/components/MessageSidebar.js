@@ -2,8 +2,7 @@ import React from "react";
 import { Button, Badge, ListGroup, Stack } from "react-bootstrap";
 import MessageDataService from '../services/message.service';
 import { useNavigate } from 'react-router-dom';
-import Pagination from 'react-bootstrap/Pagination';
-import Pager from '../components/PagingComponents/Pager';
+import paginationFactory from "react-bootstrap-table2-paginator";
 import BootstrapTable from "react-bootstrap-table-next";
 
 export default function Sidebar(props) {
@@ -15,16 +14,37 @@ export default function Sidebar(props) {
   const selectedUserMessages = props.selectedUserMessages;
   const users = props.users;
   const loadPeople = props.loadPeople;
+  const selectedRow = null;
+  
+  const rowEvents = {
+    onClick: (e, row, rowIndex) => {
+      selectedUserMessages(row.id);
+      
+    }
+  };
 
   
 
   const columns = [
     {
       dataField: "name",
-      text: "name",
-      sort: true
-    },
-  ];
+      text: "User Name",
+      isDummyField: true,
+      headerAttrs: {
+        hidden: true
+      },
+      formatter: (cellContent, row, index, extraData) => {
+        return(
+        <td key={row.id}>
+          {row.name}
+        </td> 
+        
+        )
+      }
+    }
+  ]
+
+  
 
   
     if (!users){
@@ -63,32 +83,23 @@ export default function Sidebar(props) {
 
       <h5>Patients</h5>
 
-      <ListGroup defaultActiveKey="">
-
-      {users.map((user) => {
-
-        if (user.unread_msg === 0){
-          
-          return (
-        <ListGroup.Item key={user.id} action onClick={() => selectedUserMessages(user.id)} href={`#${user.id}`}>
-          {user.name}
-        </ListGroup.Item>
-        )}
-
-        else{
-
-          return (
-          <ListGroup.Item key={user.id} action onClick={() => selectedUserMessages(user.id)} href={`#${user.id}`}>
-          {user.name} <Badge bg="success">{user.unread_msg}</Badge>
-          </ListGroup.Item>
-
-        )}
-
-        })}
-
-
-      </ListGroup>
-
+      <BootstrapTable
+      bootstrap4
+      keyField="id"
+      data={users}
+      columns={columns}
+      rowEvents={ rowEvents }
+      wrapperClasses="responsive"
+      hover
+      selectRow={{
+        mode: "radio",
+        hideSelectColumn: true,
+        clickToSelect: true,
+        bgColor: "#99ccff",
+      }}
+      pagination={paginationFactory({ sizePerPage: 12 })}
+      />
+        
 
     </Stack>
     )
