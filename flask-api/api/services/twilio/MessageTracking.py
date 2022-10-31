@@ -18,6 +18,7 @@ class MessageTracking:
         if user:
             message = Message(
                 sender_id=user.id,
+                sender_name=user.name,
                 recipient_id=None,
                 body=body,
                 location_id=location_id
@@ -52,6 +53,7 @@ class MessageTracking:
             message = Message(
                 sender_id=None,
                 recipient_id=patient.id,
+                sender_name=patient.name,
                 body=body,
                 location_id=location_id
             )

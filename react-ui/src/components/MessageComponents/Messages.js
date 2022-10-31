@@ -175,7 +175,7 @@ export default function App(){
                       bg="primary"
                       text="white">
                       <Card.Header>
-                        {message.sender_id}
+                        {message.sender_name}
                         <small className="float-end" >{message.timestamp}</small>
                       </Card.Header>
                       <ListGroup variant="flush">
