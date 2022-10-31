@@ -173,7 +173,7 @@ class User(UserMixin, db.Model):
             "id": self.id,
             "name": self.name,
             "roles": [x.serialize_name() for x in self.roles],
-            "location_id": 'banana',
+            "location_id": 
             "email": self.email,
             "phone_number": self.phone_number,
         }
