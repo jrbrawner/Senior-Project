@@ -2,66 +2,51 @@ import React from "react";
 import { Button, Badge, ListGroup, Stack } from "react-bootstrap";
 import MessageDataService from '../services/message.service';
 import { useNavigate } from 'react-router-dom';
-import ReactPaginate from 'react-paginate';
+import paginationFactory from "react-bootstrap-table2-paginator";
+import BootstrapTable from "react-bootstrap-table-next";
 
 export default function Sidebar(props) {
 
+  
   const navigate = useNavigate();
 
   const locations = props.locations;
   const selectedUserMessages = props.selectedUserMessages;
   const users = props.users;
   const loadPeople = props.loadPeople;
-  const itemsPerPage = props.itemsPerPage;
-  const pageCount = props.pageCount;
-  const handlePageClick = props.handlePageClick;
-  const itemOffset = props.itemOffset;
-  var currentItems = props.currentItems;
+  const selectedRow = null;
+  
+  const rowEvents = {
+    onClick: (e, row, rowIndex) => {
+      selectedUserMessages(row.id);
+      
+    }
+  };
 
   
-  //React.useEffect(() => {
-    // Fetch items from another resources.
-    //const endOffset = itemOffset + itemsPerPage;
-    //console.log(`Loading items from ${itemOffset} to ${endOffset}`);
-    
-    //if ((Array.isArray(users))){
-    //  currentItems = users.slice(itemOffset, endOffset)
-    //  console.log(pageCount);
-    //}
-    //}
-    //console.log(pageCount);
-    //setCurrentItems(users.slice(itemOffset, endOffset));
-    //setCurrentItems(Array.isArray(users) ? users.slice(itemOffset, endOffset) : []);
-    //setPageCount(Math.ceil(users.length / itemsPerPage));
 
-  //}, [itemOffset, itemsPerPage]);
+  const columns = [
+    {
+      dataField: "name",
+      text: "User Name",
+      isDummyField: true,
+      headerAttrs: {
+        hidden: true
+      },
+      formatter: (cellContent, row, index, extraData) => {
+        return(
+        <td key={row.id}>
+          {row.name}
+        </td> 
+        
+        )
+      }
+    }
+  ]
 
-  function UsersNoMsg({ currentUsers }) {
-    return (
-      <div className="items">
-      {currentUsers && currentUsers.map((user) => (
+  
 
-        <ListGroup.Item key={user.id} action onClick={() => selectedUserMessages(user.id)} href={`#${user.id}`}>
-          {user.name}
-        </ListGroup.Item>
-      ))}
-        </div>
-    );
-  }
-
-  function UsersMsg({ currentUsers }) {
-    return (
-      <div className="items">
-      {currentUsers && currentUsers.map((user) => (
-
-            <ListGroup.Item key={user.id} action onClick={() => selectedUserMessages(user.id)} href={`#${user.id}`}>
-              {user.name} <Badge bg="success">{user.unread_msg}</Badge>
-            </ListGroup.Item>
-      ))}
-        </div>
-    );
-  }
-
+  
     if (!users){
       return (
       <Stack gap={3}>
@@ -98,34 +83,23 @@ export default function Sidebar(props) {
 
       <h5>Patients</h5>
 
-      <ListGroup defaultActiveKey="">
-
-        <UsersNoMsg currentUsers={currentItems}/>
+      <BootstrapTable
+      bootstrap4
+      keyField="id"
+      data={users}
+      columns={columns}
+      rowEvents={ rowEvents }
+      wrapperClasses="responsive"
+      hover
+      selectRow={{
+        mode: "radio",
+        hideSelectColumn: true,
+        clickToSelect: true,
+        bgColor: "#99ccff",
+      }}
+      pagination={paginationFactory({ sizePerPage: 12 })}
+      />
         
-      </ListGroup>
-
-      <ReactPaginate
-        nextLabel=">"
-        onPageChange={handlePageClick}
-        pageRangeDisplayed={2}
-        marginPagesDisplayed={1}
-        pageCount={pageCount}
-        initialPage={0}
-        previousLabel="<"
-        pageClassName="page-item"
-        pageLinkClassName="page-link"
-        previousClassName="page-item"
-        previousLinkClassName="page-link"
-        nextClassName="page-item"
-        nextLinkClassName="page-link"
-        breakLabel="..."
-        breakClassName="page-item"
-        breakLinkClassName="page-link"
-        containerClassName="pagination"
-        activeClassName="active"
-        />
-
-
 
     </Stack>
     )

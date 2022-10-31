@@ -36,6 +36,19 @@ export default function App() {
     })
   }
 
+  function deleteUser(userId) {
+    UserDataService.delete(userId).then((response) =>
+    {
+      if (response.status === 200){
+          navigate('/user');
+      }
+      else{
+        alert("Error");
+      }
+      
+    })
+  }
+
   if (!user) return <p>Loading...</p>;
 
   return (
@@ -95,6 +108,7 @@ export default function App() {
       <Button variant="primary" type="submit">
         Edit User
       </Button>
+      <Button variant="danger" onClick={() => deleteUser(user.id)}>Delete User</Button>
     </Form>
   )
   

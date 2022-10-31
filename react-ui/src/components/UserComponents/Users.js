@@ -5,6 +5,9 @@ import Button from 'react-bootstrap/Button';
 import {useNavigate} from 'react-router-dom';
 import Dropdown from 'react-bootstrap/Dropdown';
 
+import BootstrapTable from "react-bootstrap-table-next";
+import paginationFactory from "react-bootstrap-table2-paginator";
+
 export default function App() {
   
   const [users, setUsers] = React.useState(null);
@@ -21,94 +24,88 @@ export default function App() {
       }
     });
   }, []);
-
+  
   function editUser(id) {
-      navigate(`/user/${id}`);
-    }
+    navigate(`/user/${id}`);
+  }
+
   function newUser() {
     navigate(`/user/create`);
   }
 
-  function deleteUser(userId) {
-    UserDataService.delete(userId).then((response) =>
+  const columns = [
     {
-      if (response.status === 200){
-          navigate(0);
-      }
-      else{
-        alert("Error");
-      }
-      
-    })
-  }
-
-  if (!users) return <p>Loading</p>;
-
-  return (
-    <div>
-      <div className="mb-1" >
-        <Button variant="outline-success" onClick={() => newUser()}>Create New User</Button>
-      </div>
-
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-                <th>User Name</th>
-                <th>User Email</th>
-                <th>User Location</th>
-                <th>User Roles</th>
-                <th>Phone Number</th>
-                <th>Edit</th>
-                <th>Delete</th>
-            </tr>
-          </thead>
-            <tbody>
-
-            {users.map((user) => {
-
-            if (user.roles.length == 1){
-              return(
-                  <tr key={user.id}>
-                    <td>{user.name}</td>
-                    <td>{user.email}</td>
-                    <td>{user.location_id}</td>
-                    <td>{user.roles.map((role) => (
-                      role.name))}</td>
-                    <td>{user.phone_number}</td>
-                    <td><Button variant="primary" onClick={() => editUser(user.id)}>Edit</Button>{' '}</td>
-                    <td><Button variant="danger" onClick={() => deleteUser(user.id)}>Delete</Button>{' '}</td>
-                </tr>
-                )}
-
-            else{
-                return(
-                  <tr key={user.id}>
-                    <td>{user.name}</td>
-                    <td>{user.email}</td>
-                    <td>{user.location_id}</td>
-
-                    <Dropdown>
+      dataField: "name",
+      text: "User Name",
+      sort: true
+    },
+    {
+      dataField: "email",
+      text: "User Email",
+      sort: true
+    },
+    {
+      dataField: "location_id",
+      text: "User Location",
+      sort: true
+    },
+    {
+      dataField: "roles.name",
+      text: "User Role",
+      sort:true,
+      formatter: (cellContent, row) => {
+        if (row.length > 1){ return <Dropdown>
                     <Dropdown.Toggle variant="" id="dropdown-basic">
                       Roles
                     </Dropdown.Toggle>
                     <Dropdown.Menu>
-                      {user.roles.map((role) => (
+                      {row.roles.map((role) => (
                         <Dropdown.Item>{role.name}</Dropdown.Item>
                       ))}
                     </Dropdown.Menu>
                   </Dropdown>
-
-                    <td>{user.phone_number}</td>
-                    <td><Button variant="primary" onClick={() => editUser(user.id)}>Edit</Button>{' '}</td>
-                    <td><Button variant="danger" onClick={() => deleteUser(user.id)}>Delete</Button>{' '}</td>
-                </tr>
-                )}
-
-            })}
-                
-            </tbody>
-      </Table>
+                  }
+        else
+        {
+          return <td>{row.roles.map((role) => (
+                      role.name))}</td>
+          }
+      }
+    },
+    {
+      dataField: "phone_number",
+      text: "User Phone Number",
+      sort:true
+    },
+    {
+      text: "Edit User",
+      isDummyField: true,
+      formatter: (cellContent, row) => {
+        return <Button variant="primary" onClick={() => editUser(row.id)}>Edit</Button>
+      }
       
+    }
+  ]
+
+  if (!users) return <p>Loading</p>;
+
+  return (
+
+    
+    <div>
+      <div className="mb-1" >
+        <Button variant="outline-success" onClick={() => newUser()}>Create New User</Button>
+      </div>
+      <BootstrapTable
+          bootstrap4
+          striped
+          bordered
+          hover
+          keyField="id"
+          data={users}
+          columns={columns}
+          pagination={paginationFactory({ sizePerPage: 10 })}
+          />
     </div>
   );
 }

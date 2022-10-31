@@ -171,18 +171,16 @@ def delete_user(id):
     """
     DELETE: Deletes specified user.
     """
-    user = User.query.filter_by(id=id).first()
-    user_name = user.name
+    user = User.query.get(id)
+    #user_name = user.name
     user_id = user.id
     if user:
-
         db.session.delete(user)
         db.session.commit()
-        # logging.warning(
-        #    f"User id - {current_user.id} - deleted user with id {user_id} and name of {user_name}."
-        # )
-        return WebHelpers.EasyResponse(f"{user.name} deleted.", 200)
-
+        logging.warning(
+            f"User id - {current_user.id} - deleted user with id {user_id}."
+         )
+        return WebHelpers.EasyResponse(f"{user_id} deleted.", 200)
     return WebHelpers.EasyResponse(f"user with that id does not exist.", 404)
 
 
