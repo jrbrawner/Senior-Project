@@ -36,7 +36,7 @@ export default function Sidebar(props) {
       formatter: (cellContent, row, index, extraData) => {
         return(
         <td key={row.id}>
-          {row.name}
+          {row.name}<Badge bg="success">{row.unread_msg}</Badge>
         </td> 
         
         )
@@ -97,7 +97,7 @@ export default function Sidebar(props) {
         clickToSelect: true,
         bgColor: "#99ccff",
       }}
-      pagination={paginationFactory({ sizePerPage: 12 })}
+      pagination={paginationFactory({ sizePerPage: 13 })}
       />
         
 
