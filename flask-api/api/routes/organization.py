@@ -1,6 +1,6 @@
 from flask import Blueprint, request, send_from_directory
 from flask import current_app as app, jsonify
-from ..models.OrganizationModels import Organization
+from ..models.OrgModels import Organization
 from api.models.db import db
 from ..services.WebHelpers import WebHelpers
 import logging

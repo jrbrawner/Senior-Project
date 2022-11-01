@@ -1,5 +1,5 @@
 from ...models.Messages import Message
-from ...models.Users import User
+from ...models.OrgModels import User
 from ...models.db import db
 import logging
 from api import user_datastore

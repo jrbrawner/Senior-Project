@@ -1,4 +1,4 @@
-from api.models.Users import Role
+from api.models.OrgModels import Role
 from api.models.db import db
 from flask import Blueprint, request
 import logging

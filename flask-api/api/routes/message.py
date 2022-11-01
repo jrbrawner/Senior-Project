@@ -12,12 +12,11 @@ from ..services.twilio.MessageTracking import MessageTracking
 import logging
 from flask_cors import cross_origin
 from twilio.twiml.messaging_response import MessagingResponse
-from ..models.Users import User
 from ..models.db import db
 from ..services.twilio.TwilioClient import TwilioClient
 from twilio.base.exceptions import TwilioRestException
 from ..services.twilio.MessageTracking import MessageTracking
-from ..models.OrganizationModels import Location, Organization
+from ..models.OrgModels import Location, Organization, User
 from api.permissions import Permissions
 
 
