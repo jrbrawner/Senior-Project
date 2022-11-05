@@ -1,5 +1,5 @@
 from venv import create
-from api.models.Users import User, Role, Permission
+from api.models.OrgModels import User, Role, Permission
 from api.models.db import db
 from api import user_datastore
 from flask_security.utils import hash_password
