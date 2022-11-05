@@ -12,12 +12,11 @@ from ..services.twilio.MessageTracking import MessageTracking
 import logging
 from flask_cors import cross_origin
 from twilio.twiml.messaging_response import MessagingResponse
-from ..models.Users import User
 from ..models.db import db
 from ..services.twilio.TwilioClient import TwilioClient
 from twilio.base.exceptions import TwilioRestException
 from ..services.twilio.MessageTracking import MessageTracking
-from ..models.OrganizationModels import Location, Organization
+from ..models.OrgModels import Location, Organization, User
 from api.permissions import Permissions
 
 
@@ -235,6 +234,40 @@ def message_user(id):
         return WebHelpers.EasyResponse(f"Message sent.", 200)
 
     return WebHelpers.EasyResponse(f"User with id {id} does not exist.", 404)
+
+
+@login_required
+@cross_origin()
+@message_bp.post('/api/message/announcement')
+def send_announcement():
+
+    if current_user.has_permission(Permissions.SEND_ANNOUNCEMENT):
+
+        location_id = current_user.location_id
+        
+
+        message = request.form['msg']
+
+        location = Location.query.get(location_id)
+        organization_id = location.organization_id
+        organization = Organization.query.get(organization_id)
+
+        twilioClient = TwilioClient(
+            organization.twilio_account_id, organization.twilio_auth_token
+        )
+        users = User.query.filter_by(location_id = id).all()
+
+        for i in users:
+            twilioClient.send_automated_message(location.phone_number, i.phone_number, message, location.id)
+            logging.warning(
+            f"{current_user.name} sent an announcement to users of location ({location.id})"
+            )
+        return WebHelpers.EasyResponse(f"Announcement sent.", 200)
+        
+    return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+
+        
+
 
 
 

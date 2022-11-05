@@ -5,14 +5,13 @@ from flask_login import logout_user, login_required
 from sqlalchemy import create_engine, MetaData
 import json
 from flask import current_app as app, jsonify
-from api.models.Users import User, Role, roles_users
 from api.models.db import db
 from api.services.WebHelpers import WebHelpers
 import logging
 from flask_cors import cross_origin
 from flask_login import current_user
 from api.services.twilio.TwilioClient import TwilioClient
-from api.models.OrganizationModels import Location, Organization
+from api.models.OrgModels import Location, Organization, User, Role, roles_users
 from api import user_datastore
 from flask_security.utils import hash_password
 from flask_security import roles_accepted

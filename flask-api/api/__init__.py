@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 import logging
 from flask_security import SQLAlchemyUserDatastore, Security
-from api.models.Users import User, Role
+from api.models.OrgModels import User, Role
 from api.models.db import db
 from flask_login import LoginManager
 from flask import abort

@@ -4,7 +4,7 @@ from flask_login import logout_user, login_required
 from sqlalchemy import create_engine, MetaData
 import json
 from flask import current_app as app, jsonify, url_for
-from ..models.OrganizationModels import Location
+from ..models.OrgModels import Location
 from api.models.db import db
 from ..services.WebHelpers import WebHelpers
 import logging

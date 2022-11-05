@@ -5,12 +5,11 @@ from flask import (
     abort
 )
 from flask_login import current_user
-from ..models.Users import User
+from ..models.OrgModels import User
 from ..models.db import db
 from flask import current_app as app, jsonify
 from ..services.WebHelpers import WebHelpers
 import logging
-from ..models.Users import User
 from api import user_datastore
 from flask_login import login_required
 from flask_security.utils import verify_password
