@@ -1,3 +1,5 @@
+from venv import create
+from api.models.Users import User, Role, Permission
 from api.models.db import db
 from api import user_datastore
 from flask_security.utils import hash_password
@@ -58,6 +60,8 @@ def seed_db():
         logging.warning(f"No roles found, default roles created.")
 
         # CREATING PERMISSIONS
+
+        # ORGANIZATIONS
         view_all_organizations = Permission(
             id=Permissions.VIEW_ALL_ORGANIZATIONS.value,
             name=Permissions.VIEW_ALL_ORGANIZATIONS.name,
@@ -98,8 +102,54 @@ def seed_db():
             id=Permissions.DELETE_ORGANIZATION.value,
             name=Permissions.DELETE_ORGANIZATION.name,
             description="Allows the role to delete organizations."
-        )        
+        )
 
+        #LOCATIONS
+
+        view_all_locations = Permission(
+            id=Permissions.VIEW_ALL_LOCATIONS.value,
+            name=Permissions.VIEW_ALL_LOCATIONS.name,
+            description="Allows the role to view all locations."
+        )
+
+        view_current_location = Permission(
+            id=Permissions.VIEW_CURRENT_LOCATION.value,
+            name=Permissions.VIEW_CURRENT_LOCATION.name,
+            description="Allows the role to view the location they belong to."
+        )
+
+        view_current_org_locations = Permission(
+            id=Permissions.VIEW_ALL_CURRENT_ORG_LOCATIONS.value,
+            name=Permissions.VIEW_ALL_CURRENT_ORG_LOCATIONS.name,
+            description="Allows the role to view all locations owned by their current organization."
+        )
+
+        create_new_location = Permission(
+            id=Permissions.CREATE_NEW_LOCATION.value,
+            name=Permissions.CREATE_NEW_LOCATION.name,
+            description="Allows the role to create new locations."
+        )
+
+        update_current_location= Permission(
+            id=Permissions.UPDATE_CURRENT_LOCATION.value,
+            name=Permissions.UPDATE_CURRENT_LOCATION.name,
+            description="Allows the role to update the location they belong to."
+        )
+
+        update_all_locations = Permission(
+            id=Permissions.UPDATE_ALL_LOCATIONS.value,
+            name=Permissions.UPDATE_ALL_LOCATIONS.name,
+            description="Allows the role to update all locations."
+        )
+
+        delete_location = Permission(
+            id=Permissions.DELETE_LOCATION.value,
+            name=Permissions.DELETE_LOCATION.name,
+            description="Allows the role to delete locations."
+        )
+
+
+        # PEOPLE
         view_all_people = Permission(
             id=Permissions.VIEW_ALL_PEOPLE.value,
             name=Permissions.VIEW_ALL_PEOPLE.name,
@@ -124,6 +174,7 @@ def seed_db():
             description="Allows the role to view all the patients and pending patients that belong to their organization."
         )
 
+        # MESSAGES
         view_all_messages = Permission(
             id=Permissions.VIEW_ALL_MESSAGES.value,
             name=Permissions.VIEW_ALL_MESSAGES.name,
@@ -156,6 +207,14 @@ def seed_db():
         db.session.add(view_all_messages)
         db.session.add(view_all_current_org_messages)
         db.session.add(view_all_current_location_messages)
+
+        db.session.add(view_all_locations)
+        db.session.add(view_current_location)
+        db.session.add(create_new_location)
+        db.session.add(delete_location)
+        db.session.add(update_all_locations)
+        db.session.add(update_current_location)
+        db.session.add(view_current_org_locations)
         db.session.commit()
         ###ADD PERMISSIONS TO APPROPRIATE ROLES
         #MAKE SURE TO SAVE THIS PART
@@ -164,15 +223,19 @@ def seed_db():
         super_admin_role.add_permission(super_admin_role.id, Permissions.VIEW_ALL_ORGANIZATIONS.value)
         super_admin_role.add_permission(super_admin_role.id, Permissions.VIEW_ALL_PEOPLE.value)
         super_admin_role.add_permission(super_admin_role.id, Permissions.VIEW_ALL_MESSAGES.value)
+        super_admin_role.add_permission(super_admin_role.id, Permissions.VIEW_ALL_LOCATIONS.value)
         #ADMIN ROLE
         admin_role.add_permission(admin_role.id, Permissions.VIEW_CURRENT_ORGANIZATION.value)
         admin_role.add_permission(admin_role.id, Permissions.VIEW_ALL_CURRENT_ORG_PEOPLE.value)
+        admin_role.add_permission(admin_role.id, Permissions.VIEW_ALL_CURRENT_ORG_LOCATIONS.value)
         #PHYSICIAN ROLE
         physician_role.add_permission(physician_role.id, Permissions.VIEW_ALL_CURRENT_ORG_EMPLOYEE.value)
         physician_role.add_permission(physician_role.id, Permissions.VIEW_ALL_CURRENT_ORG_MESSAGES.value)
+        physician_role.add_permission(physician_role.id, Permissions.VIEW_CURRENT_LOCATION.value)
         #EMPLOYEE ROLE
         employee_role.add_permission(employee_role.id, Permissions.VIEW_ALL_CURRENT_ORG_PATIENTS.value)
         employee_role.add_permission(employee_role.id, Permissions.VIEW_ALL_CURRENT_LOCATION_MESSAGES.value)
+        
 
 
 
@@ -181,6 +244,7 @@ def seed_db():
         admin = user_datastore.create_user(
             name="admin",
             email="admin@email.com",
+            phone_number="+18129909999",
             password=password,
             organization_id=1,
             location_id=1,
@@ -216,9 +280,10 @@ def seed_db():
         db.session.add(location)
         db.session.commit()
 
-
-
     # everything past here is extra for testing purposes
+
+
+
     if Organization.query.count() == 1:
         organization1 = Organization(
             name="Healthcare Overlords", twilio_account_id="", twilio_auth_token=""
@@ -283,7 +348,7 @@ def seed_db():
             organization_id=2,
             location_id=2,
             password=password,
-            phone_number="+18124533801",
+            phone_number="+1812453",
         )
         db.session.add(user)
         db.session.commit()
