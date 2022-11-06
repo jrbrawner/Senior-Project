@@ -4,5 +4,4 @@
 development.db
 __pycache__
 record.log
-/flask_session/*
-/photos/*
+api/static/photos/*

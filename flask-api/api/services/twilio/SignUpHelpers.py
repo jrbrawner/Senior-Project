@@ -60,10 +60,13 @@ class TwilioSignUpHelpers:
             f"Phone number {phone_number} entry made. Ready for user sign-up."
         )
 
-        return f"Thanks for choosing to be with us! Please fill out this form to complete your registration. Name/Email"
+        return f"Thanks for choosing to be with us! Please fill out this form to complete your registration. Name/Email\nRespond {1} for an example."
 
     @staticmethod
     def CompleteUserSignUp(phone_number, msg):
+
+        if msg == "1":
+            return f"John Smith/johnsmith@gmail.com"
 
         phone_number_user = user_datastore.find_user(phone_number=phone_number)
 

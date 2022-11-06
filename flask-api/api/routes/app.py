@@ -35,4 +35,4 @@ def test_message():
     resp = jsonify([x.serialize() for x in messages])
     message = messages[-1]
 
-    return message.serialize()
+    return resp

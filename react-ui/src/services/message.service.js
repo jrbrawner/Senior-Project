@@ -22,6 +22,10 @@ class MessageDataService {
         return axios.post(`/message/user/${id}`, data)
     }
 
+    loadPicture(photoUrl){
+        return axios.get(`/message/load-photo/${photoUrl}`)
+    }
+
 }
 
 export default new MessageDataService();

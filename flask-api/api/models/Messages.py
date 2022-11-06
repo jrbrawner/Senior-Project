@@ -28,7 +28,11 @@ class Photo(db.Model):
         self.message_id = message_id
         db.session.commit()
 
-    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'photo': self.photo_url
+        }
 
 
 class Message(db.Model):
@@ -65,7 +69,7 @@ class Message(db.Model):
             "id": self.id,
             "sender_id": self.sender_id,
             "sender_name": self.sender_name,
-            "photos": [x.photo_url for x in self.photos],
+            "photos": [x.serialize() for x in self.photos],
             "recipient_id": self.recipient_id,
             "body": self.body,
             "timestamp": str_date_time,
