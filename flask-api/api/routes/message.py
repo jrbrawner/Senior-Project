@@ -70,6 +70,15 @@ def create_message():
     body = request.values.get("Body", None)
     to = request.values.get("To", None)
 
+    #handle photos
+    num_media = int(request.values.get('NumMedia', 0))
+
+    media_files = [(request.values.get(f"MediaUrl{i}", ''),
+                    request.values.get(f"MediaContentType{i}", ''))
+                    for i in range(0, num_media)]
+
+
+
     location = Location.query.filter_by(phone_number=to).first()
     organization_id = location.organization_id
     organization = Organization.query.get(organization_id)
@@ -84,7 +93,7 @@ def create_message():
         if user_status == "Accepted":
             status_msg = f"Your physician has received your message."
             MessageTracking.create_new_message_patient(
-                phone_number=phone_number, body=body, location_id=location.id
+                phone_number=phone_number, body=body, location_id=location.id, media_files=media_files
             )
             #automated response when user is fully accepted
             #twilioClient.send_automated_message(
@@ -265,6 +274,13 @@ def send_announcement():
         return WebHelpers.EasyResponse(f"Announcement sent.", 200)
         
     return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+
+@login_required
+@cross_origin()
+@message_bp.get('/api/load-photo/<string:photo>')
+def load_message(photo):
+
+    return send_from_directory("static", f'photos/{photo}')
 
         
 

@@ -10,6 +10,8 @@ class DevConfig:
     """Set Flask configuration from environment variables."""
     load_dotenv(path.join(basedir, '.env'))
 
+    
+
     FLASK_APP = 'wsgi.py'
     FLASK_ENV = environ.get('FLASK_ENV')
     SECRET_KEY = environ.get('SECRET_KEY')
@@ -23,6 +25,9 @@ class DevConfig:
     STATIC_FOLDER = 'static'
     TEMPLATES_FOLDER = 'templates'
     COMPRESSOR_DEBUG = environ.get('COMPRESSOR_DEBUG')
+
+    #Folder for user Photo uploads
+    PHOTOS = 'api/static/photos'
 
     # Flask-SQLAlchemy
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir + '/api/' 'development.db')

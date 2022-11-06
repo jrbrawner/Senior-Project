@@ -286,7 +286,7 @@ def seed_db():
 
     if Organization.query.count() == 1:
         organization1 = Organization(
-            name="Healthcare Overlords", twilio_account_id="", twilio_auth_token=""
+            name="Healthcare Overlords", twilio_account_id="AC7a914eac1184b21ab730290493c44e8a", twilio_auth_token="c2d088ecf368e4213d8ab09f709f0a4f"
         )
         db.session.add(organization1)
         db.session.commit()

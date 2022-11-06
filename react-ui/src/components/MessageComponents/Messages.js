@@ -38,6 +38,11 @@ export default function App(){
                 {
                   alert('You are not authenticated for this page.');
                 }
+                if (error.response.status === 500){
+                  navigate(`/login`);
+                  console.log('Not authenticated.');
+                }
+                
             }
             });
       
