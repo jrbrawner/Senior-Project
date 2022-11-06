@@ -38,6 +38,11 @@ export default function App(){
                 {
                   alert('You are not authenticated for this page.');
                 }
+                if (error.response.status === 500){
+                  navigate(`/login`);
+                  console.log('Not authenticated.');
+                }
+                
             }
             });
       
@@ -48,6 +53,8 @@ export default function App(){
         MessageDataService.getUserMessages(userId).then((response) => {
         setMessages(response.data);
         setCurrentUser(userId);
+
+        console.log(messages);
           
         }).catch(function (error) {
         if (error.response)
@@ -122,10 +129,17 @@ export default function App(){
 
         
       }
+
       function ClearTextBox() {
         document.getElementById("msgBox").value = "";
 
       }
+
+      //const loadPhoto = e => {
+      //  e.preventDefault;
+//
+  //      MessageDataService.loadPicture(e)
+    //  }
 
       useEffect(() => {
         // 👇️ scroll to bottom every time messages change
@@ -163,11 +177,9 @@ export default function App(){
               
 
                 {messages.map((message) => {
-                  
-                if(message.sender_id != null ){
+                //users messages
+                if(message.sender_id != null){
                     return (
-                      
-
                       <Card
                       key={message.id}
                       style={{ width: '16rem' }}
@@ -179,17 +191,23 @@ export default function App(){
                         <small className="float-end" >{message.timestamp}</small>
                       </Card.Header>
                       <ListGroup variant="flush">
-                        <ListGroup.Item>{message.body}</ListGroup.Item>
+                        <ListGroup.Item>
+                        {message.photos.map((photo) => {
+                        return (<a target="_blank" href={`http://127.0.0.1:5000/api/load-photo/${photo.photo}`}>Photo </a>)
+                        })
+                      }
+                          <Card.Text>{message.body}</Card.Text>
+                          </ListGroup.Item>
                       </ListGroup>
                     </Card>
                     
                     )}
                     
+                    
                     else{
                       
                       return (
-                        
-
+                        //orgs messages
                         <Card
                         key={message.id}
                         style={{ width: '16rem' }}
@@ -201,7 +219,9 @@ export default function App(){
                       <small className="float-end" >{message.timestamp}</small>
                     </Card.Header>
                     <ListGroup variant="flush">
-                      <ListGroup.Item>{message.body}</ListGroup.Item>
+                      <ListGroup.Item>
+                      <Card.Text>{message.body}</Card.Text>
+                        </ListGroup.Item>
                     </ListGroup>
                   </Card>
                     

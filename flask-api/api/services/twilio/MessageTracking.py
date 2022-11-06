@@ -4,16 +4,20 @@ from ...models.db import db
 import logging
 from api import user_datastore
 from flask_security import current_user
-
+from ..WebHelpers import WebHelpers
 
 class MessageTracking:
     @staticmethod
-    def create_new_message_patient(phone_number, body, location_id):
+    def create_new_message_patient(phone_number, body, location_id, media_files):
         """
         Standard function for creating messages between a patient and physician.
         """
 
         user = user_datastore.find_user(phone_number=phone_number)
+        photos = None
+        #photos handling
+        if len(media_files) > 0:
+            photos = WebHelpers.HandleUserPictureTwilioMMS(media_files=media_files, user_id=user.id)
 
         if user:
             message = Message(
@@ -25,6 +29,11 @@ class MessageTracking:
             )
 
             db.session.add(message)
+            db.session.commit()
+        
+        if photos:
+            for i in photos:
+                i.add_relation(i.id, message.id)
             db.session.commit()
 
             logging.warning(f"New message created from {user.name} to their office.")

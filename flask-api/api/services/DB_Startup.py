@@ -193,6 +193,13 @@ def seed_db():
             description="Allows the role to view all the messages sent & received by their current location."
         )
 
+        send_announcement = Permission(
+            id=Permissions.SEND_ANNOUNCEMENT.value,
+            name=Permissions.SEND_ANNOUNCEMENT.name,
+            description="Allows the role to send an announcement to all users of a location."
+        )
+
+
         db.session.add(view_all_organizations)
         db.session.add(view_user_organizations)
         db.session.add(view_specific_organizations)
@@ -204,9 +211,11 @@ def seed_db():
         db.session.add(view_all_current_org_employee)
         db.session.add(view_all_current_org_people)
         db.session.add(view_all_current_org_patients)
+
         db.session.add(view_all_messages)
         db.session.add(view_all_current_org_messages)
         db.session.add(view_all_current_location_messages)
+        db.session.add(send_announcement)
 
         db.session.add(view_all_locations)
         db.session.add(view_current_location)
@@ -232,6 +241,7 @@ def seed_db():
         physician_role.add_permission(physician_role.id, Permissions.VIEW_ALL_CURRENT_ORG_EMPLOYEE.value)
         physician_role.add_permission(physician_role.id, Permissions.VIEW_ALL_CURRENT_ORG_MESSAGES.value)
         physician_role.add_permission(physician_role.id, Permissions.VIEW_CURRENT_LOCATION.value)
+        physician_role.add_permission(physician_role.id, Permissions.SEND_ANNOUNCEMENT.value)
         #EMPLOYEE ROLE
         employee_role.add_permission(employee_role.id, Permissions.VIEW_ALL_CURRENT_ORG_PATIENTS.value)
         employee_role.add_permission(employee_role.id, Permissions.VIEW_ALL_CURRENT_LOCATION_MESSAGES.value)

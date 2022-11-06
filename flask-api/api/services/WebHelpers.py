@@ -1,9 +1,13 @@
 from flask import jsonify, request
 from werkzeug.utils import secure_filename
 from flask_login import current_user
+import mimetypes
 import os
 from flask import current_app as app
-
+import requests
+from urllib.parse import urlparse
+from api.models.Messages import Photo
+from api.models.db import db
 
 class WebHelpers:
     @staticmethod
@@ -57,3 +61,34 @@ class WebHelpers:
                 return WebHelpers.EasyResponse("Profile picture uploaded.", 200)
         else:
             return WebHelpers.EasyResponse("Error.", 400)
+
+    @staticmethod
+    def HandleUserPictureTwilioMMS(media_files, user_id):
+        """
+        Handles retrieving of a users photo sent in an MMS.
+        Expects picture to come in form with specified id 'picture'.
+        Path is saved in user attribute 'profile_pic'
+        """
+        photos = []
+
+        if media_files is not None:
+            for (media_url, mime_type) in media_files:
+                print(media_url)
+                file_extension = mimetypes.guess_extension(mime_type)
+                media_sid = os.path.basename(urlparse(media_url).path)
+                photo = requests.get(media_url).content
+                filename = secure_filename(f"{user_id}_{media_sid}{file_extension}")
+
+                if photo and WebHelpers.allowed_file_extension(filename):
+                    file_path = os.path.join(app.config['PHOTOS'], filename)
+                    with open(file_path, "wb") as file:
+                        file.write(photo)
+                    file.close()
+                    photo = Photo(
+                        photo_url=filename
+                    )
+                    db.session.add(photo)
+                    db.session.commit()
+                    photos.append(photo)
+
+            return photos
