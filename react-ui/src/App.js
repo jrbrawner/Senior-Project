@@ -12,6 +12,7 @@ import NewUserPage from './pages/NewUserPage';
 import MessagesPage from './pages/MessagesPage';
 import PendingUsersPage from './pages/PendingUsersPage';
 import NotificationPage from './pages/NotificationPage';
+import LocationAnnouncementPage from './pages/LocationAnnouncementPage';
 
 
 export default function App(){
@@ -29,6 +30,7 @@ export default function App(){
             
             <Route path="/location" element={<LocationsPage/>}/>
             <Route path="/location/:locationId" element={<LocationPage />} />
+            <Route path="/location/:locationId/announcement" element={<LocationAnnouncementPage/>}/>
             
             <Route path="/user" element={<UsersPage />} />
             <Route path="/user/:userId" element={<EditUserPage/>} />

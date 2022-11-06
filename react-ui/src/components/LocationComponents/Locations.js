@@ -20,8 +20,11 @@ export default function App() {
 
   function editLocation(id) {
       navigate(`/location/${id}`);
-
     }
+
+  function announcementPage(id) {
+    navigate(`/location/${id}/announcement`)
+  }
   
 
   if (!locations) return null;
@@ -37,7 +40,7 @@ export default function App() {
                 <th>State</th>
                 <th>Phone Number</th>
                 <th>Edit</th>
-                <th>Delete</th>
+                <th>Announcement</th>
             </tr>
           </thead>
             <tbody>
@@ -49,7 +52,7 @@ export default function App() {
                 <td>{location.state}</td>
                 <td>{location.phone_number}</td>
                 <td><Button variant="primary" onClick={() => editLocation(location.id)}>Edit</Button>{' '}</td>
-                <td><Button variant="danger">Delete</Button>{' '}</td>
+                <td><Button variant="info" onClick={() => announcementPage(location.id)}>Announcement</Button>{' '}</td>
             </tr>
                 ))}
             </tbody>

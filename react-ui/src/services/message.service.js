@@ -26,6 +26,11 @@ class MessageDataService {
         return axios.get(`/message/load-photo/${photoUrl}`)
     }
 
+    sendAnnouncement(id, data){
+        return axios.post(`/message/announcement/${id}`, data)
+    }
+
+
 }
 
 export default new MessageDataService();

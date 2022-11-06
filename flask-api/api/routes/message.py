@@ -247,17 +247,15 @@ def message_user(id):
 
 @login_required
 @cross_origin()
-@message_bp.post('/api/message/announcement')
-def send_announcement():
+@message_bp.post('/api/message/announcement/<int:id>')
+def send_announcement(id):
 
-    if current_user.has_permission(Permissions.SEND_ANNOUNCEMENT):
-
-        location_id = current_user.location_id
-        
+    if current_user.has_permission(Permissions.SEND_ANNOUNCEMENT) and current_user.location_id == id:
 
         message = request.form['msg']
+        #roles = request.form['roles']
 
-        location = Location.query.get(location_id)
+        location = Location.query.get(id)
         organization_id = location.organization_id
         organization = Organization.query.get(organization_id)
 
@@ -267,10 +265,14 @@ def send_announcement():
         users = User.query.filter_by(location_id = id).all()
 
         for i in users:
-            twilioClient.send_automated_message(location.phone_number, i.phone_number, message, location.id)
-            logging.warning(
-            f"{current_user.name} sent an announcement to users of location ({location.id})"
-            )
+            try:
+                twilioClient.send_automated_message(location.phone_number, i.phone_number, message, location.id)
+                logging.warning(
+                f"{current_user.name} sent an announcement to users of location ({location.id})"
+                )
+            except TwilioRestException as e:
+                logging.warning(e)
+
         return WebHelpers.EasyResponse(f"Announcement sent.", 200)
         
     return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
