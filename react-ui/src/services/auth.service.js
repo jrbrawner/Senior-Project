@@ -3,11 +3,11 @@ import axios from 'axios';
 class AuthDataService{
 
     login(data) {
-        return axios.post(`/login`, data)
+        return axios.post(`/api/login`, data)
     }
 
     logout(){
-        return axios.get('/logout')
+        return axios.get('/api/logout')
     }
 
 }

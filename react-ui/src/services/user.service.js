@@ -3,35 +3,35 @@ import axios from 'axios';
 class UserDataService {
 
     getAll(){
-        return axios.get('/user');
+        return axios.get('/api/user');
     }
 
     get(id) {
-        return axios.get(`/user/${id}`);
+        return axios.get(`/api/user/${id}`);
     }
 
     update(id, data) {
-        return axios.put(`/user/${id}`, data);
+        return axios.put(`/api/user/${id}`, data);
     }
 
     delete(id) {
-        return axios.delete(`/user/${id}`);
+        return axios.delete(`/api/user/${id}`);
     }
 
     create(data) {
-        return axios.post(`/user`, data);
+        return axios.post(`/api/user`, data);
     }
 
     getPending() {
-        return axios.get(`/user/new`);
+        return axios.get(`/api/user/new`);
     }
 
     acceptPending(id) {
-        return axios.put(`/user/new/accept/${id}`);
+        return axios.put(`/api/user/new/accept/${id}`);
     }
 
     declinePending(id) {
-        return axios.delete(`/user/new/decline/${id}`);
+        return axios.delete(`/api/user/new/decline/${id}`);
     }
 
 

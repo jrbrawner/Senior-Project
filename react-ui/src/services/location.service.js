@@ -4,23 +4,23 @@ class LocationDataService {
 
     getAll(){
         
-        return axios.get("/location");
+        return axios.get("/api/location");
     }
 
     get(id) {
-        return axios.get(`/location/${id}`);
+        return axios.get(`/api/location/${id}`);
     }
 
     create(data) {
-        return axios.post("/location/", data)
+        return axios.post("/api/location/", data)
     }
 
     update(id, data) {
-        return axios.put(`/location/${id}`, data)
+        return axios.put(`/api/location/${id}`, data)
     }
 
     delete(id) {
-        return axios.delete(`/location/${id}`)
+        return axios.delete(`/api/location/${id}`)
     }
 }
 
