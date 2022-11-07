@@ -320,7 +320,7 @@ def seed_db():
         )
         db.session.add(location)
         db.session.commit()
-
+    """
     if Location.query.count() == 2:
         location1 = Location(
             name="Sweet Water Healthcare",
@@ -1762,7 +1762,7 @@ def seed_db():
 
     db.session.add(message2)
     db.session.commit()
-
+    """
     
 
 
