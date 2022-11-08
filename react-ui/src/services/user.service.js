@@ -34,6 +34,10 @@ class UserDataService {
         return axios.delete(`/api/user/new/decline/${id}`);
     }
 
+    updateRoles(id, data){
+        return axios.post(`/api/user/roles/${id}`, data);
+    }
+
 
 }
 

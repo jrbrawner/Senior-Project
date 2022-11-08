@@ -9,7 +9,7 @@ from datetime import datetime
 from api.models.Messages import Message
 from .Notifications import Notification
 import json
-from sqlalchemy import insert, delete
+from sqlalchemy import insert, delete, select
 from flask import session
 
 
@@ -138,8 +138,9 @@ class Role(db.Model, RoleMixin):
 
     def remove_permission(self, role_id, permission_id):
         stmt = (
-            delete(roles_permissions).
-            values(role_id=role_id, permission_id=permission_id)
+            roles_permissions.delete()
+            .where(roles_permissions.c.permission_id == permission_id)
+            .where(roles_permissions.c.role_id == role_id)
         )
         db.session.execute(stmt)
         db.session.commit()
