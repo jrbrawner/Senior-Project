@@ -21,6 +21,10 @@ class OrganizationDataService {
     delete(id) {
         return axios.delete(`/api/organization/${id}`)
     }
+
+    getLocations(id) {
+        return axios.get(`/api/organization/${id}/locations`)
+    }
 }
 
 export default new OrganizationDataService();

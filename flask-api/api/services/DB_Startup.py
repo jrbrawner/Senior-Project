@@ -320,7 +320,8 @@ def seed_db():
         )
         db.session.add(location)
         db.session.commit()
-    """
+
+    
     if Location.query.count() == 2:
         location1 = Location(
             name="Sweet Water Healthcare",
@@ -349,7 +350,7 @@ def seed_db():
     #    db.session.commit()
     #    user_datastore.add_role_to_user(user, "Patient")
     #    user_datastore.commit()
-    if User.query.count() != 20:
+    if User.query.count() == 1:
 
         password = hash_password("password")
         user = user_datastore.create_user(
@@ -362,11 +363,14 @@ def seed_db():
         )
         db.session.add(user)
         db.session.commit()
+
+        user.add_location(user.id, 2)
+
         user_datastore.add_role_to_user(user, "Physician")
         user_datastore.commit()
 
 
-    if User.query.count() != 20:
+    if User.query.count() == 2:
         password = hash_password("password")
         user = user_datastore.create_user(
             name="TestAdmin",
@@ -376,12 +380,14 @@ def seed_db():
             password=password,
             phone_number="+18127831029",
         )
+
         db.session.add(user)
         db.session.commit()
+        user.add_location(user.id, 2)
         user_datastore.add_role_to_user(user, "Admin")
         user_datastore.commit()
 
-    if User.query.count() != 20:
+    if User.query.count() == 3:
         password = hash_password("password")
         user = user_datastore.create_user(
             name="TestEmployee",
@@ -393,9 +399,11 @@ def seed_db():
         )
         db.session.add(user)
         db.session.commit()
+        user.add_location(user.id, 2)
         user_datastore.add_role_to_user(user, "Employee")
         user_datastore.commit()
-    if User.query.count() != 20:
+
+    if User.query.count() == 4:
         password = hash_password("password")
         user = user_datastore.create_user(
             name="Test1Admin",
@@ -407,12 +415,14 @@ def seed_db():
         )
         db.session.add(user)
         db.session.commit()
+        user.add_location(user.id, 3)
         user_datastore.add_role_to_user(user, "Admin")
         user_datastore.commit()
 
 
         logging.warning(f"Database seeded.")
 
+    """
     #Messages for testing
     
     timestamp = datetime.utcnow()

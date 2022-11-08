@@ -140,8 +140,8 @@ def get_organization_locations(id):
     organization = Organization.query.get(id)
 
     if organization:
-        locations = Organization.Locations
-        resp = jsonify([x.serialize() for x in locations])
+        locations = organization.locations
+        resp = jsonify([x.serialize_name() for x in locations])
         resp.status_code = 200
 
         return resp
