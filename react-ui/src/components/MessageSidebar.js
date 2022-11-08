@@ -23,8 +23,6 @@ export default function Sidebar(props) {
     }
   };
 
-  
-
   const columns = [
     {
       dataField: "name",
@@ -43,10 +41,13 @@ export default function Sidebar(props) {
       }
     }
   ]
+    //if (locations.length === 1){
 
-  
+      //var firstLocationId = locations[0].id;
+      //loadPeople(firstLocationId);
 
-  
+    //}
+
     if (!users){
       return (
       <Stack gap={3}>

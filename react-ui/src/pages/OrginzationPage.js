@@ -1,10 +1,10 @@
 import Body from '../components/Body'
-import Organizations from '../components/OrganizationComponents/Organizations'
+import Organization from '../components/OrganizationComponents/Organization'
 
 export default function OrganizationsPage(){
     return(
         <Body>
-            <Organizations />
+            <Organization />
         </Body>
     );
 }

@@ -1,6 +1,10 @@
 import React from 'react';
 import OrganizationDataService from '../../services/organization.service'
 import { useNavigate } from 'react-router-dom';
+import Spinner from 'react-bootstrap/Spinner';
+import Button from 'react-bootstrap/Button';
+import paginationFactory from "react-bootstrap-table2-paginator";
+import BootstrapTable from "react-bootstrap-table-next";
 
 export default function App() {
   const [organizations, setOrganizations] = React.useState(null);
@@ -22,20 +26,53 @@ export default function App() {
     });
   }, []);
 
+  function EditOrg(id){
+    navigate(`/organization/${id}`)
+  }
 
-  if (!organizations) return <p>No data.</p>;
+  const columns = [
+    {
+      dataField: "name",
+      text: "Organization Name",
+      sort: true
+    },
+    {
+      dataField: "twilio_account_id",
+      text: "Org Twilio Account ID",
+      sort: true
+    },
+    {
+      dataField: "twilio_auth_token",
+      text: "Org Twilio Auth Token",
+      sort: true
+    },
+    {
+      text: "Edit Organization",
+      isDummyField: true,
+      formatter: (cellContent, row) => {
+        return <Button variant="primary" onClick={() => EditOrg(row.id)}>Edit</Button>
+      }
+      
+    }
+  ]
+
+
+  if (!organizations) return <Spinner animation="border" role="status">
+                              <span className="visually-hidden">Loading...</span>
+                            </Spinner>
 
   return (
     <div>
-      {organizations.map((organization) => (
-        <ul key={organization.id}>
-          <h2>{organization.name}</h2>
-          
-          <li>Twilio Account ID {organization.twilio_account_id}</li>
-          <li>Twilio Auth Token {organization.twilio_auth_token}</li>
-        </ul>
-        
-      ))}
+      <BootstrapTable
+          bootstrap4
+          striped
+          bordered
+          hover
+          keyField="id"
+          data={organizations}
+          columns={columns}
+          pagination={paginationFactory({ sizePerPage: 15 })}
+          />
     </div>
   );
 }

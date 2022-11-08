@@ -35,6 +35,11 @@ class Organization(db.Model):
             #'Locations': jsonify([x.serialize() for x in self.Locations])
         }
 
+locations_users = db.Table(
+    "locations_users",
+    db.Column("user_id", db.Integer(), db.ForeignKey("User.id")),
+    db.Column("location_id", db.Integer(), db.ForeignKey("Location.id")),
+)
 
 class Location(db.Model):
     """Model for Locations."""
@@ -167,7 +172,11 @@ class User(UserMixin, db.Model):
     )
 
     profile_pic = db.Column(db.String(), index=False, unique=False, nullable=True)
+    #primary location
     location_id = db.Column(db.ForeignKey("Location.id"), nullable=False)
+    locations = db.relationship(
+        "Location", secondary=locations_users, backref=db.backref("User", lazy="dynamic")
+    )
     organization_id = db.Column(db.ForeignKey("Organization.id"), nullable=False)
     phone_number = db.Column(db.String(20), unique=True, nullable=True)
 
