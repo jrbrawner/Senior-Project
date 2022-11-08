@@ -6,14 +6,63 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import React from 'react';
 import Cookies from 'js-cookie';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 export default function NavigationBar(){
 
     const state = {
-      username: Cookies.get('name')
+      username: Cookies.get('name'),
+      roles: Cookies.get('roles')
     }
+  
+  if (state.roles != undefined){
+    if (state.roles.includes("Super Admin")){
+      return (
+        <Navbar bg="light" expand="sm">
+          <Container>
+            <Nav classname="me-auto">
     
-
+                <Nav.Link href="/organization">Organizations</Nav.Link>
+                <Nav.Link href="/location">Locations</Nav.Link>
+    
+                <NavDropdown title="People">
+                  <NavDropdown.Item href="/user">People</NavDropdown.Item> 
+                  <NavDropdown.Item href="/user/new">Pending Users</NavDropdown.Item>
+                </NavDropdown>
+    
+                <Nav.Link href="/messages">Messages</Nav.Link>
+                
+            </Nav>
+                
+              <Form className="d-flex">
+                <Form.Control
+                  type="search"
+                  placeholder="Search"
+                  className="me-2"
+                  aria-label="Search"
+                  />
+                <Button variant="outline-success">Search</Button>
+              </Form>
+              <Nav>
+                <Nav.Link href="/notifications">Notifications</Nav.Link>
+              </Nav>
+              
+              <Nav>
+                <Nav.Link href="/role">Role Management</Nav.Link>
+              </Nav>
+              <NavDropdown>
+                <NavDropdown.Item><i className="fa fa-envelope fa-fw"></i>Profile</NavDropdown.Item>
+                <NavDropdown.Item><i className="fa fa-gear fa-fw"></i>Settings</NavDropdown.Item>
+                <NavDropdown.Item divider />
+                <NavDropdown.Item href="/logout" eventKey='3'><i className="fa fa-sign-out fa-fw"></i>Logout</NavDropdown.Item>
+              </NavDropdown>
+          </Container>
+        </Navbar>
+    );
+    }
+  }
+  
   return (
     <Navbar bg="light" expand="sm">
       <Container>
@@ -40,15 +89,20 @@ export default function NavigationBar(){
               />
             <Button variant="outline-success">Search</Button>
           </Form>
-          <Nav className="">
+          <Nav>
             <Nav.Link href="/notifications">Notifications</Nav.Link>
           </Nav>
-          <Navbar.Text>
-            <a href="/logout"> {state.username}
-              </a>
-          </Navbar.Text>
+
+          <NavDropdown>
+              <NavDropdown.Item><i className="fa fa-envelope fa-fw"></i>Profile</NavDropdown.Item>
+              <NavDropdown.Item><i className="fa fa-gear fa-fw"></i>Settings</NavDropdown.Item>
+              <NavDropdown.Item divider />
+              <NavDropdown.Item href="/logout" eventKey='3'><i className="fa fa-sign-out fa-fw"></i>Logout</NavDropdown.Item>
+          </NavDropdown>
+
       </Container>
     </Navbar>
   );
+  
 }
 

@@ -3,31 +3,31 @@ import axios from 'axios';
 class MessageDataService {
 
     getAll(){
-        return axios.get("/message");
+        return axios.get("/api/message");
     }
 
     getLocations(){
-        return axios.get("/user/locations")
+        return axios.get("/api/user/locations")
     }
 
     getUsers(id){
-        return axios.get(`/location/${id}/users`)
+        return axios.get(`/api/location/${id}/users`)
     }
 
     getUserMessages(id){
-        return axios.get(`/user/${id}/messages`)
+        return axios.get(`/api/user/${id}/messages`)
     }
 
     sendMessage(id, data){
-        return axios.post(`/message/user/${id}`, data)
+        return axios.post(`/api/message/user/${id}`, data)
     }
 
     loadPicture(photoUrl){
-        return axios.get(`/message/load-photo/${photoUrl}`)
+        return axios.get(`/api/message/load-photo/${photoUrl}`)
     }
 
     sendAnnouncement(id, data){
-        return axios.post(`/message/announcement/${id}`, data)
+        return axios.post(`/api/message/announcement/${id}`, data)
     }
 
 

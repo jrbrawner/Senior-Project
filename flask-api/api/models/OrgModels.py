@@ -9,7 +9,7 @@ from datetime import datetime
 from api.models.Messages import Message
 from .Notifications import Notification
 import json
-from sqlalchemy import insert
+from sqlalchemy import insert, delete
 from flask import session
 
 
@@ -119,10 +119,26 @@ class Role(db.Model, RoleMixin):
 
     def serialize_name(self):
         return {"name": self.name}
+
+    def serialize_p(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'permissions': [x.serialize() for x in self.permissions]
+        }
     
     def add_permission(self, role_id, permission_id):
         stmt = (
             insert(roles_permissions).
+            values(role_id=role_id, permission_id=permission_id)
+        )
+        db.session.execute(stmt)
+        db.session.commit()
+
+    def remove_permission(self, role_id, permission_id):
+        stmt = (
+            delete(roles_permissions).
             values(role_id=role_id, permission_id=permission_id)
         )
         db.session.execute(stmt)

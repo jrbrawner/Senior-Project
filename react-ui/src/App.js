@@ -1,6 +1,6 @@
 import Container from 'react-bootstrap/Container';
 import Header from './components/Header';
-import {BrowserRouter, Routes, Route} from 'react-router-dom';
+import {BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import OrganizationsPage from './pages/OrganizationsPage';
 import LocationsPage from './pages/LocationsPage'
 import LocationPage from './pages/LocationPage'
@@ -13,6 +13,8 @@ import MessagesPage from './pages/MessagesPage';
 import PendingUsersPage from './pages/PendingUsersPage';
 import NotificationPage from './pages/NotificationPage';
 import LocationAnnouncementPage from './pages/LocationAnnouncementPage';
+import RolesPage from './pages/RolesPage';
+import RolePage from './pages/RolePage';
 
 
 export default function App(){
@@ -23,6 +25,7 @@ export default function App(){
         <BrowserRouter>
         <Header/>
           <Routes>
+            <Route path="/" element={<Navigate to="/login" />} />
             <Route path="/login" element={<LoginPage/>}/>
             <Route path="/logout" element={<LogoutPage/>}/>
 
@@ -40,6 +43,9 @@ export default function App(){
             <Route path="/messages" element={<MessagesPage/>} />
 
             <Route path="/notifications" element={<NotificationPage/>} />
+
+            <Route path="/role" element={<RolesPage/>} />
+            <Route path="/role/:roleId" element={<RolePage/>} />
 
           </Routes>
         </BrowserRouter>
