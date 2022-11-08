@@ -19,9 +19,17 @@ export default function Login(){
         AuthDataService.login(formData).then((response) =>
         {
             if (response.status === 200){
-                Cookies.set('name', response.data['name'])
+                Cookies.set('name', response.data['name']);
+                var roles = "";
+                response.data['roles'].map((role) =>
+                {
+                    roles += role.name + ",";
+                })
+                var decodedRoles = decodeURI(roles);
+                Cookies.set('roles', decodedRoles);
                 navigate(`/user`);
             }
+
             if (response.status === 400){
                 alert("Error");
             }

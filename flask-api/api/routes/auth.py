@@ -44,6 +44,8 @@ def login():
             logging.debug(f" User with id {user.id} logged in.")
 
             data["name"] = user.name
+            data["roles"] = [x.serialize() for x in user.roles]
+
             resp = jsonify(data)
             resp.status_code = 200
 
