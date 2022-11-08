@@ -15,7 +15,8 @@ import NotificationPage from './pages/NotificationPage';
 import LocationAnnouncementPage from './pages/LocationAnnouncementPage';
 import RolesPage from './pages/RolesPage';
 import RolePage from './pages/RolePage';
-
+import NewRolePage from './pages/NewRolePage';
+import UserRolesPage from './pages/UserRolesPage';
 
 export default function App(){
 
@@ -45,7 +46,9 @@ export default function App(){
             <Route path="/notifications" element={<NotificationPage/>} />
 
             <Route path="/role" element={<RolesPage/>} />
+            <Route path="/role/create" element={<NewRolePage/>} />
             <Route path="/role/:roleId" element={<RolePage/>} />
+            <Route path="/role/user/:userId" element={<UserRolesPage/>} />
 
           </Routes>
         </BrowserRouter>

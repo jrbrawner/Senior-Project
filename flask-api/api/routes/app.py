@@ -5,7 +5,7 @@ import time
 from flask_security.decorators import login_required
 from api.services.DB_Startup import seed_db
 from api.models.Messages import Message
-from api.models.OrgModels import User
+from api.models.OrgModels import User, Role, Permission
 from flask import jsonify, send_from_directory
 
 app_bp = Blueprint("app_bp", __name__)
@@ -31,11 +31,7 @@ def get_time():
 @app_bp.get("/testing")
 def test_message():
 
-    user = User.query.get(55)
-    messages = user.messages_sent
-    print(messages[-1].photos)
-    
-    resp = jsonify([x.serialize() for x in messages])
-    message = messages[-1]
+    role = Role.query.get(4)
+    role.remove_permission(role.id, 11)
 
-    return resp
+    return 'GOT IT'

@@ -1,9 +1,10 @@
-from api.models.OrgModels import Role, Permission
+from api.models.OrgModels import Role, Permission, User
 from api.models.db import db
 from flask import Blueprint, request, jsonify
 import logging
 from flask_security import current_user
 from api.services.WebHelpers import WebHelpers
+from api import user_datastore
 
 role_bp = Blueprint("role_bp", __name__)
 
@@ -39,9 +40,20 @@ def create_role():
     
 
     role = Role(name=role_name, description=role_description)
-
     db.session.add(role)
     db.session.commit()
+
+    all_permissions = Permission.query.all()
+    formValues = {}
+
+    for i in all_permissions:
+        formValues[i.name] = request.form.get(i.name)
+
+    for name,checked in formValues.items():
+        if checked == 'on':
+            permission = Permission.query.filter_by(name = name).first()
+            role.add_permission(role.id, permission.id)
+            
     logging.warning(f"User id - {current_user.id} - created new role id - {role.id} -")
     return role.serialize()
 
@@ -55,43 +67,26 @@ def update_role(id):
         role_name = request.form["name"]
         role_description = request.form["description"]
 
-        # :(
-        permissions_selected = {
-            "VIEW_ALL_ORGANIZATIONS": request.form.get("VIEW_ALL_ORGANIZATIONS"),
-            "VIEW_CURRENT_ORGANIZATION": request.form.get("VIEW_CURRENT_ORGANIZATION"),
-            "VIEW_SPECIFIC_ORGANIZATION": request.form.get("VIEW_SPECIFIC_ORGANIZATION"),
-            "CREATE_NEW_ORGANIZATION": request.form.get("CREATE_NEW_ORGANIZATION"),
-            "UPDATE_CURRENT_ORGANIZATION": request.form.get("UPDATE_CURRENT_ORGANIZATION"),
-            "UPDATE_ALL_ORGANIZATIONS": request.form.get("UPDATE_ALL_ORGANIZATIONS"),
-            "DELETE_ORGANIZATION": request.form.get("DELETE_ORGANIZATION"),
-            "VIEW_ALL_PEOPLE": request.form.get("VIEW_ALL_PEOPLE"),
-            "VIEW_ALL_CURRENT_ORG_PEOPLE": request.form.get("VIEW_ALL_CURRENT_ORG_PEOPLE"),
-            "VIEW_ALL_CURRENT_ORG_EMPLOYEE": request.form.get("VIEW_ALL_CURRENT_ORG_EMPLOYEE"),
-            "VIEW_ALL_CURRENT_ORG_PATIENTS": request.form.get("VIEW_ALL_CURRENT_ORG_PATIENTS"),
-            "VIEW_ALL_MESSAGES": request.form.get("VIEW_ALL_MESSAGES"),
-            "VIEW_ALL_CURRENT_ORG_MESSAGES": request.form.get("VIEW_ALL_CURRENT_ORG_MESSAGES"),
-            "VIEW_ALL_CURRENT_LOCATION_MESSAGES": request.form.get("VIEW_ALL_CURRENT_LOCATION_MESSAGES"),
-            "SEND_ANNOUNCEMENT": request.form.get("SEND_ANNOUNCEMENT"),
-            "VIEW_ALL_LOCATIONS": request.form.get("VIEW_ALL_LOCATIONS"),
-            "VIEW_ALL_CURRENT_ORG_LOCATIONS": request.form.get("VIEW_ALL_CURRENT_ORG_LOCATIONS"),
-            "VIEW_CURRENT_LOCATION": request.form.get("VIEW_CURRENT_LOCATION"),
-            "CREATE_NEW_LOCATION": request.form.get("CREATE_NEW_LOCATION"),
-            "UPDATE_CURRENT_LOCATION": request.form.get("UPDATE_CURRENT_LOCATION"),
-            "UPDATE_ALL_LOCATIONS": request.form.get("UPDATE_ALL_LOCATIONS"),
-            "DELETE_LOCATION": request.form.get("DELETE_LOCATION")
-        }
-        ###################NEED TO FINISH
-        for name,checked in permissions_selected.items():
-            permission_id = Permission.query.filter_by(name = name)
+        formValues = {}
+        all_permissions = Permission.query.all()
+
+        for i in all_permissions:
+            formValues[i.name] = request.form.get(i.name)
+
+        permissions = [x.name for x in role.permissions]
+        
+        for name,checked in formValues.items():
             if checked == 'on':
-                for x in role.permissions:
-                    if name not in [j.serialize_name() for j in x]:
-                        role.add_permission(id, permission_id)
-            else:
+                if name in permissions:
+                    continue
+                elif name not in permissions:
+                    permission = Permission.query.filter_by(name = name).first()
+                    role.add_permission(role.id, permission.id)
+            elif checked != 'on':
                 # change to list comprehension later
-                for x in role.permissions:
-                    if name in [j.serialize_name() for j in x]:
-                        role.remove_permission(id, permission_id)
+                if name in permissions:
+                    permission = Permission.query.filter_by(name = name).first()
+                    role.remove_permission(role.id, permission.id)
 
         role.name = role_name
         role.description = role_description
@@ -124,3 +119,36 @@ def get_permissions():
     resp.status_code = 200
 
     return resp
+
+@role_bp.post("/api/user/roles/<int:id>")
+def modify_roles(id):
+
+    user = User.query.get(id)
+    roles = Role.query.all()
+    formValues = {}
+    user_roles = []
+
+    for role in user.roles:
+        user_roles.append(role.name)
+
+    if user:
+        for i in roles:
+            formValues[i.name] = request.form.get(i.name)
+
+        for name, checked in formValues.items():
+            if checked == 'on':
+                if name in user_roles:
+                    continue
+                elif name not in user_roles:
+                    user_datastore.add_role_to_user(user, name)
+                    db.session.commit()
+            elif checked != 'on':
+                if name in user_roles:
+                    user_datastore.remove_role_from_user(user, name)
+                    db.session.commit()
+
+        return WebHelpers.EasyResponse(f"User Roles updated.", 200)
+    return WebHelpers.EasyResponse(f"User not found.", 404)
+
+
+

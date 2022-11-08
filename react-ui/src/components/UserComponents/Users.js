@@ -54,7 +54,7 @@ export default function App() {
       text: "User Role",
       sort:true,
       formatter: (cellContent, row) => {
-        if (row.length > 1){ return <Dropdown>
+        if (row.roles.length > 1){ return <Dropdown>
                     <Dropdown.Toggle variant="" id="dropdown-basic">
                       Roles
                     </Dropdown.Toggle>
