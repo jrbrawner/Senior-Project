@@ -135,6 +135,13 @@ export default function App(){
 
       }
 
+      function openPicture(photoId) {
+        MessageDataService.loadPicture(photoId).then((response) => {
+          console.log(response.data)
+        }
+        );
+      }
+
       //const loadPhoto = e => {
       //  e.preventDefault;
 //
@@ -193,7 +200,7 @@ export default function App(){
                       <ListGroup variant="flush">
                         <ListGroup.Item>
                         {message.photos.map((photo) => {
-                        return (<a target="_blank" href={`http://127.0.0.1:5000/api/load-photo/${photo.photo}`}>Photo </a>)
+                        return (<a target="_blank" href={`/api/load-photo/${photo.photo}`}>Photo </a>)
                         })
                       }
                           <Card.Text>{message.body}</Card.Text>

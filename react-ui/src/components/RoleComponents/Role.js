@@ -76,6 +76,7 @@ if (!permissions) return <Spinner animation="border" role="status">
         <Form.Label>Role Name</Form.Label>
         <Form.Control
             required
+            autoComplete="off"
             type="text"
             name="name"
             defaultValue={role.name}
@@ -86,6 +87,7 @@ if (!permissions) return <Spinner animation="border" role="status">
         <Form.Label>Role Description</Form.Label>
         <Form.Control
             required
+            autoComplete="off"
             type="text"
             name="description"
             defaultValue={role.description}

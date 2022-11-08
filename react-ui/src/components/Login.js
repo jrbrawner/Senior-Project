@@ -27,7 +27,8 @@ export default function Login(){
                 })
                 var decodedRoles = decodeURI(roles);
                 Cookies.set('roles', decodedRoles);
-                navigate(`/user`);
+                //navigate(`/user`);
+                window.location.href = '/location';
             }
 
             if (response.status === 400){
