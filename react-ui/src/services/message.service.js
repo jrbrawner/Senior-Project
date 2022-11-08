@@ -18,8 +18,8 @@ class MessageDataService {
         return axios.get(`/api/user/${id}/messages`)
     }
 
-    sendMessage(id, data){
-        return axios.post(`/api/message/user/${id}`, data)
+    sendMessage(id, locationId, data){
+        return axios.post(`/api/message/user/${id}/location/${locationId}`, data)
     }
 
     loadPicture(photoUrl){

@@ -41,7 +41,7 @@ export default function App() {
     OrganizationDataService.delete(organizationId).then((response) =>
     {
       if (response.status === 200){
-          navigate('/role');
+          navigate('/organization');
       }
       else{
         alert("Error");

@@ -1,6 +1,6 @@
 from flask import Blueprint, request, send_from_directory
 from flask import current_app as app, jsonify
-from ..models.OrgModels import Organization
+from ..models.OrgModels import Organization, Location, User
 from api.models.db import db
 from ..services.WebHelpers import WebHelpers
 import logging
@@ -112,7 +112,19 @@ def update_organization(id):
 
 @organization_bp.delete("/api/organization/<int:id>")
 def delete_organization(id):
-    organization = Organization.query.filter_by(id=id).first()
+
+    locations = Location.query.filter_by(organization_id=id).all()
+
+    for i in locations:
+        db.session.delete(i)
+        db.session.commit()
+    
+    users = User.query.filter_by(organization_id = id).all()
+    for i in users:
+        db.session.delete(i)
+        db.session.commit()
+
+    organization = Organization.query.get(id)
 
     if organization:
         db.session.delete(organization)

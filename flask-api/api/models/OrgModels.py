@@ -262,13 +262,17 @@ class User(UserMixin, db.Model):
 
     def serialize_user_display(self):
 
-        location = Location.query.get(self.location_id)
-        
+        try:
+            location = Location.query.get(self.location_id)
+            name = location.name
+        except:
+            name = ""
+
         return {
             "id": self.id,
             "name": self.name,
             "roles": [x.serialize_name() for x in self.roles],
-            "location_id": location.name,
+            "location_id": name,
             "email": self.email,
             "phone_number": self.phone_number,
         }
