@@ -2,6 +2,7 @@ import Container from 'react-bootstrap/Container';
 import Header from './components/Header';
 import {BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import OrganizationsPage from './pages/OrganizationsPage';
+import OrganizationPage from './pages/OrginzationPage';
 import LocationsPage from './pages/LocationsPage'
 import LocationPage from './pages/LocationPage'
 import UsersPage from './pages/UserPage';
@@ -31,6 +32,7 @@ export default function App(){
             <Route path="/logout" element={<LogoutPage/>}/>
 
             <Route path="/organization" element={<OrganizationsPage/>}/>
+            <Route path="/organization/:organizationId" element={<OrganizationPage/>}/>
             
             <Route path="/location" element={<LocationsPage/>}/>
             <Route path="/location/:locationId" element={<LocationPage />} />

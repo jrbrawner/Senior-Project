@@ -18,13 +18,22 @@ export default function App(){
     const [locations, setLocations] = React.useState(0);
     const [users, setUsers ] = React.useState(0);
     const [currentUser, setCurrentUser] = React.useState(0);
+    const [currentLocation, setCurrentLocation] = React.useState(0);
     const bottomRef = useRef(null);
     
     const navigate = useNavigate();
 
     React.useEffect(() => {
       MessageDataService.getLocations().then((response) => {
+
           setLocations(response.data);
+          //if (locations.length === 1){
+
+            //var firstLocationId = locations[0].id;
+            //loadPeople(firstLocationId);
+
+          //}
+
           }).catch(function (error) {
             if (error.response)
             {
@@ -53,8 +62,6 @@ export default function App(){
         MessageDataService.getUserMessages(userId).then((response) => {
         setMessages(response.data);
         setCurrentUser(userId);
-
-        console.log(messages);
           
         }).catch(function (error) {
         if (error.response)
@@ -77,10 +84,8 @@ export default function App(){
 
       MessageDataService.getUsers(id).then((response) => {
       setUsers(response.data);
+      setCurrentLocation(id);
       
-      var firstLocationId = locations[0].name;
-        console.log(firstLocationId);
-        
       }).catch(function (error) {
       if (error.response)
       {
@@ -102,8 +107,7 @@ export default function App(){
         
       e.preventDefault();
       const formData = new FormData(e.target);
-      console.log(currentUser);
-      console.log("Message sent")
+      console.log(currentLocation);
       
       MessageDataService.sendMessage(currentUser, formData).then((response) => {
 

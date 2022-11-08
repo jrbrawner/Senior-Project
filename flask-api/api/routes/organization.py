@@ -88,25 +88,24 @@ def create_organization():
     )
 
 
-@organization_bp.put("/api/organization")
+@organization_bp.put("/api/organization/<int:id>")
 @login_required
-def update_organization():
+def update_organization(id):
     """
     PUT: Updates specified organization.
     """
     name = request.form["name"]
-    org_id = request.form["id"]
     twilio_account_id = request.form['twilio_account_id']
     twilio_auth_token = request.form['twilio_auth_token']
 
-    organization = Organization.query.filter_by(id=org_id).first()
+    organization = Organization.query.get(id)
 
     if organization:
         organization.name = name
         organization.twilio_account_id = twilio_account_id
         organization.twilio_auth_token = twilio_auth_token
         db.session.commit()
-        logging.info(f"User id {current_user.id} updated organization id - {org_id} -")
+        logging.info(f"User id {current_user.id} updated organization id - {id} -")
         return WebHelpers.EasyResponse(f"{name} updated.", 200)
     return WebHelpers.EasyResponse(f"Organization with that id does not exist.", 404)
 
