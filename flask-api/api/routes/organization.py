@@ -96,11 +96,15 @@ def update_organization():
     """
     name = request.form["name"]
     org_id = request.form["id"]
+    twilio_account_id = request.form['twilio_account_id']
+    twilio_auth_token = request.form['twilio_auth_token']
 
     organization = Organization.query.filter_by(id=org_id).first()
 
     if organization:
         organization.name = name
+        organization.twilio_account_id = twilio_account_id
+        organization.twilio_auth_token = twilio_auth_token
         db.session.commit()
         logging.info(f"User id {current_user.id} updated organization id - {org_id} -")
         return WebHelpers.EasyResponse(f"{name} updated.", 200)
