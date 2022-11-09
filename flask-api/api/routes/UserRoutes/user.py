@@ -158,6 +158,7 @@ def create_user():
 
         user_datastore.add_role_to_user(user, role)
         db.session.commit()
+        user.add_location(user.id, location_id)
         logging.debug(f"New user {email} created.).")
         return WebHelpers.EasyResponse(f"New user {user.name} created.", 201)
     return WebHelpers.EasyResponse(f"User with that email already exists.", 400)

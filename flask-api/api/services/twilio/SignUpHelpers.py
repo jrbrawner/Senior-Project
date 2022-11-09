@@ -51,6 +51,7 @@ class TwilioSignUpHelpers:
             organization_id=organization.id,
         )
         user_datastore.commit()
+        new_patient.add_location(new_patient.id, location.id)
 
         MessageTracking.create_new_message_before_signup(
             user_id=new_patient.id, body=msg, location_id=location.id
