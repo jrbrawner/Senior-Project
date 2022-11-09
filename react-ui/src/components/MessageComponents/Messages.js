@@ -109,7 +109,7 @@ export default function App(){
       const formData = new FormData(e.target);
       console.log(currentLocation);
       
-      MessageDataService.sendMessage(currentUser, formData).then((response) => {
+      MessageDataService.sendMessage(currentUser, currentLocation, formData).then((response) => {
 
         document.getElementById("msgBox").value = "";
         MessageDataService.getUserMessages(currentUser);

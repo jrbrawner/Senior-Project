@@ -218,14 +218,14 @@ def get_user_messages(id):
 
 @login_required
 @cross_origin()
-@message_bp.post('/api/message/user/<int:id>')
-def message_user(id):
+@message_bp.post('/api/message/user/<int:id>/location/<int:locationId>')
+def message_user(id, locationId):
 
     user = User.query.get(id)
     message = request.form["msg"]
-    location_id = current_user.location_id
+    #location_id = current_user.location_id
     #location_id = 1
-    location = Location.query.get(location_id)
+    location = Location.query.get(locationId)
     organization_id = location.organization_id
     organization = Organization.query.get(organization_id)
 

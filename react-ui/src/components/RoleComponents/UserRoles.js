@@ -6,10 +6,12 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useNavigate } from 'react-router-dom';
 import Spinner from 'react-bootstrap/Spinner';
+import OrganizationDataService from '../../services/organization.service';
 
 export default function App() {
   const [user, setUser] = React.useState(null);
   const [roles, setRoles] = React.useState(null);
+  const [locations, setLocations] = React.useState(null);
 
   const navigate = useNavigate(); 
   const params = useParams();
@@ -18,10 +20,19 @@ export default function App() {
   React.useEffect(() => {
     UserDataService.get(params.userId).then((response) => {
       setUser(response.data);
+      const userLocationId = response.data['location_id'];
+      OrganizationDataService.getLocations(response.data['organization_id']).then((response) =>{
+        setLocations(response.data);
+        
+      });
     });
     RoleDataService.getAll().then((response) => {
         setRoles(response.data);
-    })
+    });
+    //OrganizationDataService.getLocations(user.organization_id).then((response) =>{
+     // setLocations(response.data);
+    //});
+
   }, []);
 
   const handleEditSubmit = e => {
@@ -42,14 +53,16 @@ export default function App() {
 
   
 
-  
-
   if (!user) return <Spinner animation="border" role="status">
                         <span className="visually-hidden">Loading...</span>
                     </Spinner>
   if (!roles) return <Spinner animation="border" role="status">
                         <span className="visually-hidden">Loading...</span>
                     </Spinner>
+  if (!locations) return <Spinner animation="border" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                      </Spinner>
+  
 
   return (
     <Form onSubmit={handleEditSubmit}>
@@ -74,16 +87,36 @@ export default function App() {
           />
       </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formUserLocation">
-        <Form.Label>Location</Form.Label>
-        <Form.Control
-            disabled
-            type="text"
-            name="locationId"
-            defaultValue={user.location_id}
-          />
-      </Form.Group>
-
+      <h4>Users Organization Locations</h4>
+      {locations.map((location) => {
+        if (user.locations.some((x) => x.name === location.name)){
+            return (
+                <div>
+                <Form.Check 
+                    type={"checkbox"}
+                    defaultChecked={true}
+                    id={`${location.name}`}
+                    name={location.name}
+                    label={`${location.name}`}
+                    />
+                </div>
+            )
+        }
+        else {
+            return (
+                <div>
+                <Form.Check 
+                    type={"checkbox"}
+                    defaultChecked={false}
+                    id={`${location.name}`}
+                    name={location.name}
+                    label={`${location.name}`}
+                    />
+                </div>
+            )
+        }
+      })}
+      <h4>User Roles</h4>
       {roles.map((role) => {
         if (user.roles.some((x) => x.name === role.name)){
             return (
@@ -120,5 +153,5 @@ export default function App() {
     </Form>
   )
   
-
+    
 }

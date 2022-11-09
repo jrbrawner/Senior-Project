@@ -1,4 +1,4 @@
-from api.models.OrgModels import Role, Permission, User
+from api.models.OrgModels import Role, Permission, User, Organization, Location
 from api.models.db import db
 from flask import Blueprint, request, jsonify
 import logging
@@ -125,8 +125,16 @@ def modify_roles(id):
 
     user = User.query.get(id)
     roles = Role.query.all()
+    organization_id = user.organization_id
     formValues = {}
     user_roles = []
+    locationValues = {}
+    user_locations = []
+
+    locations = Location.query.filter_by(organization_id = organization_id).all()
+
+    for location in user.locations:
+        user_locations.append(location.name)
 
     for role in user.roles:
         user_roles.append(role.name)
@@ -134,6 +142,8 @@ def modify_roles(id):
     if user:
         for i in roles:
             formValues[i.name] = request.form.get(i.name)
+        for i in locations:
+            locationValues[i.name] = request.form.get(i.name)
 
         for name, checked in formValues.items():
             if checked == 'on':
@@ -146,6 +156,21 @@ def modify_roles(id):
                 if name in user_roles:
                     user_datastore.remove_role_from_user(user, name)
                     db.session.commit()
+
+        for name, checked in locationValues.items():
+            if checked == 'on':
+                if name in user_locations:
+                    continue
+                elif name not in user_locations:
+                    location = Location.query.filter_by(name=name).first()
+                    user.add_location(user.id, location.id)
+                    db.session.commit()
+            elif checked != 'on':
+                if name in user_locations:
+                    location = Location.query.filter_by(name=name).first()
+                    user.remove_location(user.id, location.id)
+                    db.session.commit()
+
 
         return WebHelpers.EasyResponse(f"User Roles updated.", 200)
     return WebHelpers.EasyResponse(f"User not found.", 404)

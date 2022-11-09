@@ -72,6 +72,12 @@ class Location(db.Model):
             #'physicians': jsonify([x.serialize() for x in self.physicians])
         }
 
+    def serialize_name(self):
+        return {
+            "name": self.name,
+            "id":self.id
+        }
+
     def get_messages_with_no_response(self):
         #this could be slow but can be improved later
         
@@ -235,6 +241,24 @@ class User(UserMixin, db.Model):
         db.session.add(n)
         return n
 
+    def add_location(self, user_id, location_id):
+    
+        stmt = (
+            insert(locations_users).
+            values(user_id=user_id, location_id=location_id)
+        )
+        db.session.execute(stmt)
+        db.session.commit()
+
+    def remove_location(self, user_id, location_id):
+        stmt = (
+            locations_users.delete()
+            .where(locations_users.c.user_id == user_id)
+            .where(locations_users.c.location_id == location_id)
+        )
+        db.session.execute(stmt)
+        db.session.commit()
+
     def has_permission(self, permission):
 
         ###DATABASE WAY
@@ -254,23 +278,29 @@ class User(UserMixin, db.Model):
         return {
             "id": self.id,
             "name": self.name,
+            "organization_id": self.organization_id,
             "roles": [x.serialize_name() for x in self.roles],
             "location_id": self.location_id,
             "email": self.email,
             "phone_number": self.phone_number,
+            "locations": [x.serialize_name() for x in self.locations]
         }
 
     def serialize_user_display(self):
 
-        location = Location.query.get(self.location_id)
-        
+        #try:
+            #location = Location.query.get(self.location_id)
+            #name = location.name
+        #except:
+            #name = ""
+
         return {
             "id": self.id,
             "name": self.name,
             "roles": [x.serialize_name() for x in self.roles],
-            "location_id": location.name,
             "email": self.email,
             "phone_number": self.phone_number,
+            "locations": [x.serialize_name() for x in self.locations]
         }
 
     def serialize_msg_sidebar(self):

@@ -16,6 +16,7 @@ export default function App() {
   React.useEffect(() => {
     UserDataService.getAll().then((response) => {
       setUsers(response.data);
+      console.log(response.data);
     }).catch(error => {
       if (error.response.status === 401)
       {
@@ -45,9 +46,27 @@ export default function App() {
       sort: true
     },
     {
-      dataField: "location_id",
-      text: "User Location",
-      sort: true
+      dataField: "locations.name",
+      text: "User Locations",
+      sort:true,
+      formatter: (cellContent, row) => {
+        if (row.locations.length > 1){ return <Dropdown>
+                    <Dropdown.Toggle variant="" id="dropdown-basic">
+                      Locations
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      {row.locations.map((location) => (
+                        <Dropdown.Item>{location.name}</Dropdown.Item>
+                      ))}
+                    </Dropdown.Menu>
+                  </Dropdown>
+                  }
+        else
+        {
+          return <td>{row.locations.map((location) => (
+                      location.name))}</td>
+          }
+      }
     },
     {
       dataField: "roles.name",
