@@ -7,6 +7,7 @@ import Form from 'react-bootstrap/Form';
 import { useNavigate } from 'react-router-dom';
 import Spinner from 'react-bootstrap/Spinner';
 import OrganizationDataService from '../../services/organization.service';
+import EditFormDialogModal from '../DialogModals/EditFormDialogModal';
 
 export default function App() {
   const [user, setUser] = React.useState(null);
@@ -29,10 +30,7 @@ export default function App() {
     RoleDataService.getAll().then((response) => {
         setRoles(response.data);
     });
-    //OrganizationDataService.getLocations(user.organization_id).then((response) =>{
-     // setLocations(response.data);
-    //});
-
+    
   }, []);
 
   const handleEditSubmit = e => {
@@ -65,7 +63,7 @@ export default function App() {
   
 
   return (
-    <Form onSubmit={handleEditSubmit}>
+    <Form onSubmit={handleEditSubmit} id="userForm">
 
       <Form.Group className="mb-3" controlId="formUserName">
         <Form.Label>Name</Form.Label>
@@ -147,9 +145,8 @@ export default function App() {
       })}
 
       
-      <Button variant="primary" type="submit">
-        Edit User
-      </Button>
+      <EditFormDialogModal buttonName="Edit User" modalTitle="Edit User" modalBody="Are you sure you want to change this users roles and locations?"
+      form="userForm"/>
     </Form>
   )
   

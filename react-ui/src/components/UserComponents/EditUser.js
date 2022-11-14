@@ -4,6 +4,9 @@ import { useParams } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useNavigate } from 'react-router-dom';
+import EditFormDialogModal from '../DialogModals/EditFormDialogModal';
+import DeleteDialogModal from '../DialogModals/DeleteDialogModal';
+import Spinner from 'react-bootstrap/Spinner';
 
 export default function App() {
   const [user, setUser] = React.useState(null);
@@ -36,23 +39,30 @@ export default function App() {
     })
   }
 
-  function deleteUser(userId) {
-    UserDataService.delete(userId).then((response) =>
-    {
-      if (response.status === 200){
-          navigate('/user');
+  const deleteUser = () => {
+
+    UserDataService.delete(user.id).then((response) => {
+      navigate(`/user`);
+
+    }).catch(error => {
+      if (error.response.status === 401)
+      {
+        navigate(`/login`);
+        console.log('Not authenticated.');
       }
-      else{
-        alert("Error");
+      if (error.response.status === 403)
+      {
+        alert('You are not authenticated for this functionality.');
       }
-      
-    })
+    });
   }
 
-  if (!user) return <p>Loading...</p>;
+  if (!user)  return (<Spinner animation="border" role="status">
+  <span className="visually-hidden">Loading...</span>
+</Spinner>)
 
   return (
-    <Form onSubmit={handleEditSubmit}>
+    <Form onSubmit={handleEditSubmit} id="userForm">
 
       <Form.Group className="mb-3" controlId="formUserName">
         <Form.Label>Name</Form.Label>
@@ -105,10 +115,10 @@ export default function App() {
           />
       </Form.Group>
 
-      <Button variant="primary" type="submit">
-        Edit User
-      </Button>
-      <Button variant="danger" onClick={() => deleteUser(user.id)}>Delete User</Button>
+      <EditFormDialogModal buttonName="Edit User" modalTitle="Edit User" modalBody="Are you sure you want to change this user?"
+      form="userForm"/>
+      <DeleteDialogModal buttonName="Delete User" modalTitle="Delete User" 
+      modalBody="Are you sure you want to delete this user? This action cannot be reversed." onSuccess={deleteUser}/>
     </Form>
   )
   

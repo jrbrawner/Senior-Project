@@ -51,7 +51,6 @@ export default function App(){
                   navigate(`/login`);
                   console.log('Not authenticated.');
                 }
-                
             }
             });
       

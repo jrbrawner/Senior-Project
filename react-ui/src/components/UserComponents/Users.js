@@ -16,7 +16,6 @@ export default function App() {
   React.useEffect(() => {
     UserDataService.getAll().then((response) => {
       setUsers(response.data);
-      console.log(response.data);
     }).catch(error => {
       if (error.response.status === 401)
       {
