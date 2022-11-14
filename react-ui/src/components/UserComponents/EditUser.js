@@ -84,16 +84,6 @@ export default function App() {
           />
       </Form.Group>
 
-      <Form.Group className="mb-3" controlId="formUserLocation">
-        <Form.Label>Location</Form.Label>
-        <Form.Control
-            required
-            type="text"
-            name="locationId"
-            defaultValue={user.location_id}
-          />
-      </Form.Group>
-
       <Form.Group className="mb-3" controlId="formUserRoles">
         <Form.Label>Roles</Form.Label>
         <Form.Control
@@ -115,7 +105,24 @@ export default function App() {
           />
       </Form.Group>
 
-      <EditFormDialogModal buttonName="Edit User" modalTitle="Edit User" modalBody="Are you sure you want to change this user?"
+      <div className="mb-3">
+      {user.locations.map((location) => {
+
+            return (
+                <div>
+                <Form.Check 
+                    type={"checkbox"}
+                    defaultChecked={false}
+                    id={`${location.name}`}
+                    name={location.name}
+                    label={`${location.name}`}
+                    />
+                </div>
+            )
+      })}
+      </div>
+
+      <EditFormDialogModal className="-5" buttonName="Edit User" modalTitle="Edit User" modalBody="Are you sure you want to change this user?"
       form="userForm"/>
       <DeleteDialogModal buttonName="Delete User" modalTitle="Delete User" 
       modalBody="Are you sure you want to delete this user? This action cannot be reversed." onSuccess={deleteUser}/>

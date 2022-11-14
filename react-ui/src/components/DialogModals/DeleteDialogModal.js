@@ -7,6 +7,10 @@ export default function DialogModal(props) {
   const [show, setShow] = useState(false);
 
   const handleShow = () => setShow(true);
+  const handleCloseNoSuccess = () => {
+    setShow(false);
+  }
+
   const handleClose = () => {
     setShow(false);
     onSuccess();
@@ -29,7 +33,7 @@ export default function DialogModal(props) {
         </Modal.Header>
         <Modal.Body>{modalBody}</Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="secondary" onClick={handleCloseNoSuccess}>
             Close
           </Button>
           <Button variant="danger" onClick={handleClose}>

@@ -178,7 +178,7 @@ class User(UserMixin, db.Model):
     )
 
     profile_pic = db.Column(db.String(), index=False, unique=False, nullable=True)
-    
+
     #primary location
     location_id = db.Column(db.ForeignKey("Location.id"), nullable=False)
 
@@ -290,13 +290,7 @@ class User(UserMixin, db.Model):
         }
 
     def serialize_user_display(self):
-
-        #try:
-            #location = Location.query.get(self.location_id)
-            #name = location.name
-        #except:
-            #name = ""
-
+        # used for displaying user on users page
         return {
             "id": self.id,
             "name": self.name,
@@ -307,8 +301,25 @@ class User(UserMixin, db.Model):
         }
 
     def serialize_msg_sidebar(self):
+        #used for displaying user in message sidebar
         return {
             "id": self.id,
             "name": self.name,
             "unread_msg": self.unread_messages()
+        }
+
+    def serialize_pending(self):
+        #used for displaying user in pending users page
+        try:
+            location = Location.query.get(self.location_id)
+            name = location.name
+        except:
+            name = "Error"
+
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "phone_number": self.phone_number,
+            "location_name": name
         }
