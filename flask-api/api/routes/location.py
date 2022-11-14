@@ -44,7 +44,7 @@ def get_locations():
         return resp
     #Physician
     if current_user.has_permission(Permissions.VIEW_CURRENT_LOCATION):
-        locations = Location.query.filter_by(id = current_user.location_id).all()
+        locations = current_user.locations
         resp = jsonify([x.serialize() for x in locations])
         resp.status_code = 200
         logging.info(f"User id - {current_user.id} - accessed all current employees & patients.")

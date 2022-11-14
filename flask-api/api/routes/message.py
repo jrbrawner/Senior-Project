@@ -250,12 +250,13 @@ def message_user(id, locationId):
 @message_bp.post('/api/message/announcement/<int:id>')
 def send_announcement(id):
 
-    if current_user.has_permission(Permissions.SEND_ANNOUNCEMENT) and current_user.location_id == id:
+    location = Location.query.get(id)
+    print(location)
+    if current_user.has_permission(Permissions.SEND_ANNOUNCEMENT) and location in current_user.locations:
 
         message = request.form['msg']
         #roles = request.form['roles']
 
-        location = Location.query.get(id)
         organization_id = location.organization_id
         organization = Organization.query.get(organization_id)
 

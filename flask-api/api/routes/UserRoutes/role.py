@@ -159,6 +159,10 @@ def modify_roles(id):
 
         for name, checked in locationValues.items():
             if checked == 'on':
+                if 'Patient' or 'Pending Patient' in user.roles:
+                    location = Location.query.filter_by(name=name).first()
+                    user.location_id = location.id
+                    db.session.commit()
                 if name in user_locations:
                     continue
                 elif name not in user_locations:
