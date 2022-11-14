@@ -93,7 +93,7 @@ def get_user(id):
     if user is None:
         return WebHelpers.EasyResponse("User with that id does not exist.", 404)
 
-    resp = jsonify(user.serialize())
+    resp = jsonify(user.serialize_user_display())
     resp.status_code = 200
     # logging.info(f"User id - {current_user.id} - accessed patient with id of {id}.")
 
@@ -193,10 +193,19 @@ def get_new_users():
     # 6 is role id for pending patient, could look it up but its faster if we keep id's the same
     # pending_patient = Role.query.filter_by(name='Pending Patient').first()
     # new_users = User.query.filter(User.roles.any(id=pending_patient)).all()
+    new_users = []
 
-    new_users = User.query.filter(User.roles.any(id=6)).all()
+    if current_user.has_permission(Permissions.VIEW_ALL_PEOPLE):
+        users = User.query.filter(User.roles.any(id=6)).all()
+        for x in users:
+            new_users.append(x)
+    else:
+        for x in current_user.locations:
+            users = User.query.filter(User.roles.any(id=6)).filter(User.location_id == x.id).all()
+            for x in users:
+                new_users.append(x)
 
-    resp = jsonify([x.serialize() for x in new_users])
+    resp = jsonify([x.serialize_pending() for x in new_users])
     resp.status_code = 200
     logging.info(f"User id ({current_user.id}) accessed all new users.")
 

@@ -61,7 +61,7 @@ class TwilioSignUpHelpers:
             f"Phone number {phone_number} entry made. Ready for user sign-up."
         )
 
-        return f"Thanks for choosing to be with us! Please fill out this form to complete your registration. Name/Email\nRespond {1} for an example."
+        return f"Thanks for choosing to be with us! Please fill out this form to complete your registration.\n\nFirst Name Last Name/Email\n\nRespond {1} for an example."
 
     @staticmethod
     def CompleteUserSignUp(phone_number, msg):
@@ -80,10 +80,13 @@ class TwilioSignUpHelpers:
             Basic example form to have user send in, seperate fields with '.' in message:
             Name.Email.
             """
-            msg_array = msg.split("/")
+            try:
+                msg_array = msg.split("/")
 
-            name = msg_array[0]
-            email = msg_array[1]
+                name = msg_array[0]
+                email = msg_array[1]
+            except:
+                raise IndexError
 
             phone_number_user.name = name
             phone_number_user.email = email

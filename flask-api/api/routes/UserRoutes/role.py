@@ -179,5 +179,22 @@ def modify_roles(id):
         return WebHelpers.EasyResponse(f"User Roles updated.", 200)
     return WebHelpers.EasyResponse(f"User not found.", 404)
 
+@role_bp.get("/api/user/new/roles")
+def get_available_roles():
+
+    roles = []
+
+    if 'Super Admin' in current_user.roles:
+        roles = Role.query.all()
+    elif 'Admin' in current_user.roles:
+        roles = Role.query.filter(Role.name != 'Super Admin').all()
+    elif 'Physician' in current_user.roles:
+        roles = Role.query.filter(Role.name != 'Super Admin').filter(Role.name != 'Admin').all()
+    elif 'Employee' in current_user.roles:
+        roles = Role.query.filter(Role.name != 'Super Admin').filter(Role.name != 'Admin').filter(Role.name != 'Physician').all()
+
+    resp = jsonify([x.serialize() for x in roles])
+    resp.status_code = 200
+    return resp
 
 

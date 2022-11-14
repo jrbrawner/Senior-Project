@@ -1,14 +1,30 @@
 import React from 'react';
+import MessageDataService from '../../services/message.service';
 import UserDataService from '../../services/user.service';
+import RoleDataService from '../../services/role.service';
 import { useParams } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useNavigate } from 'react-router-dom';
+import Spinner from 'react-bootstrap/Spinner';
 
 export default function App() {
   
   const navigate = useNavigate(); 
   const params = useParams();
+  const [locations, setLocations] = React.useState();
+  const [roles, setRoles] = React.useState();
+
+  React.useEffect(() => {
+    MessageDataService.getLocations().then((response) => {
+      setLocations(response.data);
+    });
+
+    RoleDataService.getAvailableRoles().then((response) => {
+      setRoles(response.data);
+    } )
+
+  }, []);
   
   const handleNewSubmit = e => {
     e.preventDefault();
@@ -25,6 +41,14 @@ export default function App() {
           alert("Error");
         }});
   }
+
+  if (!locations)  return (<Spinner animation="border" role="status">
+  <span className="visually-hidden">Loading...</span>
+</Spinner>)
+
+if (!roles)  return (<Spinner animation="border" role="status">
+  <span className="visually-hidden">Loading...</span>
+</Spinner>)
 
   return (
     <Form onSubmit={handleNewSubmit}>
@@ -65,15 +89,6 @@ export default function App() {
           />
       </Form.Group>
 
-
-      <Form.Group className="mb-3" controlId="formUserLocation">
-        <Form.Label>Location ID</Form.Label>
-        <Form.Control
-            required
-            type="text"
-            name="locationId"/>
-      </Form.Group>
-
       <Form.Group className="mb-3" controlId="formUserRole">
         <Form.Label>Role</Form.Label>
         <Form.Control
@@ -82,6 +97,38 @@ export default function App() {
             name="role"
           />
       </Form.Group>
+
+      <div className="mb-3">
+      <h4>Select Users Locations</h4>
+      {locations.map((location) => {
+            return (
+                <div>
+                <Form.Check 
+                    type={"checkbox"}
+                    defaultChecked={false}
+                    id={`${location.name}`}
+                    name={location.name}
+                    label={`${location.name}`}
+                    />
+                </div>
+            )
+      })}
+      </div>
+
+      <h4>Select Users Role</h4>
+      {roles.map((role) => {
+            return (
+                <div>
+                <Form.Check 
+                    type={"radio"}
+                    defaultChecked={false}
+                    id={`${role.name}`}
+                    name={role.name}
+                    label={`${role.name}`}
+                    />
+                </div>
+            )
+      })}
 
       <Button variant="primary" type="submit">
         Create User

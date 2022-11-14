@@ -26,6 +26,10 @@ class RoleDataService {
     getPermissions() {
         return axios.get(`/api/permission`)
     }
+
+    getAvailableRoles() {
+        return axios.get(`/api/user/new/roles`)
+    }
 }
 
 export default new RoleDataService();

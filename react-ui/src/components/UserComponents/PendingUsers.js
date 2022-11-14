@@ -68,7 +68,7 @@ export default function App() {
             <tr key={user.id}>
                 <td>{user.name}</td>
                 <td>{user.email}</td>
-                <td>{user.location_id}</td>
+                <td>{user.location_name}</td>
                 
                 <td>{user.phone_number}</td>
                 <td><Button variant="success" onClick={() => acceptUser(user.id)}>Accept</Button>{' '}</td>
