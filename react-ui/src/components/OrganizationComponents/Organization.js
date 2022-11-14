@@ -6,6 +6,9 @@ import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Spinner from 'react-bootstrap/Spinner';
+import EditFormDialogModal from '../DialogModals/EditFormDialogModal';
+import DeleteDialogModal from '../DialogModals/DeleteDialogModal';
+
 
 export default function App() {
 
@@ -37,17 +40,22 @@ export default function App() {
     })
   }
 
-  function deleteOrganization(organizationId) {
-    OrganizationDataService.delete(organizationId).then((response) =>
-    {
-      if (response.status === 200){
-          navigate('/organization');
+  const deleteOrganization = () => {
+
+    OrganizationDataService.delete(organization.id).then((response) => {
+      navigate(`/organization`);
+
+    }).catch(error => {
+      if (error.response.status === 401)
+      {
+        navigate(`/login`);
+        console.log('Not authenticated.');
       }
-      else{
-        alert("Error");
+      if (error.response.status === 403)
+      {
+        alert('You are not authenticated for this functionality.');
       }
-      
-    })
+    });
   }
 
   if (!organization) return <Spinner animation="border" role="status">
@@ -55,7 +63,7 @@ export default function App() {
                     </Spinner>
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} id="organizationForm">
 
       <Form.Group className="mb-3" controlId="formOrgName">
         <Form.Label>Organization Name</Form.Label>
@@ -90,10 +98,11 @@ export default function App() {
       </Form.Group>
 
 
-      <Button variant="primary" type="submit">
-        Edit Organization
-      </Button>
-      <Button className="ms-5" variant="danger" onClick={() => deleteOrganization(organization.id)}>Delete Organization</Button>
+      <EditFormDialogModal buttonName="Edit Organization" modalTitle="Edit Organization" modalBody="Are you sure you want to change this organization?"
+        form="organizationForm"/>
+      <DeleteDialogModal buttonName="Delete Organization" modalTitle="Delete Organization" 
+      modalBody="Are you sure you want to delete this organization? This action cannot be reversed." onSuccess={deleteOrganization}/>
+
     </Form>
   )
   

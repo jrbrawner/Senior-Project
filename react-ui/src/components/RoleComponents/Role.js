@@ -7,6 +7,8 @@ import Form from 'react-bootstrap/Form';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Spinner from 'react-bootstrap/Spinner';
+import EditFormDialogModal from '../DialogModals/EditFormDialogModal';
+import DeleteDialogModal from '../DialogModals/DeleteDialogModal';
 
 export default function App() {
 
@@ -25,9 +27,6 @@ export default function App() {
 
     RoleDataService.getPermissions().then((response) => {
         setPermissions(response.data);
-
-
-
   
     })
 
@@ -49,17 +48,22 @@ export default function App() {
     })
   }
 
-  function deleteRole(roleId) {
-    RoleDataService.delete(roleId).then((response) =>
-    {
-      if (response.status === 200){
-          navigate('/role');
+  const deleteRole = () => {
+
+    RoleDataService.delete(role.id).then((response) => {
+      navigate(`/role`);
+
+    }).catch(error => {
+      if (error.response.status === 401)
+      {
+        navigate(`/login`);
+        console.log('Not authenticated.');
       }
-      else{
-        alert("Error");
+      if (error.response.status === 403)
+      {
+        alert('You are not authenticated for this functionality.');
       }
-      
-    })
+    });
   }
 
   if (!role && !permissions) return <Spinner animation="border" role="status">
@@ -76,7 +80,7 @@ if (!permissions) return <Spinner animation="border" role="status">
 
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} id="roleForm">
       <Form.Group className="mb-3" controlId="formLocationName">
         <Form.Label>Role Name</Form.Label>
         <Form.Control
@@ -129,10 +133,10 @@ if (!permissions) return <Spinner animation="border" role="status">
         }
       })}
 
-      <Button variant="primary" type="submit">
-        Edit Role
-      </Button>
-      <Button className="ms-5" variant="danger" onClick={() => deleteRole(role.id)}>Delete Role</Button>
+      <EditFormDialogModal buttonName="Edit Role" modalTitle="Edit Role" modalBody="Are you sure you want to change this role?"
+      form="roleForm"/>
+      <DeleteDialogModal buttonName="Delete Role" modalTitle="Delete Role" 
+      modalBody="Are you sure you want to delete this role? This action cannot be reversed." onSuccess={deleteRole}/>
     </Form>
   )
   
