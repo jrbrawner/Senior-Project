@@ -17,7 +17,7 @@ export default function App(){
     const [messages, setMessages] = React.useState(0);
     const [locations, setLocations] = React.useState(0);
     const [users, setUsers ] = React.useState(0);
-    const [currentUser, setCurrentUser] = React.useState(0);
+    const [currentUser, setCurrentUser] = React.useState(null);
     const [currentLocation, setCurrentLocation] = React.useState(0);
     const bottomRef = useRef(null);
     
@@ -33,7 +33,6 @@ export default function App(){
             //loadPeople(firstLocationId);
 
           //}
-
           }).catch(function (error) {
             if (error.response)
             {
@@ -155,6 +154,31 @@ export default function App(){
         // 👇️ scroll to bottom every time messages change
         bottomRef.current?.scrollIntoView();
       }, [messages]);
+
+      setTimeout(() => {
+        if (currentUser !== null){
+            console.log('Refreshing Messages...')
+          MessageDataService.getUserMessages(currentUser).then((response) => {
+            setMessages(response.data);
+            setCurrentUser(currentUser);
+              
+            }).catch(function (error) {
+            if (error.response)
+            {
+                if (error.response.status === 401)
+                {
+                  navigate(`/login`);
+                  console.log('Not authenticated.');
+        
+                }
+                if (error.response.status === 403)
+                {
+                  alert('You are not authenticated for this page.');
+                }
+            }
+            });
+        }
+      }, 10000);
 
       
     
