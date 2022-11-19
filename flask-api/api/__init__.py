@@ -1,14 +1,10 @@
 """Initialize app."""
-from distutils.command.config import config
-from flask import Flask, session
-from flask_session import Session
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+from flask import Flask
 import logging
 from flask_security import SQLAlchemyUserDatastore, Security
 from api.models.OrgModels import User, Role
 from api.models.db import db
-from flask_login import LoginManager
+
 from flask import abort
 
 UPLOADS = "api/uploads"
@@ -23,18 +19,19 @@ def create_app(config):
     app = Flask(__name__)
 
     # Application Configuration
-    if config == "dev":
+    if config == 'production':
+        app.config.from_object("config.ProductionConfig")
+        logging.warning('Running production configuration.')
+    elif config == "dev":
         app.config.from_object("config.DevConfig")
-    if config == "test":
+        logging.warning('Running development configuration.')
+    elif config == "test":
         app.config.from_object("config.TestConfig")
-    else:
-        # change to prod for deployment
-        app.config.from_object("config.DevConfig")
+        logging.warning('Running test configuration.')
 
     
     # Initialize Plugins
     db.init_app(app)
-    #Session(app)
     security_ctx = security.init_app(app, user_datastore)
 
     #disable security default views

@@ -27,11 +27,3 @@ def index():
 @app_bp.route("/api/time", methods=["GET"])
 def get_time():
     return {"time": time.time()}
-
-@app_bp.get("/testing")
-def test_message():
-
-    role = Role.query.get(4)
-    role.remove_permission(role.id, 11)
-
-    return 'GOT IT'

@@ -246,28 +246,6 @@ def seed_db():
         employee_role.add_permission(employee_role.id, Permissions.VIEW_ALL_CURRENT_ORG_PATIENTS.value)
         employee_role.add_permission(employee_role.id, Permissions.VIEW_ALL_CURRENT_LOCATION_MESSAGES.value)
         
-
-
-
-    if User.query.count() == 0:
-        password = hash_password("password")
-        admin = user_datastore.create_user(
-            name="admin",
-            email="admin@email.com",
-            phone_number="+18129909999",
-            password=password,
-            organization_id=1,
-            location_id=1,
-        )
-
-        user_datastore.add_role_to_user(admin, "Super Admin")
-        db.session.add(admin)
-        db.session.commit()
-        logging.warning(
-            f"No admin found, default admin account made. Make sure default credentials are changed."
-        )
-
-
     if Organization.query.count() == 0:
         organization = Organization(
             name="Platform Owner",
@@ -290,9 +268,24 @@ def seed_db():
         db.session.add(location)
         db.session.commit()
 
+    if User.query.count() == 0:
+        password = hash_password("password")
+        admin = user_datastore.create_user(
+            name="admin",
+            email="admin@email.com",
+            phone_number="+18129909999",
+            password=password,
+            organization_id=1,
+            location_id=1,
+        )
+
+        user_datastore.add_role_to_user(admin, "Super Admin")
+        db.session.add(admin)
+        db.session.commit()
+        logging.warning(
+            f"No admin found, default admin account made. Make sure default credentials are changed."
+        )
     # everything past here is extra for testing purposes
-
-
 
     if Organization.query.count() == 1:
         organization1 = Organization(
@@ -334,6 +327,7 @@ def seed_db():
         )
         db.session.add(location1)
         db.session.commit()
+
 
     #if User.query.count() == 1:
     #

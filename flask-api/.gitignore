@@ -5,3 +5,4 @@ development.db
 __pycache__
 record.log
 api/static/photos/*
+../.ruff_cache

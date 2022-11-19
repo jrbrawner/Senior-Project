@@ -1,6 +1,8 @@
 """Application entry point."""
 from api import create_app
 
+#dev for development
+#production for deployment with docker
 app = create_app('dev')
 
 if __name__ == "__main__":
