@@ -1,15 +1,13 @@
-from email import message
 from .db import db
-from flask import jsonify
 from api.models.Messages import Message
 from .db import db
-from flask_security import UserMixin, Security, RoleMixin
+from flask_security import UserMixin, RoleMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from api.models.Messages import Message
 from .Notifications import Notification
 import json
-from sqlalchemy import insert, delete, select
+from sqlalchemy import insert
 from flask import session
 
 
