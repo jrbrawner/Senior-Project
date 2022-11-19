@@ -11,6 +11,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import {useEffect, useRef, useState} from 'react';
+import { format } from "date-fns";
 
 export default function App(){
 
@@ -60,6 +61,7 @@ export default function App(){
         MessageDataService.getUserMessages(userId).then((response) => {
         setMessages(response.data);
         setCurrentUser(userId);
+        bottomRef.current?.scrollIntoView();
           
         }).catch(function (error) {
         if (error.response)
@@ -137,30 +139,26 @@ export default function App(){
 
       }
 
-      function openPicture(photoId) {
-        MessageDataService.loadPicture(photoId).then((response) => {
-          console.log(response.data)
-        }
-        );
-      }
-
       //const loadPhoto = e => {
       //  e.preventDefault;
 //
   //      MessageDataService.loadPicture(e)
     //  }
 
-      useEffect(() => {
+      //useEffect(() => {
         // 👇️ scroll to bottom every time messages change
-        bottomRef.current?.scrollIntoView();
-      }, [messages]);
+        //bottomRef.current?.scrollIntoView();
+      //}, [messages]);
 
       setTimeout(() => {
         if (currentUser !== null){
             console.log('Refreshing Messages...')
           MessageDataService.getUserMessages(currentUser).then((response) => {
-            setMessages(response.data);
-            setCurrentUser(currentUser);
+            //if (response.data.length !== messages.length){
+            //  console.log('MESSAGES CHANGED');
+              setMessages(response.data);
+              setCurrentUser(currentUser);
+           // }
               
             }).catch(function (error) {
             if (error.response)
@@ -179,10 +177,14 @@ export default function App(){
             });
         }
       }, 10000);
-
       
+      function formatTime(time){
+        //var formattedDate = format(date, "MMMM do, yyyy H:mma");
+        return format(new Date(time), "MM/dd/yyyy 'at' h:mm a");
+      
+      }
+
     
-        
 
     if (!messages && !locations) return <p>Loading</p>
 
@@ -222,7 +224,7 @@ export default function App(){
                       text="white">
                       <Card.Header>
                         {message.sender_name}
-                        <small className="float-end" >{message.timestamp}</small>
+                        <small className="float-end" >{formatTime(message.timestamp)}</small>
                       </Card.Header>
                       <ListGroup variant="flush">
                         <ListGroup.Item>
@@ -250,7 +252,7 @@ export default function App(){
                         text="white">
                     <Card.Header>
                       {message.sender_id}
-                      <small className="float-end" >{message.timestamp}</small>
+                      <small className="float-end" >{formatTime(message.timestamp)}</small>
                     </Card.Header>
                     <ListGroup variant="flush">
                       <ListGroup.Item>
