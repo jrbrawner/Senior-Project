@@ -1,6 +1,4 @@
-from flask import Blueprint, request, send_from_directory, session
-
-# from .. import login_manager
+from flask import Blueprint, request, send_from_directory, session, Response
 from flask_login import logout_user, login_required
 from sqlalchemy import create_engine, MetaData
 import json
@@ -16,6 +14,7 @@ from api import user_datastore
 from flask_security.utils import hash_password
 from flask_security import roles_accepted
 from api.permissions import Permissions
+from flask_security.utils import verify_password
 
 user_bp = Blueprint("user_bp", __name__)
 
@@ -137,7 +136,7 @@ def update_user(id):
 def create_user():
 
     name = request.form["name"]
-    email = request.form["email"]
+    email = request.form["email"].lower()
     password = request.form["password"]
     role = request.form["role"]
     phone_number = request.form["phoneNumber"]
@@ -263,7 +262,7 @@ def decline_new_user(id):
         return WebHelpers.EasyResponse(
             f"{current_user.name} declined {user_name} as a patient.", 200
         )
-    return WebHelpers.EasyResponse(f"user with that id does not exist.", 404)
+    return WebHelpers.EasyResponse("User with that id does not exist.", 404)
 
 """
 
@@ -279,5 +278,55 @@ def get_user_msgs(id):
 
         return resp
 """
+
+@login_required
+@user_bp.get("/api/user/profile")
+def user_profile() -> Response:
+
+    user_data = {
+        'id': current_user.id,
+        'name': current_user.name,
+        'email': current_user.email,
+        'phone_number': current_user.phone_number,
+        'primary_location': current_user.location_id,
+        'locations': [x.serialize() for x in current_user.locations],
+        'roles': [x.serialize() for x in current_user.roles]
+    }
+
+    return jsonify(user_data)
+
+@login_required
+@user_bp.post("/api/user/edit-profile")
+def edit_profile() -> Response:
+
+    name = request.form['name']
+    email = request.form['email']
+    phone_number = request.form['phoneNumber']
+    current_user.name = name
+    current_user.email = email
+    current_user.phone_number = phone_number
+    db.session.commit()
+    return WebHelpers.EasyResponse('User profile information updated.', 200)
+    #return WebHelpers.EasyResponse('Error', 400)
+
+@login_required
+@user_bp.post("/api/user/change-password")
+def change_user_password() -> Response:
+    
+    current_password = request.form['currentPassword']
+    new_password = request.form['newPassword']
+    confirm_password = request.form['confirmPassword']
+
+    password_matches = verify_password(current_password, current_user.password)
+
+    if password_matches:
+        if new_password == confirm_password:
+            password = hash_password(new_password)
+            current_user.password = password
+            db.session.commit()
+            return WebHelpers.EasyResponse('Password updated.', 200)
+        return WebHelpers.EasyResponse('Passwords do not match', 400)
+    return WebHelpers.EasyResponse('Current password does not match', 400)
+
 
 

@@ -18,6 +18,8 @@ import RolesPage from './pages/RolesPage';
 import RolePage from './pages/RolePage';
 import NewRolePage from './pages/NewRolePage';
 import UserRolesPage from './pages/UserRolesPage';
+import ProfilePage from './pages/ProfilePage';
+import PasswordPage from './pages/PasswordPage';
 
 export default function App(){
 
@@ -51,6 +53,9 @@ export default function App(){
             <Route path="/role/create" element={<NewRolePage/>} />
             <Route path="/role/:roleId" element={<RolePage/>} />
             <Route path="/role/user/:userId" element={<UserRolesPage/>} />
+
+            <Route path="/profile" element={<ProfilePage/>}/>
+            <Route path="/profile/password" element={<PasswordPage/>}/>
 
           </Routes>
         </BrowserRouter>

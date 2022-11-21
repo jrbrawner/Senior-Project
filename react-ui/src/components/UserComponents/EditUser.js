@@ -87,7 +87,7 @@ export default function App() {
       <Form.Group className="mb-3" controlId="formUserRoles">
         <Form.Label>Roles</Form.Label>
         <Form.Control
-            required
+            disabled
             type="text"
             name="roles"
             defaultValue={user.roles.map((role) => (

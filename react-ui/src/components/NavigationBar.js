@@ -94,7 +94,7 @@ export default function NavigationBar(){
           </Nav>
 
           <NavDropdown>
-              <NavDropdown.Item><i className="fa fa-envelope fa-fw"></i>Profile</NavDropdown.Item>
+              <NavDropdown.Item href="/profile" eventkey='1'><i className="fa fa-envelope fa-fw"></i>Profile</NavDropdown.Item>
               <NavDropdown.Item><i className="fa fa-gear fa-fw"></i>Settings</NavDropdown.Item>
               <NavDropdown.Item divider />
               <NavDropdown.Item href="/logout" eventKey='3'><i className="fa fa-sign-out fa-fw"></i>Logout</NavDropdown.Item>
