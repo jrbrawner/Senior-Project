@@ -127,7 +127,13 @@ def seed_db():
         create_new_location = Permission(
             id=Permissions.CREATE_NEW_LOCATION.value,
             name=Permissions.CREATE_NEW_LOCATION.name,
-            description="Allows the role to create new locations."
+            description="Allows the role to create new locations for their organization."
+        )
+
+        create_new_location_superadmin = Permission(
+            id=Permissions.CREATE_NEW_LOCATION_SUPERADMIN.value,
+            name=Permissions.CREATE_NEW_LOCATION_SUPERADMIN.name,
+            description="Allows the role to create new locations for any organization."
         )
 
         update_current_location= Permission(
@@ -220,6 +226,7 @@ def seed_db():
         db.session.add(view_all_locations)
         db.session.add(view_current_location)
         db.session.add(create_new_location)
+        db.session.add(create_new_location_superadmin)
         db.session.add(delete_location)
         db.session.add(update_all_locations)
         db.session.add(update_current_location)
@@ -233,10 +240,12 @@ def seed_db():
         super_admin_role.add_permission(super_admin_role.id, Permissions.VIEW_ALL_PEOPLE.value)
         super_admin_role.add_permission(super_admin_role.id, Permissions.VIEW_ALL_MESSAGES.value)
         super_admin_role.add_permission(super_admin_role.id, Permissions.VIEW_ALL_LOCATIONS.value)
+        super_admin_role.add_permission(super_admin_role.id, Permissions.CREATE_NEW_LOCATION_SUPERADMIN.value)
         #ADMIN ROLE
         admin_role.add_permission(admin_role.id, Permissions.VIEW_CURRENT_ORGANIZATION.value)
         admin_role.add_permission(admin_role.id, Permissions.VIEW_ALL_CURRENT_ORG_PEOPLE.value)
         admin_role.add_permission(admin_role.id, Permissions.VIEW_ALL_CURRENT_ORG_LOCATIONS.value)
+        admin_role.add_permission(admin_role.id, Permissions.CREATE_NEW_LOCATION.value)
         #PHYSICIAN ROLE
         physician_role.add_permission(physician_role.id, Permissions.VIEW_ALL_CURRENT_ORG_EMPLOYEE.value)
         physician_role.add_permission(physician_role.id, Permissions.VIEW_ALL_CURRENT_ORG_MESSAGES.value)

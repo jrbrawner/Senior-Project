@@ -1,21 +1,29 @@
 import React from 'react';
 import LocationDataService from '../../services/location.service';
 import Table from 'react-bootstrap/Table';
-import Button from 'react-bootstrap/Button';
 import {useNavigate} from 'react-router-dom';
+import Spinner from 'react-bootstrap/Spinner';
+import Button from 'react-bootstrap/Button';
+import paginationFactory from "react-bootstrap-table2-paginator";
+import BootstrapTable from "react-bootstrap-table-next";
 
 export default function App() {
   const [locations, setLocations] = React.useState(null);
   const navigate = useNavigate();
   
   React.useEffect(() => {
-    LocationDataService.getAll().then((response) => {
-      setLocations(response.data);
-    }).catch(error => {
-      if (error.response.status === 401){
-        navigate(`/login`);
-        console.log('Not authenticated.');
-      }});
+  
+      LocationDataService.getAll().then((response) => {
+        setLocations(response.data);
+        }).catch(function (error) {
+          if (error.response)
+            {
+                if (error.response.status === 401){
+                    navigate(`/login`);
+                    console.log('Not authenticated.')
+                }
+            }
+    });
   }, []);
 
   function editLocation(id) {
@@ -25,39 +33,76 @@ export default function App() {
   function announcementPage(id) {
     navigate(`/location/${id}/announcement`)
   }
+
+  function newLocation(){
+    navigate(`/location/create`)
+  }
   
 
-  if (!locations) return null;
+  const columns = [
+    {
+      dataField: "name",
+      text: "Location Name",
+      sort: true
+    },
+    {
+      dataField: "address",
+      text: "Location Address",
+      sort: true
+    },
+    {
+      dataField: "city",
+      text: "Location City",
+      sort: true
+    },
+    {
+      dataField: "state",
+      text: "Location State",
+      sort: true
+    },
+    {
+      dataField: "phone_number",
+      text: "Location Phone Number",
+      sort: true
+    },
+    {
+      text: "Edit Location",
+      isDummyField: true,
+      formatter: (cellContent, row) => {
+        return <Button variant="primary" onClick={() => editLocation(row.id)}>Edit</Button>
+      }
+      
+    },
+    {
+      text: "Send Announcement",
+      isDummyField: true,
+      formatter: (cellContent, row) => {
+        return <Button variant="info" onClick={() => announcementPage(row.id)}>Send Announcement</Button>
+      }
+      
+    }
+  ]
+
+
+  if (!locations) return <Spinner animation="border" role="status">
+                              <span className="visually-hidden">Loading...</span>
+                            </Spinner>
 
   return (
     <div>
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-                <th>Location Name</th>
-                <th>Address</th>
-                <th>City</th>
-                <th>State</th>
-                <th>Phone Number</th>
-                <th>Edit</th>
-                <th>Announcement</th>
-            </tr>
-          </thead>
-            <tbody>
-            {locations.map((location) => (
-            <tr key={location.id}>
-                <td>{location.name}</td>
-                <td>{location.address}</td>
-                <td>{location.city}</td>
-                <td>{location.state}</td>
-                <td>{location.phone_number}</td>
-                <td><Button variant="primary" onClick={() => editLocation(location.id)}>Edit</Button>{' '}</td>
-                <td><Button variant="info" onClick={() => announcementPage(location.id)}>Announcement</Button>{' '}</td>
-            </tr>
-                ))}
-            </tbody>
-      </Table>
-      
+      <div className="mb-1" >
+        <Button variant="outline-success" onClick={() => newLocation()}>Create New Location</Button>
+      </div>
+      <BootstrapTable
+          bootstrap4
+          striped
+          bordered
+          hover
+          keyField="id"
+          data={locations}
+          columns={columns}
+          pagination={paginationFactory({ sizePerPage: 15 })}
+          />
     </div>
   );
 }

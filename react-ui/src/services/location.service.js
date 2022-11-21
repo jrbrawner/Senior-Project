@@ -12,7 +12,7 @@ class LocationDataService {
     }
 
     create(data) {
-        return axios.post("/api/location/", data)
+        return axios.post("/api/location", data)
     }
 
     update(id, data) {
