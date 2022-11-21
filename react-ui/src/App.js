@@ -20,6 +20,7 @@ import NewRolePage from './pages/NewRolePage';
 import UserRolesPage from './pages/UserRolesPage';
 import ProfilePage from './pages/ProfilePage';
 import PasswordPage from './pages/PasswordPage';
+import NewLocationPage from './pages/NewLocation';
 
 export default function App(){
 
@@ -39,6 +40,7 @@ export default function App(){
             <Route path="/location" element={<LocationsPage/>}/>
             <Route path="/location/:locationId" element={<LocationPage />} />
             <Route path="/location/:locationId/announcement" element={<LocationAnnouncementPage/>}/>
+            <Route path="/location/create" element={<NewLocationPage/>}/>
             
             <Route path="/user" element={<UsersPage />} />
             <Route path="/user/:userId" element={<EditUserPage/>} />

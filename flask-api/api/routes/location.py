@@ -4,7 +4,7 @@ from flask_login import logout_user, login_required
 from sqlalchemy import create_engine, MetaData
 import json
 from flask import current_app as app, jsonify, url_for
-from ..models.OrgModels import Location
+from ..models.OrgModels import Location, Organization
 from api.models.db import db
 from ..services.WebHelpers import WebHelpers
 import logging
@@ -80,32 +80,74 @@ def create_Location():
     """
     POST: Creates new Location.
     """
+    #Super admin
+    if current_user.has_permission(Permissions.CREATE_NEW_LOCATION_SUPERADMIN):
 
-    name = request.form["name"]
-    phone_number = request.form["phone_number"]
-    address = request.form["address"]
-    city = request.form["city"]
-    state = request.form["state"]
-    zip_code = request.form["zip_code"]
-    organization_id = request.form["organization_id"]
+        organizations = Organization.query.all()
+        formValues = {}
+        #if multiple organizations are selected, 
+        # last organization will be the one it ends up in
+        # need to change this later
+        for i in organizations:
+            formValues[i.name] = request.form.get(i.name)
+        for name,checked in formValues.items():
+            if checked == 'on':
+                organization_id = Organization.query.filter_by(name=name).first().id
+            
 
-    location = Location(
-        name=name,
-        phone_number=phone_number,
-        address=address,
-        city=city,
-        state=state,
-        zip_code=zip_code,
-        organization_id=organization_id,
-    )
+        name = request.form["name"]
+        phone_number = request.form["phoneNumber"]
+        address = request.form["address"]
+        city = request.form["city"]
+        state = request.form["state"]
+        zip_code = request.form["zipCode"]
+        
+        location = Location(
+            name=name,
+            phone_number=phone_number,
+            address=address,
+            city=city,
+            state=state,
+            zip_code=zip_code,
+            organization_id=organization_id,
+        )
 
-    db.session.add(location)
-    db.session.commit()
-    logging.debug(
-        f"User id - {current_user.id} - created new location id - {location.id} -"
-    )
+        db.session.add(location)
+        db.session.commit()
+        logging.debug(
+            f"User id - {current_user.id} - created new location id - {location.id} -"
+        )
+        return WebHelpers.EasyResponse(f"New location {location.name} created.", 201)
 
-    return WebHelpers.EasyResponse(f"New location {location.name} created.", 201)
+    #Admin
+    if current_user.has_permission(Permissions.CREATE_NEW_LOCATION):
+        name = request.form["name"]
+        phone_number = request.form["phoneNumber"]
+        address = request.form["address"]
+        city = request.form["city"]
+        state = request.form["state"]
+        zip_code = request.form["zipCode"]
+        organization_id = current_user.organization_id
+
+        location = Location(
+            name=name,
+            phone_number=phone_number,
+            address=address,
+            city=city,
+            state=state,
+            zip_code=zip_code,
+            organization_id=organization_id,
+        )
+
+        db.session.add(location)
+        db.session.commit()
+        logging.debug(
+            f"User id - {current_user.id} - created new location id - {location.id} -"
+        )
+
+        return WebHelpers.EasyResponse(f"New location {location.name} created.", 201)
+    else:
+        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
 
 
 @location_bp.put("/api/location/<int:id>")
