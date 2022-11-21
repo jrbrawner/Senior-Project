@@ -112,7 +112,7 @@ def logout():
     """User log-out logic."""
     # name = current_user.name
     logout_user()
-    return WebHelpers.EasyResponse(f"Logged out.", 200)
+    return WebHelpers.EasyResponse("Logged out.", 200)
 
 
 @login_manager.user_loader
@@ -128,19 +128,6 @@ def unauthorized():
     """Redirect unauthorized users to Login page."""
     return WebHelpers.EasyResponse("You must login to view this page", 401)
 
-
-@auth_bp.route("/api/troubleshoot", methods=["GET"])
-@login_required
-def troubleshoot():
-
-    user = user_datastore.get_user(2)
-    test = None
-
-    if user.roles:
-        test = "YEP"
-
-    data = {"testing": test}
-    return data
 
 def requires_permission(permission):
     def wrapper(func):

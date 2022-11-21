@@ -38,6 +38,18 @@ class UserDataService {
         return axios.post(`/api/user/roles/${id}`, data);
     }
 
+    getProfile(){
+        return axios.get(`/api/user/profile`);
+    }
+
+    changePassword(data){
+        return axios.post(`/api/user/change-password`, data)
+    }
+
+    editProfile(data){
+        return axios.post(`/api/user/edit-profile`, data)
+    }
+
 
 
 }
