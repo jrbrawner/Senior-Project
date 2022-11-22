@@ -21,7 +21,7 @@ import UserRolesPage from './pages/UserRolesPage';
 import ProfilePage from './pages/ProfilePage';
 import PasswordPage from './pages/PasswordPage';
 import NewLocationPage from './pages/NewLocation';
-
+import NewOrganizationPage from './pages/NewOrganizationPage';
 export default function App(){
 
   return (
@@ -36,6 +36,7 @@ export default function App(){
 
             <Route path="/organization" element={<OrganizationsPage/>}/>
             <Route path="/organization/:organizationId" element={<OrganizationPage/>}/>
+            <Route path="/organization/create" element={<NewOrganizationPage/>}/>
             
             <Route path="/location" element={<LocationsPage/>}/>
             <Route path="/location/:locationId" element={<LocationPage />} />

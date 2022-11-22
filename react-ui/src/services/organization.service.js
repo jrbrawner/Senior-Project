@@ -11,7 +11,7 @@ class OrganizationDataService {
     }
 
     create(data) {
-        return axios.post("/api/organization/", data)
+        return axios.post("/api/organization", data)
     }
 
     update(id, data) {
