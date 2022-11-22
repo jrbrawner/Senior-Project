@@ -51,7 +51,8 @@ export default function NavigationBar(){
               <Nav>
                 <Nav.Link href="/role">Role Management</Nav.Link>
               </Nav>
-              <NavDropdown>
+              
+              <NavDropdown title={<img src="person-circle.svg"/>}>
                 <NavDropdown.Item><i className="fa fa-envelope fa-fw"></i>Profile</NavDropdown.Item>
                 <NavDropdown.Item><i className="fa fa-gear fa-fw"></i>Settings</NavDropdown.Item>
                 <NavDropdown.Item divider />
@@ -92,8 +93,8 @@ export default function NavigationBar(){
           <Nav>
             <Nav.Link href="/notifications">Notifications</Nav.Link>
           </Nav>
-
-          <NavDropdown>
+          
+          <NavDropdown title={<img src="person-circle.svg"/>}>
               <NavDropdown.Item href="/profile" eventkey='1'><i className="fa fa-envelope fa-fw"></i>Profile</NavDropdown.Item>
               <NavDropdown.Item><i className="fa fa-gear fa-fw"></i>Settings</NavDropdown.Item>
               <NavDropdown.Item divider />

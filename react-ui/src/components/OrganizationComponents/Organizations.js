@@ -27,7 +27,11 @@ export default function App() {
   }, []);
 
   function EditOrg(id){
-    navigate(`/organization/${id}`)
+    navigate(`/organization/${id}`);
+  }
+
+  function newOrganization(){
+    navigate(`/organization/create`);
   }
 
   const columns = [
@@ -63,6 +67,9 @@ export default function App() {
 
   return (
     <div>
+      <div className="mb-1" >
+        <Button variant="outline-success" onClick={() => newOrganization()}>Create New Organization</Button>
+      </div>
       <BootstrapTable
           bootstrap4
           striped
