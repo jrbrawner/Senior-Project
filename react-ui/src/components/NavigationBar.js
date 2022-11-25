@@ -9,17 +9,25 @@ import Cookies from 'js-cookie';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 
-export default function NavigationBar(){
+export default function NavigationBar(props){
 
     const state = {
       username: Cookies.get('name'),
       roles: Cookies.get('roles')
     }
+
+    const search = ({ target: { value } }) => {
+      console.log(value);
+    };
+    
+
   
   if (state.roles != undefined){
     if (state.roles.includes("Super Admin")){
       return (
+        
         <Navbar bg="light" expand="sm">
+  
           <Container>
             <Nav classname="me-auto">
     
@@ -35,14 +43,16 @@ export default function NavigationBar(){
                 
             </Nav>
                 
-              <Form className="d-flex">
+              <Form className="d-flex" onSubmit={search} >
                 <Form.Control
                   type="search"
                   placeholder="Search"
+                  name="search"
                   className="me-2"
+                  defaultValue=""
                   aria-label="Search"
                   />
-                <Button variant="outline-success">Search</Button>
+                <Button variant="outline-success" type="submit" >Search</Button>
               </Form>
               <Nav>
                 <Nav.Link href="/notifications">Notifications</Nav.Link>

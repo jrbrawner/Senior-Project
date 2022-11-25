@@ -295,7 +295,8 @@ class User(UserMixin, db.Model):
             "roles": [x.serialize_name() for x in self.roles],
             "email": self.email,
             "phone_number": self.phone_number,
-            "locations": [x.serialize_name() for x in self.locations]
+            "locations": [x.serialize_name() for x in self.locations],
+            "organization_id": self.organization_id
         }
 
     def serialize_msg_sidebar(self):

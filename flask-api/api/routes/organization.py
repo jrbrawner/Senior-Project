@@ -49,15 +49,30 @@ def get_organization(id):
     """
     GET: Returns Organization with specified id.
     """
-    organization = Organization.query.get(id)
+    if current_user.has_permission(Permissions.VIEW_ALL_ORGANIZATIONS):
+        organization = Organization.query.get(id)
 
-    if organization is None:
-        return WebHelpers.EasyResponse("Organization with that id does not exist.", 404)
+        if organization is None:
+            return WebHelpers.EasyResponse("Organization with that id does not exist.", 404)
 
-    resp = jsonify(organization.serialize())
-    resp.status_code = 200
-    logging.info(f"User id - {current_user.id} - accessed organization id - {id} - ")
-    return resp
+        resp = jsonify(organization.serialize())
+        resp.status_code = 200
+        logging.info(f"User id - {current_user.id} - accessed organization id - {id} - ")
+        return resp
+    if current_user.has_permission(Permissions.VIEW_CURRENT_ORGANIZATION):
+        organization = Organization.query.get(current_user.organization_id)
+
+        if organization is None:
+            return WebHelpers.EasyResponse("Organization with that id does not exist.", 404)
+
+        resp = jsonify(organization.serialize())
+        resp.status_code = 200
+        logging.info(f"User id - {current_user.id} - accessed organization id - {id} - ")
+        return resp
+
+    else:
+        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+
 
 
 @organization_bp.post("/api/organization")
@@ -67,25 +82,29 @@ def create_organization():
     POST: Creates new Organization.
     """
 
-    name = request.form["name"]
-    twilio_account_id = request.form["twilio_account_id"]
-    twilio_auth_token = request.form["twilio_auth_token"]
+    if current_user.has_permission(Permissions.CREATE_NEW_ORGANIZATION):
 
-    organization = Organization(
-        name=name,
-        twilio_account_id=twilio_account_id,
-        twilio_auth_token=twilio_auth_token,
-    )
+        name = request.form["name"]
+        twilio_account_id = request.form["twilio_account_id"]
+        twilio_auth_token = request.form["twilio_auth_token"]
 
-    db.session.add(organization)
-    db.session.commit()
-    logging.debug(
-        f"User id {current_user.id} created new organization id - {organization.id} -"
-    )
+        organization = Organization(
+            name=name,
+            twilio_account_id=twilio_account_id,
+            twilio_auth_token=twilio_auth_token,
+        )
 
-    return WebHelpers.EasyResponse(
-        f"New organization {organization.name} created.", 201
-    )
+        db.session.add(organization)
+        db.session.commit()
+        logging.debug(
+            f"User id {current_user.id} created new organization id - {organization.id} -"
+        )
+
+        return WebHelpers.EasyResponse(
+            f"New organization {organization.name} created.", 201
+        )
+    else:
+        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
 
 
 @organization_bp.put("/api/organization/<int:id>")
@@ -94,51 +113,73 @@ def update_organization(id):
     """
     PUT: Updates specified organization.
     """
-    name = request.form["name"]
-    twilio_account_id = request.form['twilio_account_id']
-    twilio_auth_token = request.form['twilio_auth_token']
+    if current_user.has_permission(Permissions.UPDATE_ALL_ORGANIZATIONS):
+        name = request.form["name"]
+        twilio_account_id = request.form['twilio_account_id']
+        twilio_auth_token = request.form['twilio_auth_token']
 
-    organization = Organization.query.get(id)
+        organization = Organization.query.get(id)
 
-    if organization:
-        organization.name = name
-        organization.twilio_account_id = twilio_account_id
-        organization.twilio_auth_token = twilio_auth_token
-        db.session.commit()
-        logging.info(f"User id {current_user.id} updated organization id - {id} -")
-        return WebHelpers.EasyResponse(f"{name} updated.", 200)
-    return WebHelpers.EasyResponse(f"Organization with that id does not exist.", 404)
+        if organization:
+            organization.name = name
+            organization.twilio_account_id = twilio_account_id
+            organization.twilio_auth_token = twilio_auth_token
+            db.session.commit()
+            logging.info(f"User id {current_user.id} updated organization id - {id} -")
+            return WebHelpers.EasyResponse(f"{name} updated.", 200)
+        return WebHelpers.EasyResponse(f"Organization with that id does not exist.", 404)
+    if current_user.has_permission(Permissions.UPDATE_CURRENT_ORGANIZATION):
+        name = request.form["name"]
+        twilio_account_id = request.form['twilio_account_id']
+        twilio_auth_token = request.form['twilio_auth_token']
+
+        organization = Organization.query.get(current_user.organization_id)
+
+        if organization:
+            organization.name = name
+            organization.twilio_account_id = twilio_account_id
+            organization.twilio_auth_token = twilio_auth_token
+            db.session.commit()
+            logging.info(f"User id {current_user.id} updated organization id - {id} -")
+            return WebHelpers.EasyResponse(f"{name} updated.", 200)
+        return WebHelpers.EasyResponse(f"Organization with that id does not exist.", 404)
+    else:
+        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+    
 
 
 @organization_bp.delete("/api/organization/<int:id>")
 def delete_organization(id):
 
-    locations = Location.query.filter_by(organization_id=id).all()
+    if current_user.has_permission(Permissions.DELETE_ORGANIZATION):
 
-    for i in locations:
-        db.session.delete(i)
-        db.session.commit()
-    
-    users = User.query.filter_by(organization_id = id).all()
-    for i in users:
-        db.session.delete(i)
-        db.session.commit()
+        locations = Location.query.filter_by(organization_id=id).all()
 
-    organization = Organization.query.get(id)
+        for i in locations:
+            db.session.delete(i)
+            db.session.commit()
+        
+        users = User.query.filter_by(organization_id = id).all()
+        for i in users:
+            db.session.delete(i)
+            db.session.commit()
 
-    if organization:
-        db.session.delete(organization)
-        db.session.commit()
-        logging.info(f"User id {current_user.id} deleted org id - {id} -")
-        return WebHelpers.EasyResponse(f"Organization deleted.", 200)
-    return WebHelpers.EasyResponse(f"Organization with that id does not exist.", 404)
+        organization = Organization.query.get(id)
+
+        if organization:
+            db.session.delete(organization)
+            db.session.commit()
+            logging.info(f"User id {current_user.id} deleted org id - {id} -")
+            return WebHelpers.EasyResponse(f"Organization deleted.", 200)
+        return WebHelpers.EasyResponse(f"Organization with that id does not exist.", 404)
+    else:
+        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
 
 
 @organization_bp.get("/api/organization/<int:id>/locations")
 def get_organization_locations(id):
 
     organization = Organization.query.get(id)
-
     if organization:
         locations = organization.locations
         resp = jsonify([x.serialize_name() for x in locations])

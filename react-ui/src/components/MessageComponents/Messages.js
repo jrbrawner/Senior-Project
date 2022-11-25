@@ -126,7 +126,7 @@ export default function App(){
             }
             if (error.response.status === 403)
             {
-              alert('You are not authenticated for this page.');
+              alert('You are not authorized for this functionality.');
             }
         }
         });
