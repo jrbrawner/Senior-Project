@@ -86,48 +86,84 @@ def get_users():
 @cross_origin()
 def get_user(id):
     """
-    GET: Returns user with specified id.
+    GET: Returns user with specified id. Required to edit a user.
     """
-    user = User.query.get(id)
-    if user is None:
-        return WebHelpers.EasyResponse("User with that id does not exist.", 404)
+    if current_user.has_permission(Permissions.UPDATE_ALL_PEOPLE):
+        user = User.query.get(id)
+        if user is None:
+            return WebHelpers.EasyResponse("User with that id does not exist.", 404)
 
-    resp = jsonify(user.serialize_user_display())
-    resp.status_code = 200
-    # logging.info(f"User id - {current_user.id} - accessed patient with id of {id}.")
+        resp = jsonify(user.serialize_user_display())
+        resp.status_code = 200
+        # logging.info(f"User id - {current_user.id} - accessed patient with id of {id}.")
 
-    return resp
+        return resp
+    if current_user.has_permission(Permissions.UPDATE_CURRENT_ORG_PEOPLE):
+        user = User.query.get(id)
+        if user is None:
+            return WebHelpers.EasyResponse("User with that id does not exist.", 404)
+        
+        if user.organization == current_user.organization_id:
+            resp = jsonify(user.serialize_user_display())
+            resp.status_code = 200
+            # logging.info(f"User id - {current_user.id} - accessed patient with id of {id}.")
+
+            return resp
+        return WebHelpers.EasyResponse('You are not authorized to edit this user.', 403)
+    else:
+        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
 
 
 @user_bp.put("/api/user/<int:id>")
-@roles_accepted("Super Admin", "Admin")
 @login_required
 @cross_origin()
 def update_user(id):
     """
     PUT: Updates specified user.
     """
-    user = User.query.filter_by(id=id).first()
-    old_name = user.name
+    if current_user.has_permission(Permissions.UPDATE_ALL_PEOPLE):
+        user = User.query.get(id)
+        if user:
+            name = request.form["name"]
+            email = request.form["email"]
+            location_id = request.form["locationId"]
+            roles = request.form["roles"]
+            phone_number = request.form["phoneNumber"]
 
-    if user:
-        name = request.form["name"]
-        email = request.form["email"]
-        location_id = request.form["locationId"]
-        roles = request.form["roles"]
-        phone_number = request.form["phoneNumber"]
+            user.name = name
+            user.email = email
+            user.location_id = location_id
+            # user.roles = roles
+            user.phone_number = phone_number
+            db.session.commit()
+            logging.warning(
+                f"User id - {current_user.id} - updated user with id - {user.id} -"
+             )
+            return WebHelpers.EasyResponse(f"Name updated.", 200)
+        return WebHelpers.EasyResponse(f"user with that id does not exist.", 404)
+    if current_user.has_permission(Permissions.UPDATE_CURRENT_ORG_PEOPLE):
+        user = User.query.get(id)
+        if user.organization_id == current_user.organization_id:
+            if user:
+                name = request.form["name"]
+                email = request.form["email"]
+                location_id = request.form["locationId"]
+                roles = request.form["roles"]
+                phone_number = request.form["phoneNumber"]
 
-        user.name = name
-        user.email = email
-        user.location_id = location_id
-        # user.roles = roles
-        user.phone_number = phone_number
-        db.session.commit()
-        # logging.warning(
-        #    f"User id - {current_user.id} - updated user with id - {user.id} -"
-        # )
-        return WebHelpers.EasyResponse(f"Name updated.", 200)
-    return WebHelpers.EasyResponse(f"user with that id does not exist.", 404)
+                user.name = name
+                user.email = email
+                user.location_id = location_id
+                # user.roles = roles
+                user.phone_number = phone_number
+                db.session.commit()
+                logging.warning(
+                    f"User id - {current_user.id} - updated user with id - {user.id} -"
+                )
+                return WebHelpers.EasyResponse(f"Name updated.", 200)
+            return WebHelpers.EasyResponse(f"user with that id does not exist.", 404)
+    else:
+        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
 
 
 @user_bp.post("/api/user")
