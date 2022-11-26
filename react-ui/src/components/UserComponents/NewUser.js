@@ -16,7 +16,7 @@ export default function App() {
   const [roles, setRoles] = React.useState();
 
   React.useEffect(() => {
-    MessageDataService.getLocations().then((response) => {
+    UserDataService.getAvailableLocations().then((response) => {
       setLocations(response.data);
     });
 
@@ -38,7 +38,7 @@ export default function App() {
       }
     }).catch(error => {
         if (error.response.status === 400){
-          alert("Error");
+          alert(error.response.data["msg"]);
         }});
   }
 
@@ -57,6 +57,7 @@ if (!roles)  return (<Spinner animation="border" role="status">
         <Form.Label>Name</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="name"
           />
@@ -66,6 +67,7 @@ if (!roles)  return (<Spinner animation="border" role="status">
         <Form.Label>Email</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="email"
           />
@@ -75,6 +77,7 @@ if (!roles)  return (<Spinner animation="border" role="status">
         <Form.Label>Password</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="password"
           />
@@ -84,17 +87,9 @@ if (!roles)  return (<Spinner animation="border" role="status">
         <Form.Label>Phone Number</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="phoneNumber"
-          />
-      </Form.Group>
-
-      <Form.Group className="mb-3" controlId="formUserRole">
-        <Form.Label>Role</Form.Label>
-        <Form.Control
-            required
-            type="text"
-            name="role"
           />
       </Form.Group>
 
@@ -103,11 +98,11 @@ if (!roles)  return (<Spinner animation="border" role="status">
       {locations.map((location) => {
             return (
                 <div>
-                <Form.Check 
+                <Form.Check
                     type={"checkbox"}
                     defaultChecked={false}
                     id={`${location.name}`}
-                    name={location.name}
+                    name={`${location.name}`}
                     label={`${location.name}`}
                     />
                 </div>
@@ -123,14 +118,15 @@ if (!roles)  return (<Spinner animation="border" role="status">
                     type={"radio"}
                     defaultChecked={false}
                     id={`${role.name}`}
-                    name={role.name}
+                    name="roleGroup"
+                    value={`${role.name}`}
                     label={`${role.name}`}
                     />
                 </div>
             )
       })}
 
-      <Button variant="primary" type="submit">
+      <Button className="mt-2" variant="primary" type="submit">
         Create User
       </Button>
     </Form>

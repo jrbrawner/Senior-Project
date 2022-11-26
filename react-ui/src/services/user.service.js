@@ -50,6 +50,9 @@ class UserDataService {
         return axios.post(`/api/user/edit-profile`, data)
     }
 
+    getAvailableLocations(){
+        return axios.get(`/api/user/create/locations`)
+    }
 
 
 }

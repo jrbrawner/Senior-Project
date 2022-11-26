@@ -104,6 +104,7 @@ def seed_db():
             description="Allows the role to delete organizations."
         )
 
+
         #LOCATIONS
 
         view_all_locations = Permission(
@@ -148,10 +149,16 @@ def seed_db():
             description="Allows the role to update all locations."
         )
 
-        delete_location = Permission(
-            id=Permissions.DELETE_LOCATION.value,
-            name=Permissions.DELETE_LOCATION.name,
-            description="Allows the role to delete locations."
+        delete_all_locations = Permission(
+            id=Permissions.DELETE_ALL_LOCATIONS.value,
+            name=Permissions.DELETE_ALL_LOCATIONS.name,
+            description="Allows the role to delete any location.."
+        )
+
+        delete_current_org_location = Permission(
+            id=Permissions.DELETE_CURRENT_ORG_LOCATIONS.value,
+            name=Permissions.DELETE_CURRENT_ORG_LOCATIONS.name,
+            description="Allows the role to delete any location.."
         )
 
 
@@ -180,6 +187,49 @@ def seed_db():
             description="Allows the role to view all the patients and pending patients that belong to their organization."
         )
 
+        update_all_people = Permission(
+            id=Permissions.UPDATE_ALL_PEOPLE.value,
+            name=Permissions.UPDATE_ALL_PEOPLE.name,
+            description="Allows the role to update all users."
+        )
+
+        update_all_current_org_people = Permission(
+            id=Permissions.UPDATE_CURRENT_ORG_PEOPLE.value,
+            name=Permissions.UPDATE_CURRENT_ORG_PEOPLE.name,
+            description="Allows the role to update users that are in the same organization."
+        )
+
+        create_all_people = Permission(
+            id=Permissions.CREATE_ALL_PEOPLE.value,
+            name=Permissions.CREATE_ALL_PEOPLE.name,
+            description="Allows the role to create any type of user for any organization."
+        )
+
+        create_current_org_people = Permission(
+            id=Permissions.CREATE_CURRENT_ORG_PEOPLE.value,
+            name=Permissions.CREATE_CURRENT_ORG_PEOPLE.name,
+            description="Allows the role to create elevated user types for their current organization."
+        )
+
+        create_base_user = Permission(
+            id=Permissions.CREATE_BASE_USER.value,
+            name=Permissions.CREATE_BASE_USER.name,
+            description="Allows the role to create base users for their organization."
+        )
+
+        delete_all_people = Permission(
+            id=Permissions.DELETE_ALL_PEOPLE.value,
+            name=Permissions.DELETE_ALL_PEOPLE.name,
+            description="Allows the role to delete any user."
+        )
+
+        delete_current_org_people = Permission(
+            id=Permissions.DELETE_CURRENT_ORG_PEOPLE.value,
+            name=Permissions.DELETE_CURRENT_ORG_PEOPLE.name,
+            description="Allows the role to delete any user that belongs to their organization."
+        )
+        
+
         # MESSAGES
         view_all_messages = Permission(
             id=Permissions.VIEW_ALL_MESSAGES.value,
@@ -205,7 +255,15 @@ def seed_db():
             description="Allows the role to send an announcement to all users of a location."
         )
 
+        send_message = Permission(
+            id=Permissions.SEND_MESSAGE.value,
+            name=Permissions.SEND_MESSAGE.name,
+            description="Allows the role to send messages."
+        )
 
+        
+
+        #organizations
         db.session.add(view_all_organizations)
         db.session.add(view_user_organizations)
         db.session.add(view_specific_organizations)
@@ -213,47 +271,84 @@ def seed_db():
         db.session.add(update_current_organization)
         db.session.add(update_all_organizations)
         db.session.add(delete_organization)
+        #people
         db.session.add(view_all_people)
         db.session.add(view_all_current_org_employee)
         db.session.add(view_all_current_org_people)
         db.session.add(view_all_current_org_patients)
-
+        db.session.add(update_all_people)
+        db.session.add(update_all_current_org_people)
+        db.session.add(create_all_people)
+        db.session.add(create_current_org_people)
+        db.session.add(create_base_user)
+        db.session.add(delete_all_people)
+        db.session.add(delete_current_org_people)
+        #messages
+        db.session.add(send_message)
         db.session.add(view_all_messages)
         db.session.add(view_all_current_org_messages)
         db.session.add(view_all_current_location_messages)
         db.session.add(send_announcement)
-
+        #locations
         db.session.add(view_all_locations)
         db.session.add(view_current_location)
         db.session.add(create_new_location)
         db.session.add(create_new_location_superadmin)
-        db.session.add(delete_location)
+        db.session.add(delete_all_locations)
+        db.session.add(delete_current_org_location)
         db.session.add(update_all_locations)
         db.session.add(update_current_location)
         db.session.add(view_current_org_locations)
         db.session.commit()
         ###ADD PERMISSIONS TO APPROPRIATE ROLES
-        #MAKE SURE TO SAVE THIS PART
+        
 
         #SUPERADMIN ROLE
+        #orgs
+        super_admin_role.add_permission(super_admin_role.id, Permissions.CREATE_NEW_ORGANIZATION.value)
         super_admin_role.add_permission(super_admin_role.id, Permissions.VIEW_ALL_ORGANIZATIONS.value)
+        super_admin_role.add_permission(super_admin_role.id, Permissions.UPDATE_ALL_ORGANIZATIONS.value)
+        super_admin_role.add_permission(super_admin_role.id, Permissions.DELETE_ORGANIZATION.value)
+        #people
         super_admin_role.add_permission(super_admin_role.id, Permissions.VIEW_ALL_PEOPLE.value)
+        super_admin_role.add_permission(super_admin_role.id, Permissions.CREATE_ALL_PEOPLE.value)
+        super_admin_role.add_permission(super_admin_role.id, Permissions.DELETE_ALL_PEOPLE.value)
+        super_admin_role.add_permission(super_admin_role.id, Permissions.UPDATE_ALL_PEOPLE.value)
+        #messages
         super_admin_role.add_permission(super_admin_role.id, Permissions.VIEW_ALL_MESSAGES.value)
+        #locations
         super_admin_role.add_permission(super_admin_role.id, Permissions.VIEW_ALL_LOCATIONS.value)
         super_admin_role.add_permission(super_admin_role.id, Permissions.CREATE_NEW_LOCATION_SUPERADMIN.value)
+        super_admin_role.add_permission(super_admin_role.id, Permissions.DELETE_ALL_LOCATIONS.value)
+        super_admin_role.add_permission(super_admin_role.id, Permissions.UPDATE_ALL_LOCATIONS.value)
+
         #ADMIN ROLE
+        #orgs
         admin_role.add_permission(admin_role.id, Permissions.VIEW_CURRENT_ORGANIZATION.value)
+        admin_role.add_permission(admin_role.id, Permissions.UPDATE_CURRENT_ORGANIZATION.value)
+        #people
         admin_role.add_permission(admin_role.id, Permissions.VIEW_ALL_CURRENT_ORG_PEOPLE.value)
+        admin_role.add_permission(admin_role.id, Permissions.CREATE_CURRENT_ORG_PEOPLE.value)
+        admin_role.add_permission(admin_role.id, Permissions.UPDATE_CURRENT_ORG_PEOPLE.value)
+        admin_role.add_permission(admin_role.id, Permissions.DELETE_CURRENT_ORG_PEOPLE.value)
+        #locations
         admin_role.add_permission(admin_role.id, Permissions.VIEW_ALL_CURRENT_ORG_LOCATIONS.value)
+        admin_role.add_permission(admin_role.id, Permissions.UPDATE_CURRENT_LOCATION.value)
         admin_role.add_permission(admin_role.id, Permissions.CREATE_NEW_LOCATION.value)
+        admin_role.add_permission(admin_role.id, Permissions.DELETE_CURRENT_ORG_LOCATIONS.value)
+
         #PHYSICIAN ROLE
         physician_role.add_permission(physician_role.id, Permissions.VIEW_ALL_CURRENT_ORG_EMPLOYEE.value)
         physician_role.add_permission(physician_role.id, Permissions.VIEW_ALL_CURRENT_ORG_MESSAGES.value)
         physician_role.add_permission(physician_role.id, Permissions.VIEW_CURRENT_LOCATION.value)
         physician_role.add_permission(physician_role.id, Permissions.SEND_ANNOUNCEMENT.value)
+        physician_role.add_permission(physician_role.id, Permissions.SEND_MESSAGE.value)
+        physician_role.add_permission(physician_role.id, Permissions.CREATE_BASE_USER.value)
         #EMPLOYEE ROLE
         employee_role.add_permission(employee_role.id, Permissions.VIEW_ALL_CURRENT_ORG_PATIENTS.value)
         employee_role.add_permission(employee_role.id, Permissions.VIEW_ALL_CURRENT_LOCATION_MESSAGES.value)
+        employee_role.add_permission(employee_role.id, Permissions.SEND_MESSAGE.value)
+        employee_role.add_permission(employee_role.id, Permissions.CREATE_BASE_USER.value)
         
     if Organization.query.count() == 0:
         organization = Organization(

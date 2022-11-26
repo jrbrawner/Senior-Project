@@ -71,6 +71,7 @@ export default function App() {
         <Form.Label>Location Name</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="name"
             defaultValue={location.name}
@@ -81,6 +82,7 @@ export default function App() {
         <Form.Label>Address</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="address"
             defaultValue={location.address}
@@ -91,6 +93,7 @@ export default function App() {
         <Form.Label>City</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="city"
             defaultValue={location.city}
@@ -101,6 +104,7 @@ export default function App() {
         <Form.Label>State</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="state"
             defaultValue={location.state}
@@ -111,6 +115,7 @@ export default function App() {
         <Form.Label>Zip Code</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="zipCode"
             defaultValue={location.zip_code}
@@ -121,6 +126,7 @@ export default function App() {
         <Form.Label>Phone Number</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="phoneNumber"
             defaultValue={location.phone_number}

@@ -181,7 +181,7 @@ class User(UserMixin, db.Model):
     location_id = db.Column(db.ForeignKey("Location.id"), nullable=False)
 
     locations = db.relationship(
-        "Location", secondary=locations_users, backref=db.backref("User", lazy="dynamic")
+        "Location", secondary=locations_users, backref=db.backref("Location", lazy="dynamic")
     )
 
     organization_id = db.Column(db.ForeignKey("Organization.id"), nullable=False)
@@ -295,7 +295,8 @@ class User(UserMixin, db.Model):
             "roles": [x.serialize_name() for x in self.roles],
             "email": self.email,
             "phone_number": self.phone_number,
-            "locations": [x.serialize_name() for x in self.locations]
+            "locations": [x.serialize_name() for x in self.locations],
+            "organization_id": self.organization_id
         }
 
     def serialize_msg_sidebar(self):
