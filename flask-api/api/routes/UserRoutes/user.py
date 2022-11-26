@@ -103,7 +103,7 @@ def get_user(id):
         if user is None:
             return WebHelpers.EasyResponse("User with that id does not exist.", 404)
         
-        if user.organization == current_user.organization_id:
+        if user.organization_id == current_user.organization_id:
             resp = jsonify(user.serialize_user_display())
             resp.status_code = 200
             # logging.info(f"User id - {current_user.id} - accessed patient with id of {id}.")
@@ -170,33 +170,155 @@ def update_user(id):
 @login_required
 @cross_origin()
 def create_user():
+    if current_user.has_permission(Permissions.CREATE_ALL_PEOPLE):
+        user_name = request.form["name"]
+        email = request.form["email"].lower()
+        password = request.form["password"]
+        phone_number = request.form["phoneNumber"]
 
-    name = request.form["name"]
-    email = request.form["email"].lower()
-    password = request.form["password"]
-    role = request.form["role"]
-    phone_number = request.form["phoneNumber"]
-    location_id = request.form["locationId"]
-    organization_id = Location.query.get(location_id).organization_id
+        role = request.form.get("roleGroup")
+        
+        locations = Location.query.all()
+        location_values = {}
+        selected_locations = []
+        
+        for i in locations:
+            location_values[i.name] = request.form.get(i.name)
+        
+        for name,checked in location_values.items():
+            if checked == 'on':
+                location = Location.query.filter_by(name=name).first()
+                selected_locations.append(location)
 
-    user = user_datastore.find_user(email=email)
-    if user is None:
-        password = hash_password(password)
-        user = user_datastore.create_user(
-            email=email,
-            name=name,
-            password=password,
-            phone_number=phone_number,
-            location_id=location_id,
-            organization_id=organization_id,
-        )
+        organization_id = selected_locations[0].organization_id
 
-        user_datastore.add_role_to_user(user, role)
-        db.session.commit()
-        user.add_location(user.id, location_id)
-        logging.debug(f"New user {email} created.).")
-        return WebHelpers.EasyResponse(f"New user {user.name} created.", 201)
-    return WebHelpers.EasyResponse(f"User with that email already exists.", 400)
+        user = user_datastore.find_user(email=email)
+        if user is None:
+            user = user_datastore.find_user(phone_number=phone_number)
+            if user is None:
+                password = hash_password(password)
+                
+                user = user_datastore.create_user(
+                    email=email,
+                    name=user_name,
+                    password=password,
+                    phone_number=phone_number,
+                    location_id=selected_locations[0].id,
+                    organization_id=organization_id,
+                )
+
+                db.session.commit()
+                user_datastore.add_role_to_user(user, role)
+
+                for i in selected_locations:
+                    user.add_location(user.id, i.id)
+
+                logging.debug(f"New user {email} created.).")
+                return WebHelpers.EasyResponse(f"New user {user.name} created.", 201)
+            return WebHelpers.EasyResponse(f"User with that phone number already exists.", 400)
+        return WebHelpers.EasyResponse(f"User with that email already exists.", 400)
+    if current_user.has_permission(Permissions.CREATE_CURRENT_ORG_PEOPLE):
+        user_name = request.form["name"]
+        email = request.form["email"].lower()
+        password = request.form["password"]
+        phone_number = request.form["phoneNumber"]
+
+        role = request.form.get("roleGroup")
+        
+        locations = Location.query.filter_by(organization_id=current_user.organization_id).all()
+        location_values = {}
+        selected_locations = []
+        
+        for i in locations:
+            location_values[i.name] = request.form.get(i.name)
+        
+        for name,checked in location_values.items():
+            if checked == 'on':
+                location = Location.query.filter_by(name=name).first()
+                selected_locations.append(location)
+
+        organization_id = current_user.organization_id
+
+        user = user_datastore.find_user(email=email)
+        if user is None:
+            user = user_datastore.find_user(phone_number=phone_number)
+            if user is None:
+                password = hash_password(password)
+                
+                user = user_datastore.create_user(
+                    email=email,
+                    name=user_name,
+                    password=password,
+                    phone_number=phone_number,
+                    location_id=selected_locations[0].id,
+                    organization_id=organization_id,
+                )
+
+                db.session.commit()
+                if role != "Super Admin":
+                    user_datastore.add_role_to_user(user, role)
+                else:
+                    return WebHelpers.EasyResponse(f"Error. Please try again.", 400)
+
+                for i in selected_locations:
+                    user.add_location(user.id, i.id)
+
+                logging.debug(f"New user {email} created.).")
+                return WebHelpers.EasyResponse(f"New user {user.name} created.", 201)
+            return WebHelpers.EasyResponse(f"User with that phone number already exists.", 400)
+        return WebHelpers.EasyResponse(f"User with that email already exists.", 400)
+    if current_user.has_permission(Permissions.CREATE_BASE_USER):
+        user_name = request.form["name"]
+        email = request.form["email"].lower()
+        password = request.form["password"]
+        phone_number = request.form["phoneNumber"]
+
+        role = request.form.get("roleGroup")
+        
+        locations = Location.query.filter_by(organization_id=current_user.organization_id).all()
+        location_values = {}
+        selected_locations = []
+        
+        for i in locations:
+            location_values[i.name] = request.form.get(i.name)
+        
+        for name,checked in location_values.items():
+            if checked == 'on':
+                location = Location.query.filter_by(name=name).first()
+                selected_locations.append(location)
+
+        organization_id = current_user.organization_id
+
+        user = user_datastore.find_user(email=email)
+        if user is None:
+            user = user_datastore.find_user(phone_number=phone_number)
+            if user is None:
+                password = hash_password(password)
+                
+                user = user_datastore.create_user(
+                    email=email,
+                    name=user_name,
+                    password=password,
+                    phone_number=phone_number,
+                    location_id=selected_locations[0].id,
+                    organization_id=organization_id,
+                )
+
+                db.session.commit()
+                if role != "Super Admin" or role != "Admin":
+                    user_datastore.add_role_to_user(user, role)
+                else:
+                    return WebHelpers.EasyResponse(f"Error. Please try again.", 400)
+
+                for i in selected_locations:
+                    user.add_location(user.id, i.id)
+
+                logging.debug(f"New user {email} created.).")
+                return WebHelpers.EasyResponse(f"New user {user.name} created.", 201)
+            return WebHelpers.EasyResponse(f"User with that phone number already exists.", 400)
+        return WebHelpers.EasyResponse(f"User with that email already exists.", 400)
+    else:
+        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
 
 
 @user_bp.delete("/api/user/<int:id>")
@@ -206,17 +328,31 @@ def delete_user(id):
     """
     DELETE: Deletes specified user.
     """
-    user = User.query.get(id)
-    #user_name = user.name
-    user_id = user.id
-    if user:
-        db.session.delete(user)
-        db.session.commit()
-        logging.warning(
-            f"User id - {current_user.id} - deleted user with id {user_id}."
-         )
-        return WebHelpers.EasyResponse(f"{user_id} deleted.", 200)
-    return WebHelpers.EasyResponse(f"user with that id does not exist.", 404)
+    if current_user.has_permission(Permissions.DELETE_ALL_PEOPLE):
+        user = User.query.get(id)
+        if user:
+            db.session.delete(user)
+            db.session.commit()
+            logging.warning(
+                f"User id - {current_user.id} - deleted user with id {id}."
+            )
+            return WebHelpers.EasyResponse(f"User {id} deleted.", 200)
+        return WebHelpers.EasyResponse(f"user with that id does not exist.", 404)
+    if current_user.has_permission(Permissions.DELETE_CURRENT_ORG_PEOPLE):
+        user = User.query.get(id)
+        if user:
+            if current_user.organization_id == user.organization_id:
+                db.session.delete(user)
+                db.session.commit()
+                logging.warning(
+                    f"User id - {current_user.id} - deleted user with id {id}."
+                )
+                return WebHelpers.EasyResponse(f"User {id} deleted.", 200)
+        return WebHelpers.EasyResponse(f"user with that id does not exist.", 404)
+    else:
+        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+
+
 
 
 @login_required
@@ -300,20 +436,6 @@ def decline_new_user(id):
         )
     return WebHelpers.EasyResponse("User with that id does not exist.", 404)
 
-"""
-
-@login_required
-@cross_origin()
-@user_bp.get("/api/user/<int:id>/messages")
-def get_user_msgs(id):
-
-    user = user_datastore.find_user(id=id)
-    if user:
-        resp = jsonify([x.serialize() for x in user.messages_sent])
-        resp.status_code = 200
-
-        return resp
-"""
 
 @login_required
 @user_bp.get("/api/user/profile")
@@ -364,5 +486,26 @@ def change_user_password() -> Response:
         return WebHelpers.EasyResponse('Passwords do not match', 400)
     return WebHelpers.EasyResponse('Current password does not match', 400)
 
+@login_required
+@user_bp.get("/api/user/create/locations")
+def get_available_locations() -> Response:
+    
+    if current_user.has_permission(Permissions.CREATE_ALL_PEOPLE):
+        orgs = Organization.query.all()
+        locations = Location.query.all()
+        return jsonify([x.serialize() for x in locations])
 
+    if current_user.has_permission(Permissions.CREATE_CURRENT_ORG_PEOPLE):
+        organization_id = current_user.organization_id
+        locations = Location.query.filter_by(organization_id = organization_id).all()
+        return jsonify([x.serialize() for x in locations])
+
+    
+    if current_user.has_permission(Permissions.CREATE_BASE_USER):
+
+        return jsonify([x.serialize() for x in current_user.locations])
+
+    else:
+        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+    
 

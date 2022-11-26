@@ -62,7 +62,7 @@ export default function NavigationBar(props){
                 <Nav.Link href="/role">Role Management</Nav.Link>
               </Nav>
               
-              <NavDropdown title={<img src="person-circle.svg"/>}>
+              <NavDropdown title={<img src="person-circle.svg"/>}  >
                 <NavDropdown.Item><i className="fa fa-envelope fa-fw"></i>Profile</NavDropdown.Item>
                 <NavDropdown.Item><i className="fa fa-gear fa-fw"></i>Settings</NavDropdown.Item>
                 <NavDropdown.Item divider />

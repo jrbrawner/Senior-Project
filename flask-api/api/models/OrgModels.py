@@ -181,7 +181,7 @@ class User(UserMixin, db.Model):
     location_id = db.Column(db.ForeignKey("Location.id"), nullable=False)
 
     locations = db.relationship(
-        "Location", secondary=locations_users, backref=db.backref("User", lazy="dynamic")
+        "Location", secondary=locations_users, backref=db.backref("Location", lazy="dynamic")
     )
 
     organization_id = db.Column(db.ForeignKey("Organization.id"), nullable=False)
