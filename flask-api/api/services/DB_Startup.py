@@ -320,6 +320,7 @@ def seed_db():
         super_admin_role.add_permission(super_admin_role.id, Permissions.VIEW_ALL_LOCATIONS.value)
         super_admin_role.add_permission(super_admin_role.id, Permissions.CREATE_NEW_LOCATION_SUPERADMIN.value)
         super_admin_role.add_permission(super_admin_role.id, Permissions.DELETE_ALL_LOCATIONS.value)
+        super_admin_role.add_permission(super_admin_role.id, Permissions.UPDATE_ALL_LOCATIONS.value)
 
         #ADMIN ROLE
         #orgs

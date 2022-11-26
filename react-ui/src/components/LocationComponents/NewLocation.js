@@ -29,7 +29,10 @@ export default function App() {
                 setOrganizations(response.data);
                 }).catch(function (error) {
                   if (error.response)
-                    {
+                    {   
+                      if (error.response.status === 401){
+                            alert(error.response.data['msg']);
+                        }
                         if (error.response.status === 401){
                             navigate(`/login`);
                             console.log('Not authenticated.')
@@ -56,6 +59,9 @@ export default function App() {
         }).catch(function (error) {
           if (error.response)
             {
+                if (error.response.status === 400){
+                  alert(error.response.data['msg']);
+                }
                 if (error.response.status === 401){
                     navigate(`/login`);
                     console.log('Not authenticated.');
@@ -82,6 +88,7 @@ export default function App() {
         <Form.Label>Location Name</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="name"
             defaultValue=""
@@ -92,6 +99,7 @@ export default function App() {
         <Form.Label>Address</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="address"
             defaultValue=""
@@ -102,6 +110,7 @@ export default function App() {
         <Form.Label>City</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="city"
             defaultValue=""
@@ -112,6 +121,7 @@ export default function App() {
         <Form.Label>State</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="state"
             defaultValue=""
@@ -122,6 +132,7 @@ export default function App() {
         <Form.Label>Zip Code</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="zipCode"
             defaultValue=""
@@ -132,6 +143,7 @@ export default function App() {
         <Form.Label>Phone Number</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="phoneNumber"
             defaultValue=""
@@ -144,10 +156,11 @@ export default function App() {
         return (
             <div>
             <Form.Check 
-                type={"checkbox"}
+                type={"radio"}
                 defaultChecked={false}
                 id={`${organization.name}`}
-                name={organization.name}
+                name="radioGroup"
+                value={organization.name}
                 label={`${organization.name}`}
                 />
             </div>
@@ -168,6 +181,7 @@ export default function App() {
         <Form.Label>Location Name</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="name"
             defaultValue=""
@@ -178,6 +192,7 @@ export default function App() {
         <Form.Label>Address</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="address"
             defaultValue=""
@@ -188,6 +203,7 @@ export default function App() {
         <Form.Label>City</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="city"
             defaultValue=""
@@ -198,6 +214,7 @@ export default function App() {
         <Form.Label>State</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="state"
             defaultValue=""
@@ -208,6 +225,7 @@ export default function App() {
         <Form.Label>Zip Code</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="zipCode"
             defaultValue=""
@@ -218,6 +236,7 @@ export default function App() {
         <Form.Label>Phone Number</Form.Label>
         <Form.Control
             required
+            autocomplete="off"
             type="text"
             name="phoneNumber"
             defaultValue=""
