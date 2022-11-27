@@ -57,6 +57,7 @@ class Location(db.Model):
     # physicians = db.relationship("Physician", backref="physicians", lazy=True)
 
     def serialize(self):
+        organization_name = Organization.query.get(self.organization_id).name
         return {
             "id": self.id,
             "name": self.name,
@@ -65,6 +66,7 @@ class Location(db.Model):
             "city": self.city,
             "state": self.state,
             "organization_id": self.organization_id,
+            "organization_name": organization_name,
             "zip_code": self.zip_code,
             "messages_no_response": self.get_messages_with_no_response()
             #'physicians': jsonify([x.serialize() for x in self.physicians])

@@ -122,6 +122,9 @@ def update_user(id):
     PUT: Updates specified user.
     """
     if current_user.has_permission(Permissions.UPDATE_ALL_PEOPLE):
+
+        user : User
+
         user = User.query.get(id)
         if user:
             name = request.form["name"]
@@ -129,7 +132,7 @@ def update_user(id):
             location_id = request.form["locationId"]
             roles = request.form["roles"]
             phone_number = request.form["phoneNumber"]
-
+            
             user.name = name
             user.email = email
             user.location_id = location_id

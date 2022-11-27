@@ -106,12 +106,14 @@ export default function App() {
       </Form.Group>
 
       <div className="mb-3">
+      <Form.Label>Users Locations</Form.Label>
       {user.locations.map((location) => {
 
             return (
                 <div>
                 <Form.Check 
                     type={"checkbox"}
+                    disabled={true}
                     defaultChecked={false}
                     id={`${location.name}`}
                     name={location.name}

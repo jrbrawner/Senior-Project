@@ -506,7 +506,7 @@ def seed_db():
         user = user_datastore.create_user(
             name="Test1Admin",
             email="test1admin@email.com",
-            organization_id=2,
+            organization_id=3,
             location_id=3,
             password=password,
             phone_number="+1812",

@@ -5,11 +5,15 @@ import logging
 from flask_security import current_user
 from api.services.WebHelpers import WebHelpers
 from api import user_datastore
+from flask_security import login_required, roles_required, roles_accepted
+
 
 role_bp = Blueprint("role_bp", __name__)
 
 
 @role_bp.get("/api/role/<int:id>")
+@login_required
+@roles_accepted('Super Admin')
 def get_role(id):
 
     role = Role.query.get(id)
@@ -22,17 +26,35 @@ def get_role(id):
 
 
 @role_bp.get("/api/role")
+@login_required
+@roles_accepted('Super Admin', 'Admin')
 def get_roles():
 
-    role = Role.query.all()
-    logging.info(f"User id - {current_user.id} accessed all roles.")
-    roles = [x.serialize() for x in role]
-    resp = jsonify(roles)
-    resp.status_code = 200
-    return resp
+    roles = []
+    
+    if 'Super Admin' in current_user.roles:
+        role = Role.query.all()
+        logging.info(f"User id - {current_user.id} accessed all roles.")
+        roles = [x.serialize() for x in role]
+        resp = jsonify(roles)
+        resp.status_code = 200
+        return resp
+    if 'Admin' in current_user.roles:
+
+        my_list = ['Admin', 'Physician', 'Employee']
+        
+        role = Role.query.filter(Role.name.in_(my_list)).all()
+        roles = [x.serialize() for x in role]
+        resp = jsonify(roles)
+        resp.status_code = 200
+        return resp
+    else:
+        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
 
 
 @role_bp.post("/api/role")
+@login_required
+@roles_required('Super Admin')
 def create_role():
 
     role_name = request.form["name"]
@@ -59,6 +81,8 @@ def create_role():
 
 
 @role_bp.put("/api/role/<int:id>")
+@login_required
+@roles_required('Super Admin')
 def update_role(id):
 
     role = Role.query.get(id)
@@ -98,6 +122,8 @@ def update_role(id):
 
 
 @role_bp.delete("/api/role/<int:id>")
+@login_required
+@roles_required('Super Admin')
 def delete_role(id):
 
     role = Role.query.get(id)
@@ -111,6 +137,8 @@ def delete_role(id):
 
 
 @role_bp.get("/api/permission")
+@login_required
+@roles_required('Super Admin')
 def get_permissions():
 
     permissions = Permission.query.all()
@@ -121,7 +149,11 @@ def get_permissions():
     return resp
 
 @role_bp.post("/api/user/roles/<int:id>")
+@login_required
+@roles_accepted('Super Admin', 'Admin')
 def modify_roles(id):
+
+    user : User
 
     user = User.query.get(id)
     roles = Role.query.all()
@@ -182,7 +214,7 @@ def modify_roles(id):
 @role_bp.get("/api/user/new/roles")
 def get_available_roles():
 
-    roles = []
+    roles : Role
 
     if 'Super Admin' in current_user.roles:
         roles = Role.query.all()
