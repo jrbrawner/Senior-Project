@@ -39,7 +39,9 @@ def get_organizations():
         resp.status_code = 200
         return resp
     else:
-        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+        return WebHelpers.EasyResponse(
+            "You are not authorized for this functionality.", 403
+        )
 
 
 @organization_bp.get("/api/organization/<int:id>")
@@ -53,26 +55,35 @@ def get_organization(id):
         organization = Organization.query.get(id)
 
         if organization is None:
-            return WebHelpers.EasyResponse("Organization with that id does not exist.", 404)
+            return WebHelpers.EasyResponse(
+                "Organization with that id does not exist.", 404
+            )
 
         resp = jsonify(organization.serialize())
         resp.status_code = 200
-        logging.info(f"User id - {current_user.id} - accessed organization id - {id} - ")
+        logging.info(
+            f"User id - {current_user.id} - accessed organization id - {id} - "
+        )
         return resp
     if current_user.has_permission(Permissions.VIEW_CURRENT_ORGANIZATION):
         organization = Organization.query.get(current_user.organization_id)
 
         if organization is None:
-            return WebHelpers.EasyResponse("Organization with that id does not exist.", 404)
+            return WebHelpers.EasyResponse(
+                "Organization with that id does not exist.", 404
+            )
 
         resp = jsonify(organization.serialize())
         resp.status_code = 200
-        logging.info(f"User id - {current_user.id} - accessed organization id - {id} - ")
+        logging.info(
+            f"User id - {current_user.id} - accessed organization id - {id} - "
+        )
         return resp
 
     else:
-        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
-
+        return WebHelpers.EasyResponse(
+            "You are not authorized for this functionality.", 403
+        )
 
 
 @organization_bp.post("/api/organization")
@@ -104,7 +115,9 @@ def create_organization():
             f"New organization {organization.name} created.", 201
         )
     else:
-        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+        return WebHelpers.EasyResponse(
+            "You are not authorized for this functionality.", 403
+        )
 
 
 @organization_bp.put("/api/organization/<int:id>")
@@ -115,8 +128,8 @@ def update_organization(id):
     """
     if current_user.has_permission(Permissions.UPDATE_ALL_ORGANIZATIONS):
         name = request.form["name"]
-        twilio_account_id = request.form['twilio_account_id']
-        twilio_auth_token = request.form['twilio_auth_token']
+        twilio_account_id = request.form["twilio_account_id"]
+        twilio_auth_token = request.form["twilio_auth_token"]
 
         organization = Organization.query.get(id)
 
@@ -127,11 +140,13 @@ def update_organization(id):
             db.session.commit()
             logging.info(f"User id {current_user.id} updated organization id - {id} -")
             return WebHelpers.EasyResponse(f"{name} updated.", 200)
-        return WebHelpers.EasyResponse(f"Organization with that id does not exist.", 404)
+        return WebHelpers.EasyResponse(
+            f"Organization with that id does not exist.", 404
+        )
     if current_user.has_permission(Permissions.UPDATE_CURRENT_ORGANIZATION):
         name = request.form["name"]
-        twilio_account_id = request.form['twilio_account_id']
-        twilio_auth_token = request.form['twilio_auth_token']
+        twilio_account_id = request.form["twilio_account_id"]
+        twilio_auth_token = request.form["twilio_auth_token"]
 
         organization = Organization.query.get(current_user.organization_id)
 
@@ -142,10 +157,13 @@ def update_organization(id):
             db.session.commit()
             logging.info(f"User id {current_user.id} updated organization id - {id} -")
             return WebHelpers.EasyResponse(f"{name} updated.", 200)
-        return WebHelpers.EasyResponse(f"Organization with that id does not exist.", 404)
+        return WebHelpers.EasyResponse(
+            f"Organization with that id does not exist.", 404
+        )
     else:
-        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
-    
+        return WebHelpers.EasyResponse(
+            "You are not authorized for this functionality.", 403
+        )
 
 
 @organization_bp.delete("/api/organization/<int:id>")
@@ -158,8 +176,8 @@ def delete_organization(id):
         for i in locations:
             db.session.delete(i)
             db.session.commit()
-        
-        users = User.query.filter_by(organization_id = id).all()
+
+        users = User.query.filter_by(organization_id=id).all()
         for i in users:
             db.session.delete(i)
             db.session.commit()
@@ -171,9 +189,13 @@ def delete_organization(id):
             db.session.commit()
             logging.info(f"User id {current_user.id} deleted org id - {id} -")
             return WebHelpers.EasyResponse(f"Organization deleted.", 200)
-        return WebHelpers.EasyResponse(f"Organization with that id does not exist.", 404)
+        return WebHelpers.EasyResponse(
+            f"Organization with that id does not exist.", 404
+        )
     else:
-        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+        return WebHelpers.EasyResponse(
+            "You are not authorized for this functionality.", 403
+        )
 
 
 @organization_bp.get("/api/organization/<int:id>/locations")

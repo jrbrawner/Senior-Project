@@ -20,14 +20,11 @@ class TwilioClient:
         message = self.client.messages.create(
             body=text, from_=location_number, to=user_number
         )
-        
+
         user_acc = user_datastore.find_user(phone_number=user_number)
         if user_acc is None:
             track_message = Message(
-                sender_id=None,
-                location_id=location_id,
-                recipient_id=None,
-                body=text
+                sender_id=None, location_id=location_id, recipient_id=None, body=text
             )
             db.session.add(track_message)
             db.session.commit()
@@ -36,7 +33,7 @@ class TwilioClient:
                 sender_id=None,
                 location_id=location_id,
                 recipient_id=user_acc.id,
-                body=text
+                body=text,
             )
             db.session.add(track_message)
             db.session.commit()

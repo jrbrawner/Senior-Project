@@ -28,32 +28,35 @@ def get_locations():
 
     """
 
-    #Super Admin
+    # Super Admin
     if current_user.has_permission(Permissions.VIEW_ALL_LOCATIONS):
         locations = Location.query.all()
         resp = jsonify([x.serialize() for x in locations])
         resp.status_code = 200
         logging.info(f"User id - {current_user.id} - accessed all locations.")
         return resp
-    #Admin
+    # Admin
     if current_user.has_permission(Permissions.VIEW_ALL_CURRENT_ORG_LOCATIONS):
-        locations = Location.query.filter_by(organization_id = current_user.organization_id).all()
+        locations = Location.query.filter_by(
+            organization_id=current_user.organization_id
+        ).all()
         resp = jsonify([x.serialize() for x in locations])
         resp.status_code = 200
         logging.info(f"User id - {current_user.id} - accessed all current users.")
         return resp
-    #Physician
+    # Physician
     if current_user.has_permission(Permissions.VIEW_CURRENT_LOCATION):
         locations = current_user.locations
         resp = jsonify([x.serialize() for x in locations])
         resp.status_code = 200
-        logging.info(f"User id - {current_user.id} - accessed all current employees & patients.")
+        logging.info(
+            f"User id - {current_user.id} - accessed all current employees & patients."
+        )
         return resp
     else:
-        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
-
-
-
+        return WebHelpers.EasyResponse(
+            "You are not authorized for this functionality.", 403
+        )
 
 
 @location_bp.get("/api/location/<int:id>")
@@ -73,20 +76,24 @@ def get_location(id):
 
         return resp
     if current_user.has_permission(Permissions.UPDATE_CURRENT_LOCATION):
-        
+
         location = Location.query.get(id)
 
         if location.organization_id == current_user.organization_id:
             if location is None:
-                return WebHelpers.EasyResponse("Location with that id does not exist.", 404)
+                return WebHelpers.EasyResponse(
+                    "Location with that id does not exist.", 404
+                )
 
             resp = jsonify(location.serialize())
             resp.status_code = 200
 
             return resp
-        return 
+        return
     else:
-        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+        return WebHelpers.EasyResponse(
+            "You are not authorized for this functionality.", 403
+        )
 
 
 @location_bp.post("/api/location")
@@ -95,19 +102,19 @@ def create_Location():
     """
     POST: Creates new Location.
     """
-    #Super admin
+    # Super admin
     if current_user.has_permission(Permissions.CREATE_NEW_LOCATION_SUPERADMIN):
 
-        organization = request.form['radioGroup']
+        organization = request.form["radioGroup"]
         organization_id = Organization.query.filter_by(name=organization).first().id
-        
+
         name = request.form["name"]
         phone_number = request.form["phoneNumber"]
         address = request.form["address"]
         city = request.form["city"]
         state = request.form["state"]
         zip_code = request.form["zipCode"]
-        
+
         if Location.query.filter_by(phone_number=phone_number).scalar() is None:
 
             location = Location(
@@ -125,11 +132,14 @@ def create_Location():
             logging.debug(
                 f"User id - {current_user.id} - created new location id - {location.id} -"
             )
-            return WebHelpers.EasyResponse(f"New location {location.name} created.", 201)
-        return WebHelpers.EasyResponse(f"Location already exists with that phone number. ", 400)
+            return WebHelpers.EasyResponse(
+                f"New location {location.name} created.", 201
+            )
+        return WebHelpers.EasyResponse(
+            f"Location already exists with that phone number. ", 400
+        )
 
-
-    #Admin
+    # Admin
     if current_user.has_permission(Permissions.CREATE_NEW_LOCATION):
         name = request.form["name"]
         phone_number = request.form["phoneNumber"]
@@ -158,7 +168,9 @@ def create_Location():
 
         return WebHelpers.EasyResponse(f"New location {location.name} created.", 201)
     else:
-        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+        return WebHelpers.EasyResponse(
+            "You are not authorized for this functionality.", 403
+        )
 
 
 @location_bp.put("/api/location/<int:id>")
@@ -216,8 +228,9 @@ def update_Location(id):
                 # logging.info(f"User id - {current_user.id} - updated location id - {location.id} -")
                 return WebHelpers.EasyResponse(f"Location updated.", 200)
     else:
-        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
-    
+        return WebHelpers.EasyResponse(
+            "You are not authorized for this functionality.", 403
+        )
 
 
 @location_bp.delete("/api/location/<int:id>")
@@ -242,6 +255,10 @@ def delete_Location(id):
                 db.session.commit()
                 logging.info(f"User id - {current_user.id} - deleted location - {id} -")
                 return WebHelpers.EasyResponse(f"Location deleted.", 200)
-            return WebHelpers.EasyResponse(f"Location with that id does not exist.", 404)
+            return WebHelpers.EasyResponse(
+                f"Location with that id does not exist.", 404
+            )
     else:
-        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+        return WebHelpers.EasyResponse(
+            "You are not authorized for this functionality.", 403
+        )

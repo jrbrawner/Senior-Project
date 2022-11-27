@@ -68,14 +68,16 @@ def create_message():
     body = request.values.get("Body", None)
     to = request.values.get("To", None)
 
-    #handle photos
-    num_media = int(request.values.get('NumMedia', 0))
+    # handle photos
+    num_media = int(request.values.get("NumMedia", 0))
 
-    media_files = [(request.values.get(f"MediaUrl{i}", ''),
-                    request.values.get(f"MediaContentType{i}", ''))
-                    for i in range(0, num_media)]
-
-
+    media_files = [
+        (
+            request.values.get(f"MediaUrl{i}", ""),
+            request.values.get(f"MediaContentType{i}", ""),
+        )
+        for i in range(0, num_media)
+    ]
 
     location = Location.query.filter_by(phone_number=to).first()
     organization_id = location.organization_id
@@ -91,15 +93,18 @@ def create_message():
         if user_status == "Accepted":
             status_msg = f"Your physician has received your message."
             MessageTracking.create_new_message_patient(
-                phone_number=phone_number, body=body, location_id=location.id, media_files=media_files
+                phone_number=phone_number,
+                body=body,
+                location_id=location.id,
+                media_files=media_files,
             )
-            #automated response when user is fully accepted
-            #twilioClient.send_automated_message(
+            # automated response when user is fully accepted
+            # twilioClient.send_automated_message(
             #    location.phone_number,
             #    phone_number,
             #    status_msg,
             #    location_id=location.id
-            #)
+            # )
             return WebHelpers.EasyResponse("Success.", 200)
 
         # if new, prepare db table for new account registration
@@ -108,7 +113,10 @@ def create_message():
                 phone_number, location, organization, body
             )
             twilioClient.send_automated_message(
-                location.phone_number, phone_number, text=status_msg, location_id=location.id
+                location.phone_number,
+                phone_number,
+                text=status_msg,
+                location_id=location.id,
             )
             return WebHelpers.EasyResponse("Success.", 200)
 
@@ -118,7 +126,10 @@ def create_message():
                 f"Your physician is in the process of accepting your registration."
             )
             twilioClient.send_automated_message(
-                location.phone_number, phone_number, text=status_msg, location_id=location.id
+                location.phone_number,
+                phone_number,
+                text=status_msg,
+                location_id=location.id,
             )
             return WebHelpers.EasyResponse("Success.", 200)
 
@@ -127,12 +138,15 @@ def create_message():
             status_msg = TwilioSignUpHelpers.CompleteUserSignUp(
                 phone_number=phone_number, msg=body
             )
-            twilioClient.send_automated_message(location.phone_number, phone_number, status_msg, location_id=location.id)
+            twilioClient.send_automated_message(
+                location.phone_number, phone_number, status_msg, location_id=location.id
+            )
             return WebHelpers.EasyResponse("Success.", 200)
-            
+
     except TwilioRestException as e:
         logging.warning(e)
         return WebHelpers.EasyResponse("Error", 400)
+
 
 """
 @message_bp.route("/api/message/<int:id>", methods=["DELETE"])
@@ -153,8 +167,6 @@ def delete_message(id):
 """
 
 
-
-
 @login_required
 @cross_origin()
 @message_bp.get("/api/user/locations")
@@ -162,7 +174,7 @@ def get_message_sidebar_locations():
 
     if current_user:
         if current_user.has_permission(Permissions.VIEW_ALL_MESSAGES):
-            
+
             orgs = Organization.query.all()
 
             locations = Location.query.all()
@@ -173,11 +185,10 @@ def get_message_sidebar_locations():
 
             organization_id = current_user.organization_id
 
-            locations = Location.query.filter_by(organization_id = organization_id).all()
+            locations = Location.query.filter_by(organization_id=organization_id).all()
 
             return jsonify([x.serialize() for x in locations])
 
-        
         if current_user.has_permission(Permissions.VIEW_ALL_CURRENT_LOCATION_MESSAGES):
 
             location_id = current_user.location_id
@@ -187,48 +198,72 @@ def get_message_sidebar_locations():
             return resp_locations
 
         else:
-            return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+            return WebHelpers.EasyResponse(
+                "You are not authorized for this functionality.", 403
+            )
     else:
         return WebHelpers.EasyResponse("You must login to view this page", 401)
+
 
 @login_required
 @cross_origin()
 @message_bp.get("/api/location/<int:id>/users")
 def get_message_sidebar_users(id):
 
-    if current_user.has_permission(Permissions.VIEW_ALL_MESSAGES) or current_user.has_permission(Permissions.VIEW_ALL_CURRENT_ORG_MESSAGES)\
-        or current_user.has_permission(Permissions.VIEW_ALL_CURRENT_LOCATION_MESSAGES):
-        page = request.args.get('page', 1, type=int)
-        #users = User.query.filter(User.location_id==id).filter(User.roles.any(name='Patient')).paginate(page=page, per_page=10, error_out=False)
-        users = User.query.filter(User.location_id==id).filter(User.roles.any(name='Patient')).all()
+    if (
+        current_user.has_permission(Permissions.VIEW_ALL_MESSAGES)
+        or current_user.has_permission(Permissions.VIEW_ALL_CURRENT_ORG_MESSAGES)
+        or current_user.has_permission(Permissions.VIEW_ALL_CURRENT_LOCATION_MESSAGES)
+    ):
+        page = request.args.get("page", 1, type=int)
+        # users = User.query.filter(User.location_id==id).filter(User.roles.any(name='Patient')).paginate(page=page, per_page=10, error_out=False)
+        users = (
+            User.query.filter(User.location_id == id)
+            .filter(User.roles.any(name="Patient"))
+            .all()
+        )
 
         return jsonify([x.serialize_msg_sidebar() for x in users])
     else:
-        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+        return WebHelpers.EasyResponse(
+            "You are not authorized for this functionality.", 403
+        )
 
 
 @login_required
 @cross_origin()
-@message_bp.get('/api/user/<int:id>/messages')
+@message_bp.get("/api/user/<int:id>/messages")
 def get_user_messages(id):
-    
-    if current_user.has_permission(Permissions.VIEW_ALL_MESSAGES) or current_user.has_permission(Permissions.VIEW_ALL_CURRENT_ORG_MESSAGES)\
-        or current_user.has_permission(Permissions.VIEW_ALL_CURRENT_LOCATION_MESSAGES):
-        
-        all_messages = Message.query.order_by(Message.timestamp.asc()).filter((Message.recipient_id==id) | (Message.sender_id==id)).all() 
+
+    if (
+        current_user.has_permission(Permissions.VIEW_ALL_MESSAGES)
+        or current_user.has_permission(Permissions.VIEW_ALL_CURRENT_ORG_MESSAGES)
+        or current_user.has_permission(Permissions.VIEW_ALL_CURRENT_LOCATION_MESSAGES)
+    ):
+
+        all_messages = (
+            Message.query.order_by(Message.timestamp.asc())
+            .filter((Message.recipient_id == id) | (Message.sender_id == id))
+            .all()
+        )
 
         return jsonify([x.serialize() for x in all_messages])
     else:
-        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+        return WebHelpers.EasyResponse(
+            "You are not authorized for this functionality.", 403
+        )
 
 
 @login_required
 @cross_origin()
-@message_bp.post('/api/message/user/<int:id>/location/<int:locationId>')
+@message_bp.post("/api/message/user/<int:id>/location/<int:locationId>")
 def message_user(id, locationId):
 
     location = Location.query.get(locationId)
-    if current_user.has_permission(Permissions.SEND_MESSAGE) and location in current_user.locations:
+    if (
+        current_user.has_permission(Permissions.SEND_MESSAGE)
+        and location in current_user.locations
+    ):
 
         user = User.query.get(id)
         message = request.form["msg"]
@@ -241,7 +276,9 @@ def message_user(id, locationId):
 
         if user:
 
-            twilioClient.send_automated_message(location.phone_number, user.phone_number, message, location.id)
+            twilioClient.send_automated_message(
+                location.phone_number, user.phone_number, message, location.id
+            )
 
             logging.warning(
                 f"{current_user.name} sent a message to patient with id ({user.id})"
@@ -250,19 +287,24 @@ def message_user(id, locationId):
 
         return WebHelpers.EasyResponse(f"User with id {id} does not exist.", 404)
     else:
-        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+        return WebHelpers.EasyResponse(
+            "You are not authorized for this functionality.", 403
+        )
 
 
 @login_required
 @cross_origin()
-@message_bp.post('/api/message/announcement/<int:id>')
+@message_bp.post("/api/message/announcement/<int:id>")
 def send_announcement(id):
 
     location = Location.query.get(id)
-    if current_user.has_permission(Permissions.SEND_ANNOUNCEMENT) and location in current_user.locations:
+    if (
+        current_user.has_permission(Permissions.SEND_ANNOUNCEMENT)
+        and location in current_user.locations
+    ):
 
-        message = request.form['msg']
-        #roles = request.form['roles']
+        message = request.form["msg"]
+        # roles = request.form['roles']
 
         organization_id = location.organization_id
         organization = Organization.query.get(organization_id)
@@ -270,33 +312,37 @@ def send_announcement(id):
         twilioClient = TwilioClient(
             organization.twilio_account_id, organization.twilio_auth_token
         )
-        users = User.query.filter_by(location_id = id).all()
+        users = User.query.filter_by(location_id=id).all()
 
         for i in users:
             try:
-                twilioClient.send_automated_message(location.phone_number, i.phone_number, message, location.id)
+                twilioClient.send_automated_message(
+                    location.phone_number, i.phone_number, message, location.id
+                )
                 logging.warning(
-                f"{current_user.name} sent an announcement to users of location ({location.id})"
+                    f"{current_user.name} sent an announcement to users of location ({location.id})"
                 )
             except TwilioRestException as e:
                 logging.warning(e)
 
         return WebHelpers.EasyResponse(f"Announcement sent.", 200)
     else:
-        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+        return WebHelpers.EasyResponse(
+            "You are not authorized for this functionality.", 403
+        )
+
 
 @login_required
 @cross_origin()
-@message_bp.get('/api/load-photo/<string:photo>')
+@message_bp.get("/api/load-photo/<string:photo>")
 def load_message(photo):
-    if current_user.has_permission(Permissions.VIEW_ALL_MESSAGES) or current_user.has_permission(Permissions.VIEW_ALL_CURRENT_ORG_MESSAGES)\
-        or current_user.has_permission(Permissions.VIEW_ALL_CURRENT_LOCATION_MESSAGES):
-        return send_from_directory("static", f'photos/{photo}')
+    if (
+        current_user.has_permission(Permissions.VIEW_ALL_MESSAGES)
+        or current_user.has_permission(Permissions.VIEW_ALL_CURRENT_ORG_MESSAGES)
+        or current_user.has_permission(Permissions.VIEW_ALL_CURRENT_LOCATION_MESSAGES)
+    ):
+        return send_from_directory("static", f"photos/{photo}")
     else:
-        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
-
-        
-
-
-
-
+        return WebHelpers.EasyResponse(
+            "You are not authorized for this functionality.", 403
+        )
