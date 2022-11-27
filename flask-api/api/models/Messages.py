@@ -11,27 +11,22 @@ photos_message = db.Table(
     db.Column("message_id", db.Integer(), db.ForeignKey("Message.id")),
 )
 
+
 class Photo(db.Model):
     __tablename__ = "Photo"
 
     id = db.Column(db.Integer, primary_key=True)
     photo_url = db.Column(db.String(), nullable=False)
-    message_id = db.Column(db.ForeignKey('Message.id'), nullable=True)
+    message_id = db.Column(db.ForeignKey("Message.id"), nullable=True)
 
     def add_relation(self, photo_id, message_id):
-        stmt = (
-            insert(photos_message).
-            values(photo_id=photo_id, message_id=message_id)
-        )
+        stmt = insert(photos_message).values(photo_id=photo_id, message_id=message_id)
         db.session.execute(stmt)
         self.message_id = message_id
         db.session.commit()
 
     def serialize(self):
-        return {
-            'id': self.id,
-            'photo': self.photo_url
-        }
+        return {"id": self.id, "photo": self.photo_url}
 
 
 class Message(db.Model):
@@ -55,7 +50,7 @@ class Message(db.Model):
         return "<Message {}>".format(self.body)
 
     def serialize(self):
-        
+
         return {
             "id": self.id,
             "sender_id": self.sender_id,

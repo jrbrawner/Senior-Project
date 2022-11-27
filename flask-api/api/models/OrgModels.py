@@ -33,11 +33,13 @@ class Organization(db.Model):
             #'Locations': jsonify([x.serialize() for x in self.Locations])
         }
 
+
 locations_users = db.Table(
     "locations_users",
     db.Column("user_id", db.Integer(), db.ForeignKey("User.id")),
     db.Column("location_id", db.Integer(), db.ForeignKey("Location.id")),
 )
+
 
 class Location(db.Model):
     """Model for Locations."""
@@ -73,24 +75,32 @@ class Location(db.Model):
         }
 
     def serialize_name(self):
-        return {
-            "name": self.name,
-            "id":self.id
-        }
+        return {"name": self.name, "id": self.id}
 
     def get_messages_with_no_response(self):
-        #this could be slow but can be improved later
-        
+        # this could be slow but can be improved later
+
         unresponded = 0
-        users = User.query.filter(User.location_id==self.id).filter(User.roles.any(name='Patient')).all()
-        
+        users = (
+            User.query.filter(User.location_id == self.id)
+            .filter(User.roles.any(name="Patient"))
+            .all()
+        )
+
         if users is not None:
             for i in users:
-                message_history = Message.query.order_by(Message.timestamp.desc()).filter((Message.recipient_id==i.id) | (Message.sender_id==i.id)).first()
+                message_history = (
+                    Message.query.order_by(Message.timestamp.desc())
+                    .filter(
+                        (Message.recipient_id == i.id) | (Message.sender_id == i.id)
+                    )
+                    .first()
+                )
                 if message_history.sender_id == i.id:
                     unresponded += 1
 
         return unresponded
+
 
 roles_users = db.Table(
     "roles_users",
@@ -101,8 +111,9 @@ roles_users = db.Table(
 roles_permissions = db.Table(
     "roles_permissions",
     db.Column("permission_id", db.Integer(), db.ForeignKey("Permission.id")),
-    db.Column("role_id", db.Integer(), db.ForeignKey("Role.id"))
+    db.Column("role_id", db.Integer(), db.ForeignKey("Role.id")),
 )
+
 
 class Permission(db.Model):
     __tablename__ = "Permission"
@@ -115,15 +126,16 @@ class Permission(db.Model):
 
     def serialize_name(self):
         return {"name": self.name}
-    
-    
-    
+
+
 class Role(db.Model, RoleMixin):
     __tablename__ = "Role"
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
-    permissions = db.relationship("Permission", secondary=roles_permissions, backref=db.backref("roles"))
+    permissions = db.relationship(
+        "Permission", secondary=roles_permissions, backref=db.backref("roles")
+    )
 
     def serialize(self):
         return {"id": self.id, "name": self.name, "description": self.description}
@@ -133,16 +145,15 @@ class Role(db.Model, RoleMixin):
 
     def serialize_p(self):
         return {
-            'id': self.id,
-            'name': self.name,
-            'description': self.description,
-            'permissions': [x.serialize() for x in self.permissions]
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "permissions": [x.serialize() for x in self.permissions],
         }
-    
+
     def add_permission(self, role_id, permission_id):
-        stmt = (
-            insert(roles_permissions).
-            values(role_id=role_id, permission_id=permission_id)
+        stmt = insert(roles_permissions).values(
+            role_id=role_id, permission_id=permission_id
         )
         db.session.execute(stmt)
         db.session.commit()
@@ -179,11 +190,13 @@ class User(UserMixin, db.Model):
 
     profile_pic = db.Column(db.String(), index=False, unique=False, nullable=True)
 
-    #primary location
+    # primary location
     location_id = db.Column(db.ForeignKey("Location.id"), nullable=False)
 
     locations = db.relationship(
-        "Location", secondary=locations_users, backref=db.backref("Location", lazy="dynamic")
+        "Location",
+        secondary=locations_users,
+        backref=db.backref("Location", lazy="dynamic"),
     )
 
     organization_id = db.Column(db.ForeignKey("Organization.id"), nullable=False)
@@ -226,7 +239,11 @@ class User(UserMixin, db.Model):
         return "<User {}>".format(self.name)
 
     def unread_messages(self):
-        message_history = Message.query.order_by(Message.timestamp.desc()).filter((Message.recipient_id==self.id) | (Message.sender_id==self.id)).first()
+        message_history = (
+            Message.query.order_by(Message.timestamp.desc())
+            .filter((Message.recipient_id == self.id) | (Message.sender_id == self.id))
+            .first()
+        )
         if message_history.sender_id == self.id:
             return 1
 
@@ -245,11 +262,8 @@ class User(UserMixin, db.Model):
         return n
 
     def add_location(self, user_id, location_id):
-    
-        stmt = (
-            insert(locations_users).
-            values(user_id=user_id, location_id=location_id)
-        )
+
+        stmt = insert(locations_users).values(user_id=user_id, location_id=location_id)
         db.session.execute(stmt)
         db.session.commit()
 
@@ -265,18 +279,18 @@ class User(UserMixin, db.Model):
     def has_permission(self, permission):
 
         ###DATABASE WAY
-        #all roles that have the permission to do this action
-        #roles_allowed = Role.query.join(Role.permissions, aliased=True)\
+        # all roles that have the permission to do this action
+        # roles_allowed = Role.query.join(Role.permissions, aliased=True)\
         #            .filter_by(id=permission.value).all()
-       
-        #for x in self.roles:
+
+        # for x in self.roles:
         #    if x in roles_allowed:
         #        return True
 
-        #session way
-        if permission.value in session['permissions']:
+        # session way
+        if permission.value in session["permissions"]:
             return True
-        
+
     def serialize(self):
         return {
             "id": self.id,
@@ -286,7 +300,7 @@ class User(UserMixin, db.Model):
             "location_id": self.location_id,
             "email": self.email,
             "phone_number": self.phone_number,
-            "locations": [x.serialize_name() for x in self.locations]
+            "locations": [x.serialize_name() for x in self.locations],
         }
 
     def serialize_user_display(self):
@@ -298,19 +312,15 @@ class User(UserMixin, db.Model):
             "email": self.email,
             "phone_number": self.phone_number,
             "locations": [x.serialize_name() for x in self.locations],
-            "organization_id": self.organization_id
+            "organization_id": self.organization_id,
         }
 
     def serialize_msg_sidebar(self):
-        #used for displaying user in message sidebar
-        return {
-            "id": self.id,
-            "name": self.name,
-            "unread_msg": self.unread_messages()
-        }
+        # used for displaying user in message sidebar
+        return {"id": self.id, "name": self.name, "unread_msg": self.unread_messages()}
 
     def serialize_pending(self):
-        #used for displaying user in pending users page
+        # used for displaying user in pending users page
         try:
             location = Location.query.get(self.location_id)
             name = location.name
@@ -322,5 +332,5 @@ class User(UserMixin, db.Model):
             "name": self.name,
             "email": self.email,
             "phone_number": self.phone_number,
-            "location_name": name
+            "location_name": name,
         }

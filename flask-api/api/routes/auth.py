@@ -1,9 +1,4 @@
-from flask import (
-    Blueprint,
-    request,
-    session,
-    abort
-)
+from flask import Blueprint, request, session, abort
 from flask_login import current_user
 from ..models.OrgModels import User
 from ..models.db import db
@@ -18,6 +13,7 @@ from flask_security import login_required, logout_user, login_user
 
 auth_bp = Blueprint("auth_bp", __name__)
 login_manager = app.login_manager
+
 
 @auth_bp.post("/api/login")
 def login():
@@ -49,14 +45,18 @@ def login():
             resp = jsonify(data)
             resp.status_code = 200
 
-            permissions = [permission.id for x in current_user.roles for permission in x.permissions]
-            
-            session['permissions'] = [*set(permissions)]
-        
+            permissions = [
+                permission.id
+                for x in current_user.roles
+                for permission in x.permissions
+            ]
+
+            session["permissions"] = [*set(permissions)]
 
             return resp
         return WebHelpers.EasyResponse("Invalid email/password combination.", 405)
     return WebHelpers.EasyResponse("Invalid email/password combination.", 405)
+
 
 @auth_bp.post("/api/grant_role")
 def grant_role():
@@ -137,6 +137,7 @@ def requires_permission(permission):
                 return func(*args, **kwargs)
             else:
                 abort(403)
-        return inner
-    return wrapper
 
+        return inner
+
+    return wrapper

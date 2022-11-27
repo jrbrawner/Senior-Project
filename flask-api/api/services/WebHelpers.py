@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 from api.models.Messages import Photo
 from api.models.db import db
 
+
 class WebHelpers:
     @staticmethod
     def allowed_file_extension(filename):
@@ -80,13 +81,11 @@ class WebHelpers:
                 filename = secure_filename(f"{user_id}_{media_sid}{file_extension}")
 
                 if photo and WebHelpers.allowed_file_extension(filename):
-                    file_path = os.path.join(app.config['PHOTOS'], filename)
+                    file_path = os.path.join(app.config["PHOTOS"], filename)
                     with open(file_path, "wb") as file:
                         file.write(photo)
                     file.close()
-                    photo = Photo(
-                        photo_url=filename
-                    )
+                    photo = Photo(photo_url=filename)
                     db.session.add(photo)
                     db.session.commit()
                     photos.append(photo)

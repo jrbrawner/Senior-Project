@@ -6,6 +6,7 @@ from api import user_datastore
 from flask_security import current_user
 from ..WebHelpers import WebHelpers
 
+
 class MessageTracking:
     @staticmethod
     def create_new_message_patient(phone_number, body, location_id, media_files):
@@ -15,9 +16,11 @@ class MessageTracking:
 
         user = user_datastore.find_user(phone_number=phone_number)
         photos = None
-        #photos handling
+        # photos handling
         if len(media_files) > 0:
-            photos = WebHelpers.HandleUserPictureTwilioMMS(media_files=media_files, user_id=user.id)
+            photos = WebHelpers.HandleUserPictureTwilioMMS(
+                media_files=media_files, user_id=user.id
+            )
 
         if user:
             message = Message(
@@ -25,12 +28,12 @@ class MessageTracking:
                 sender_name=user.name,
                 recipient_id=None,
                 body=body,
-                location_id=location_id
+                location_id=location_id,
             )
 
             db.session.add(message)
             db.session.commit()
-        
+
         if photos:
             for i in photos:
                 i.add_relation(i.id, message.id)
@@ -54,7 +57,9 @@ class MessageTracking:
         return True
 
     @staticmethod
-    def create_new_message_physician_to_patient(sender_id, patient_number, body, location_id):
+    def create_new_message_physician_to_patient(
+        sender_id, patient_number, body, location_id
+    ):
 
         patient = User.query.filter_by(phone_number=patient_number).first()
 
@@ -64,7 +69,7 @@ class MessageTracking:
                 recipient_id=patient.id,
                 sender_name=patient.name,
                 body=body,
-                location_id=location_id
+                location_id=location_id,
             )
 
             db.session.add(message)

@@ -10,16 +10,18 @@ from flask import jsonify, send_from_directory
 
 app_bp = Blueprint("app_bp", __name__)
 
+
 @app.before_first_request
 def start_up():
     seed_db()
 
+
 @app.errorhandler(404)
 def not_found(e):
-    return app.send_static_file('index.html')
+    return app.send_static_file("index.html")
+
 
 @app_bp.route("/", methods=["GET"])
 @login_required
 def index():
     return "Index"
-

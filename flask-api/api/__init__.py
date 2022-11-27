@@ -8,39 +8,38 @@ from api.models.db import db
 from flask import abort
 
 UPLOADS = "api/uploads"
-#login_manager = LoginManager()
+# login_manager = LoginManager()
 
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security()
+
 
 def create_app(config):
     """Construct the core app object."""
     app = Flask(__name__)
 
     # Application Configuration
-    if config == 'production':
+    if config == "production":
         app.config.from_object("config.ProductionConfig")
-        logging.warning('Running production configuration.')
+        logging.warning("Running production configuration.")
     elif config == "dev":
         app.config.from_object("config.DevConfig")
-        logging.warning('Running development configuration.')
+        logging.warning("Running development configuration.")
     elif config == "test":
         app.config.from_object("config.TestConfig")
-        logging.warning('Running test configuration.')
+        logging.warning("Running test configuration.")
 
-    
     # Initialize Plugins
     db.init_app(app)
     security_ctx = security.init_app(app, user_datastore)
 
-    #disable security default views
+    # disable security default views
     @security_ctx.context_processor
     def security_context_processor():
         return abort(404)
 
-    #login_manager.init_app(app)
-
+    # login_manager.init_app(app)
 
     # Set up logging
     logging.basicConfig(

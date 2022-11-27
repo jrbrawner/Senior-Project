@@ -95,7 +95,9 @@ class TwilioSignUpHelpers:
             db.session.commit()
 
             MessageTracking.create_new_message_before_signup(
-                user_id=phone_number_user.id, body=msg, location_id=phone_number_user.location_id
+                user_id=phone_number_user.id,
+                body=msg,
+                location_id=phone_number_user.location_id,
             )
 
             logging.warning(

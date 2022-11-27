@@ -13,7 +13,7 @@ role_bp = Blueprint("role_bp", __name__)
 
 @role_bp.get("/api/role/<int:id>")
 @login_required
-@roles_accepted('Super Admin')
+@roles_accepted("Super Admin")
 def get_role(id):
 
     role = Role.query.get(id)
@@ -27,39 +27,40 @@ def get_role(id):
 
 @role_bp.get("/api/role")
 @login_required
-@roles_accepted('Super Admin', 'Admin')
+@roles_accepted("Super Admin", "Admin")
 def get_roles():
 
     roles = []
-    
-    if 'Super Admin' in current_user.roles:
+
+    if "Super Admin" in current_user.roles:
         role = Role.query.all()
         logging.info(f"User id - {current_user.id} accessed all roles.")
         roles = [x.serialize() for x in role]
         resp = jsonify(roles)
         resp.status_code = 200
         return resp
-    if 'Admin' in current_user.roles:
+    if "Admin" in current_user.roles:
 
-        my_list = ['Admin', 'Physician', 'Employee']
-        
+        my_list = ["Admin", "Physician", "Employee"]
+
         role = Role.query.filter(Role.name.in_(my_list)).all()
         roles = [x.serialize() for x in role]
         resp = jsonify(roles)
         resp.status_code = 200
         return resp
     else:
-        return WebHelpers.EasyResponse('You are not authorized for this functionality.', 403)
+        return WebHelpers.EasyResponse(
+            "You are not authorized for this functionality.", 403
+        )
 
 
 @role_bp.post("/api/role")
 @login_required
-@roles_required('Super Admin')
+@roles_required("Super Admin")
 def create_role():
 
     role_name = request.form["name"]
     role_description = request.form["description"]
-    
 
     role = Role(name=role_name, description=role_description)
     db.session.add(role)
@@ -71,18 +72,18 @@ def create_role():
     for i in all_permissions:
         formValues[i.name] = request.form.get(i.name)
 
-    for name,checked in formValues.items():
-        if checked == 'on':
-            permission = Permission.query.filter_by(name = name).first()
+    for name, checked in formValues.items():
+        if checked == "on":
+            permission = Permission.query.filter_by(name=name).first()
             role.add_permission(role.id, permission.id)
-            
+
     logging.warning(f"User id - {current_user.id} - created new role id - {role.id} -")
     return role.serialize()
 
 
 @role_bp.put("/api/role/<int:id>")
 @login_required
-@roles_required('Super Admin')
+@roles_required("Super Admin")
 def update_role(id):
 
     role = Role.query.get(id)
@@ -98,18 +99,18 @@ def update_role(id):
             formValues[i.name] = request.form.get(i.name)
 
         permissions = [x.name for x in role.permissions]
-        
-        for name,checked in formValues.items():
-            if checked == 'on':
+
+        for name, checked in formValues.items():
+            if checked == "on":
                 if name in permissions:
                     continue
                 elif name not in permissions:
-                    permission = Permission.query.filter_by(name = name).first()
+                    permission = Permission.query.filter_by(name=name).first()
                     role.add_permission(role.id, permission.id)
-            elif checked != 'on':
+            elif checked != "on":
                 # change to list comprehension later
                 if name in permissions:
-                    permission = Permission.query.filter_by(name = name).first()
+                    permission = Permission.query.filter_by(name=name).first()
                     role.remove_permission(role.id, permission.id)
 
         role.name = role_name
@@ -123,7 +124,7 @@ def update_role(id):
 
 @role_bp.delete("/api/role/<int:id>")
 @login_required
-@roles_required('Super Admin')
+@roles_required("Super Admin")
 def delete_role(id):
 
     role = Role.query.get(id)
@@ -138,7 +139,7 @@ def delete_role(id):
 
 @role_bp.get("/api/permission")
 @login_required
-@roles_required('Super Admin')
+@roles_required("Super Admin")
 def get_permissions():
 
     permissions = Permission.query.all()
@@ -148,12 +149,13 @@ def get_permissions():
 
     return resp
 
+
 @role_bp.post("/api/user/roles/<int:id>")
 @login_required
-@roles_accepted('Super Admin', 'Admin')
+@roles_accepted("Super Admin", "Admin")
 def modify_roles(id):
 
-    user : User
+    user: User
 
     user = User.query.get(id)
     roles = Role.query.all()
@@ -163,7 +165,7 @@ def modify_roles(id):
     locationValues = {}
     user_locations = []
 
-    locations = Location.query.filter_by(organization_id = organization_id).all()
+    locations = Location.query.filter_by(organization_id=organization_id).all()
 
     for location in user.locations:
         user_locations.append(location.name)
@@ -178,20 +180,20 @@ def modify_roles(id):
             locationValues[i.name] = request.form.get(i.name)
 
         for name, checked in formValues.items():
-            if checked == 'on':
+            if checked == "on":
                 if name in user_roles:
                     continue
                 elif name not in user_roles:
                     user_datastore.add_role_to_user(user, name)
                     db.session.commit()
-            elif checked != 'on':
+            elif checked != "on":
                 if name in user_roles:
                     user_datastore.remove_role_from_user(user, name)
                     db.session.commit()
 
         for name, checked in locationValues.items():
-            if checked == 'on':
-                if 'Patient' or 'Pending Patient' in user.roles:
+            if checked == "on":
+                if "Patient" or "Pending Patient" in user.roles:
                     location = Location.query.filter_by(name=name).first()
                     user.location_id = location.id
                     db.session.commit()
@@ -201,32 +203,39 @@ def modify_roles(id):
                     location = Location.query.filter_by(name=name).first()
                     user.add_location(user.id, location.id)
                     db.session.commit()
-            elif checked != 'on':
+            elif checked != "on":
                 if name in user_locations:
                     location = Location.query.filter_by(name=name).first()
                     user.remove_location(user.id, location.id)
                     db.session.commit()
 
-
         return WebHelpers.EasyResponse(f"User Roles updated.", 200)
     return WebHelpers.EasyResponse(f"User not found.", 404)
+
 
 @role_bp.get("/api/user/new/roles")
 def get_available_roles():
 
-    roles : Role
+    roles: Role
 
-    if 'Super Admin' in current_user.roles:
+    if "Super Admin" in current_user.roles:
         roles = Role.query.all()
-    elif 'Admin' in current_user.roles:
-        roles = Role.query.filter(Role.name != 'Super Admin').all()
-    elif 'Physician' in current_user.roles:
-        roles = Role.query.filter(Role.name != 'Super Admin').filter(Role.name != 'Admin').all()
-    elif 'Employee' in current_user.roles:
-        roles = Role.query.filter(Role.name != 'Super Admin').filter(Role.name != 'Admin').filter(Role.name != 'Physician').all()
+    elif "Admin" in current_user.roles:
+        roles = Role.query.filter(Role.name != "Super Admin").all()
+    elif "Physician" in current_user.roles:
+        roles = (
+            Role.query.filter(Role.name != "Super Admin")
+            .filter(Role.name != "Admin")
+            .all()
+        )
+    elif "Employee" in current_user.roles:
+        roles = (
+            Role.query.filter(Role.name != "Super Admin")
+            .filter(Role.name != "Admin")
+            .filter(Role.name != "Physician")
+            .all()
+        )
 
     resp = jsonify([x.serialize() for x in roles])
     resp.status_code = 200
     return resp
-
-
