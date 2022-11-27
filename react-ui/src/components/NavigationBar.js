@@ -23,7 +23,7 @@ export default function NavigationBar(props){
 
   
   if (state.roles != undefined){
-    if (state.roles.includes("Super Admin")){
+    if (state.roles.includes("Super Admin") || state.roles.includes("Admin")){
       return (
         
         <Navbar bg="light" expand="sm">

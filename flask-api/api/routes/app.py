@@ -23,7 +23,3 @@ def not_found(e):
 def index():
     return "Index"
 
-
-@app_bp.route("/api/time", methods=["GET"])
-def get_time():
-    return {"time": time.time()}

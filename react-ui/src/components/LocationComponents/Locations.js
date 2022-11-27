@@ -41,28 +41,33 @@ export default function App() {
 
   const columns = [
     {
+      dataField: "organization_name",
+      text: "Organization",
+      sort: true
+    },
+    {
       dataField: "name",
       text: "Location Name",
       sort: true
     },
     {
       dataField: "address",
-      text: "Location Address",
+      text: "Address",
       sort: true
     },
     {
       dataField: "city",
-      text: "Location City",
+      text: "City",
       sort: true
     },
     {
       dataField: "state",
-      text: "Location State",
+      text: "State",
       sort: true
     },
     {
       dataField: "phone_number",
-      text: "Location Phone Number",
+      text: "Phone Number",
       sort: true
     },
     {

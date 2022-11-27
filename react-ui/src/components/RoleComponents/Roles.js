@@ -7,12 +7,19 @@ import paginationFactory from "react-bootstrap-table2-paginator";
 import Spinner from 'react-bootstrap/Spinner';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
+import Cookies from 'js-cookie';
 
 export default function App() {
 
     const navigate = useNavigate();
     const [roles, setRoles ] = React.useState();
     const [users, setUsers] = React.useState();
+
+    const state = {
+      username: Cookies.get('name'),
+      roles: Cookies.get('roles')
+    }
+
 
     React.useEffect(() => {
         RoleDataService.getAll().then((response) => {
@@ -180,7 +187,8 @@ export default function App() {
                         <span className="visually-hidden">Loading...</span>
                     </Spinner>
                   
-
+    if (state.roles != undefined){
+      if (state.roles.includes('Super Admin')){
     return (
       <div>
         <div>
@@ -214,6 +222,26 @@ export default function App() {
           </div>
       </div>
 
+      
+      )
+    }
+  }
 
-    )
+  return (
+    <>
+      <div>
+          <BootstrapTable
+              bootstrap4
+              striped
+              bordered
+              hover
+              keyField="id"
+              data={users}
+              columns={columns1}
+              pagination={paginationFactory({ sizePerPage: 15 })}
+              />
+          </div>
+    
+    </>
+  )
 }
