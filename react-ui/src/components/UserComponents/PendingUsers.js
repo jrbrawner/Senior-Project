@@ -12,14 +12,27 @@ export default function App() {
   React.useEffect(() => {
     UserDataService.getPending().then((response) => {
       setUsers(response.data);
-    }).catch(error => {
-      if (error.response.status === 401)
+    }).catch(function (error) {
+      if (error.response)
       {
-        navigate(`/login`);
-        console.log('Not authenticated.');
+          if (error.response.status === 401)
+          {
+            navigate(`/login`);
+            console.log('Not authenticated.');
+  
+          }
+          if (error.response.status === 403)
+          {
+            alert('You are not authenticated for this page.');
+          }
+          if (error.response.status === 500){
+            navigate(`/login`);
+            console.log('Not authenticated.');
+          }
       }
-    });
-  }, []);
+      });
+
+}, []);
 
   function acceptUser(userId) {
     UserDataService.acceptPending(userId).then((response) =>
@@ -52,6 +65,7 @@ export default function App() {
 
   return (
     <div>
+      
         <Table striped bordered hover>
           <thead>
             <tr>
@@ -77,6 +91,7 @@ export default function App() {
                 ))}
             </tbody>
       </Table>
+            
       
     </div>
   );

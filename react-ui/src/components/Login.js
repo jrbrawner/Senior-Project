@@ -41,8 +41,8 @@ export default function Login(){
     }
 
         return (
-            <Body >
-            <Form onSubmit={handleLoginSubmit}>
+            <>
+            <Form className="mt-5" onSubmit={handleLoginSubmit}>
                 <h3>Login to be authenticated and access the portal.</h3>
                 <Toast onClose={() => setShow(false)} show={show} delay={3000} autohide>
                     <Toast.Body>Username/Password combination not recognized.</Toast.Body>
@@ -68,7 +68,7 @@ export default function Login(){
                     Login
                 </Button>
             </Form>
-        </Body>
+            </>
     );
     
 }

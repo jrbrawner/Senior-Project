@@ -1,10 +1,11 @@
-import Body from '../components/Body';
+
 import Login from '../components/Login';
+import Container from 'react-bootstrap/Container';
 
 export default function UsersPage(){
     return(
-        <Body>
-            <Login />
-        </Body>
+            <Container>
+                <Login/>
+            </Container>
     );
 }
