@@ -86,20 +86,22 @@ class Location(db.Model):
             .filter(User.roles.any(name="Patient"))
             .all()
         )
-
-        if users is not None:
-            for i in users:
-                message_history = (
-                    Message.query.order_by(Message.timestamp.desc())
-                    .filter(
-                        (Message.recipient_id == i.id) | (Message.sender_id == i.id)
+        try:
+            if users is not None:
+                for i in users:
+                    message_history = (
+                        Message.query.order_by(Message.timestamp.desc())
+                        .filter(
+                            (Message.recipient_id == i.id) | (Message.sender_id == i.id)
+                        )
+                        .first()
                     )
-                    .first()
-                )
-                if message_history.sender_id == i.id:
-                    unresponded += 1
+                    if message_history.sender_id == i.id:
+                        unresponded += 1
 
-        return unresponded
+            return unresponded
+        except:
+            return 0
 
 
 roles_users = db.Table(
