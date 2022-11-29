@@ -241,13 +241,16 @@ class User(UserMixin, db.Model):
         return "<User {}>".format(self.name)
 
     def unread_messages(self):
-        message_history = (
-            Message.query.order_by(Message.timestamp.desc())
-            .filter((Message.recipient_id == self.id) | (Message.sender_id == self.id))
-            .first()
-        )
-        if message_history.sender_id == self.id:
-            return 1
+        try:
+            message_history = (
+                Message.query.order_by(Message.timestamp.desc())
+                .filter((Message.recipient_id == self.id) | (Message.sender_id == self.id))
+                .first()
+            )
+            if message_history.sender_id == self.id:
+                return 1
+        except:
+            return 0
 
     def new_messages(self):
         last_read_time = self.last_message_read_time or datetime(1900, 1, 1)
