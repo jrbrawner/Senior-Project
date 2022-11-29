@@ -20,7 +20,7 @@ class Organization(db.Model):
     name = db.Column(db.String(128), index=True)
     twilio_account_id = db.Column(db.String(64), nullable=False)
     twilio_auth_token = db.Column(db.String(64), nullable=False)
-    locations = db.relationship("Location", backref="Locations", lazy=True)
+    locations = db.relationship("Location", backref="Locations", cascade="all,delete", lazy=True)
 
     def serialize(self):
 
