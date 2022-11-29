@@ -1,16 +1,13 @@
-import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-import Form from 'react-bootstrap/Form';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import React from 'react';
 import Cookies from 'js-cookie';
-import DropdownButton from 'react-bootstrap/DropdownButton';
-import Dropdown from 'react-bootstrap/Dropdown';
+import logo from '../images/person-circle.svg';
+
 
 export default function NavigationBar(props){
-
     const state = {
       username: Cookies.get('name'),
       roles: Cookies.get('roles')
@@ -43,27 +40,11 @@ export default function NavigationBar(props){
                 
             </Nav>
                 
-              <Form className="d-flex" onSubmit={search} >
-                <Form.Control
-                  type="search"
-                  placeholder="Search"
-                  name="search"
-                  className="me-2"
-                  defaultValue=""
-                  aria-label="Search"
-                  />
-                <Button variant="outline-success" type="submit" >Search</Button>
-              </Form>
-              {/*}
-              <Nav>
-                <Nav.Link href="/notifications">Notifications</Nav.Link>
-              </Nav>
-              {*/}
               <Nav>
                 <Nav.Link href="/role">Role Management</Nav.Link>
               </Nav>
               
-              <NavDropdown title={<img src="person-circle.svg"/>}  >
+              <NavDropdown drop={"start"} title={<img src={logo}/>}>
               <NavDropdown.Item href="/profile" eventKey='3'><i className="fa fa-sign-out fa-fw"></i>Profile</NavDropdown.Item>
                 <NavDropdown.Item><i className="fa fa-gear fa-fw"></i>Settings</NavDropdown.Item>
                 <NavDropdown.Item divider />
@@ -74,7 +55,7 @@ export default function NavigationBar(props){
     );
     }
   }
-  
+  if (state.roles != undefined){
   return (
     <Navbar bg="light" expand="sm">
       <Container>
@@ -91,21 +72,7 @@ export default function NavigationBar(props){
             <Nav.Link href="/messages">Messages</Nav.Link>
             
         </Nav>
-            
-          <Form className="d-flex">
-            <Form.Control
-              type="search"
-              placeholder="Search"
-              className="me-2"
-              aria-label="Search"
-              />
-            <Button variant="outline-success">Search</Button>
-          </Form>
-          <Nav>
-            <Nav.Link href="/notifications">Notifications</Nav.Link>
-          </Nav>
-          
-          <NavDropdown title={<img src="person-circle.svg"/>}>
+          <NavDropdown drop={"start"} title={<img src={logo}/>}>
               <NavDropdown.Item href="/profile" eventKey='3'><i className="fa fa-sign-out fa-fw"></i>Profile</NavDropdown.Item>
               <NavDropdown.Item><i className="fa fa-gear fa-fw"></i>Settings</NavDropdown.Item>
               <NavDropdown.Item divider />
@@ -115,6 +82,6 @@ export default function NavigationBar(props){
       </Container>
     </Navbar>
   );
-  
+  }
 }
 

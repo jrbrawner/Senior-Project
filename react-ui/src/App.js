@@ -22,10 +22,9 @@ import ProfilePage from './pages/ProfilePage';
 import PasswordPage from './pages/PasswordPage';
 import NewLocationPage from './pages/NewLocation';
 import NewOrganizationPage from './pages/NewOrganizationPage';
-export default function App(){
 
+export default function App(){
   return (
-    
       <Container fluid className="App">
         <BrowserRouter>
         <Header/>
