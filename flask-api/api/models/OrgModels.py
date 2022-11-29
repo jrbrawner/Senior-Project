@@ -20,7 +20,7 @@ class Organization(db.Model):
     name = db.Column(db.String(128), index=True)
     twilio_account_id = db.Column(db.String(64), nullable=False)
     twilio_auth_token = db.Column(db.String(64), nullable=False)
-    locations = db.relationship("Location", backref="Locations", lazy=True)
+    locations = db.relationship("Location", backref="Locations", cascade="all,delete", lazy=True)
 
     def serialize(self):
 
@@ -86,20 +86,22 @@ class Location(db.Model):
             .filter(User.roles.any(name="Patient"))
             .all()
         )
-
-        if users is not None:
-            for i in users:
-                message_history = (
-                    Message.query.order_by(Message.timestamp.desc())
-                    .filter(
-                        (Message.recipient_id == i.id) | (Message.sender_id == i.id)
+        try:
+            if users is not None:
+                for i in users:
+                    message_history = (
+                        Message.query.order_by(Message.timestamp.desc())
+                        .filter(
+                            (Message.recipient_id == i.id) | (Message.sender_id == i.id)
+                        )
+                        .first()
                     )
-                    .first()
-                )
-                if message_history.sender_id == i.id:
-                    unresponded += 1
+                    if message_history.sender_id == i.id:
+                        unresponded += 1
 
-        return unresponded
+            return unresponded
+        except:
+            return 0
 
 
 roles_users = db.Table(
