@@ -137,7 +137,7 @@ def update_user(id):
         user = User.query.get(id)
         if user:
             name = request.form["name"]
-            email = request.form["email"]
+            email = request.form["email"].lower()
             location_id = request.form["locationId"]
             roles = request.form["roles"]
             phone_number = request.form["phoneNumber"]
