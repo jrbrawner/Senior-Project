@@ -1,11 +1,6 @@
 from ...services.WebHelpers import WebHelpers
-from ...models.Users import User
 from ...models.db import db
-from ...models.Users import User, Role
 import logging
-from flask_security import login_user
-from flask import session
-from .login import admin_required, employee_required, physician_required
 from api import user_datastore
 from flask_security.utils import hash_password
 

@@ -1,18 +1,13 @@
-from re import T
 from flask import Blueprint, request, send_from_directory
 
-from flask_login import logout_user, login_required, current_user
-from sqlalchemy import create_engine, MetaData
-from flask import current_app as app, jsonify, session, url_for, redirect
+from flask_login import current_user, login_required
+from flask import jsonify
 from api.models.Messages import Message
-from api.models.db import db
 from ..services.WebHelpers import WebHelpers
 from ..services.twilio.SignUpHelpers import TwilioSignUpHelpers
 from ..services.twilio.MessageTracking import MessageTracking
 import logging
 from flask_cors import cross_origin
-from twilio.twiml.messaging_response import MessagingResponse
-from ..models.db import db
 from ..services.twilio.TwilioClient import TwilioClient
 from twilio.base.exceptions import TwilioRestException
 from ..services.twilio.MessageTracking import MessageTracking
@@ -175,7 +170,7 @@ def get_message_sidebar_locations():
     if current_user:
         if current_user.has_permission(Permissions.VIEW_ALL_MESSAGES):
 
-            orgs = Organization.query.all()
+            Organization.query.all()
 
             locations = Location.query.all()
 

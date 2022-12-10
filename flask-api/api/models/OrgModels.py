@@ -20,7 +20,9 @@ class Organization(db.Model):
     name = db.Column(db.String(128), index=True)
     twilio_account_id = db.Column(db.String(64), nullable=False)
     twilio_auth_token = db.Column(db.String(64), nullable=False)
-    locations = db.relationship("Location", backref="Locations", cascade="all,delete", lazy=True)
+    locations = db.relationship(
+        "Location", backref="Locations", cascade="all,delete", lazy=True
+    )
 
     def serialize(self):
 
@@ -244,7 +246,9 @@ class User(UserMixin, db.Model):
         try:
             message_history = (
                 Message.query.order_by(Message.timestamp.desc())
-                .filter((Message.recipient_id == self.id) | (Message.sender_id == self.id))
+                .filter(
+                    (Message.recipient_id == self.id) | (Message.sender_id == self.id)
+                )
                 .first()
             )
             if message_history.sender_id == self.id:

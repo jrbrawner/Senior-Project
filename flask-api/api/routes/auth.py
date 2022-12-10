@@ -20,9 +20,9 @@ def login():
     """
     Log-in for registered users.
     """
-    ###REMOVE THIS
+
     logout_user()
-    ########
+
     data = {}
     if current_user.is_authenticated:
         return WebHelpers.EasyResponse(current_user.name + " already logged in.", 400)

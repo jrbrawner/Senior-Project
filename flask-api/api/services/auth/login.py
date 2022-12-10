@@ -1,10 +1,8 @@
 from ..WebHelpers import WebHelpers
 from flask_security import current_user, login_user
 import logging
-from flask_session import Session
 from flask import session
 from functools import wraps
-from api.models.Users import User
 from api import user_datastore
 from flask_security.utils import verify_password
 

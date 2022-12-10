@@ -3,7 +3,6 @@ from ...models.OrgModels import User
 from ...models.db import db
 import logging
 from api import user_datastore
-from flask_security import current_user
 from ..WebHelpers import WebHelpers
 
 

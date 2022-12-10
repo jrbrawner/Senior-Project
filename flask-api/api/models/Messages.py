@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy_utils import EncryptedType
 from datetime import datetime
 from sqlalchemy import insert
-from dateutil import tz
+from os import environ
 
 photos_message = db.Table(
     "photos_message",
@@ -33,7 +33,8 @@ class Message(db.Model):
     """Model for messages between physicians and patients."""
 
     __tablename__ = "Message"
-    __key = "123456"
+    # __key = "123456"
+    __key = environ.get("MESSAGE_ENCRYPTION_KEY")
 
     id = db.Column(db.Integer, primary_key=True)
     sender_id = db.Column(db.Integer, db.ForeignKey("User.id"), nullable=True)

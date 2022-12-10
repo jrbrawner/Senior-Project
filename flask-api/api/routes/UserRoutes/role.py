@@ -1,4 +1,4 @@
-from api.models.OrgModels import Role, Permission, User, Organization, Location
+from api.models.OrgModels import Location, Permission, Role, User
 from api.models.db import db
 from flask import Blueprint, request, jsonify
 import logging

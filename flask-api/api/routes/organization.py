@@ -1,5 +1,5 @@
-from flask import Blueprint, request, send_from_directory
-from flask import current_app as app, jsonify
+from flask import Blueprint, request
+from flask import jsonify
 from ..models.OrgModels import Organization, Location, User
 from api.models.db import db
 from ..services.WebHelpers import WebHelpers
@@ -7,7 +7,6 @@ import logging
 from flask_cors import cross_origin
 from flask_security import login_required, current_user
 from api.permissions import Permissions
-from flask import session
 
 organization_bp = Blueprint("organization_bp", __name__)
 
