@@ -1,18 +1,15 @@
-from flask import Blueprint, request, send_from_directory, session, Response
-from flask_login import logout_user, login_required
-from sqlalchemy import create_engine, MetaData
-import json
-from flask import current_app as app, jsonify
+from flask import Blueprint, Response, request
+from flask_login import login_required
+from flask import jsonify
 from api.models.db import db
 from api.services.WebHelpers import WebHelpers
 import logging
 from flask_cors import cross_origin
 from flask_login import current_user
 from api.services.twilio.TwilioClient import TwilioClient
-from api.models.OrgModels import Location, Organization, User, Role, roles_users
+from api.models.OrgModels import Location, Organization, User
 from api import user_datastore
 from flask_security.utils import hash_password
-from flask_security import roles_accepted
 from api.permissions import Permissions
 from flask_security.utils import verify_password
 
@@ -31,7 +28,6 @@ def get_users():
     Physician: View All Employees & Patients
     Employee: View All Patients
     """
-    data = []
 
     # Super Admin
     if current_user.has_permission(Permissions.VIEW_ALL_PEOPLE):
@@ -137,9 +133,9 @@ def update_user(id):
         user = User.query.get(id)
         if user:
             name = request.form["name"]
-            email = request.form["email"]
+            email = request.form["email"].lower()
             location_id = request.form["locationId"]
-            roles = request.form["roles"]
+            request.form["roles"]
             phone_number = request.form["phoneNumber"]
 
             user.name = name
@@ -160,7 +156,7 @@ def update_user(id):
                 name = request.form["name"]
                 email = request.form["email"]
                 location_id = request.form["locationId"]
-                roles = request.form["roles"]
+                request.form["roles"]
                 phone_number = request.form["phoneNumber"]
 
                 user.name = name
@@ -522,7 +518,7 @@ def change_user_password() -> Response:
 def get_available_locations() -> Response:
 
     if current_user.has_permission(Permissions.CREATE_ALL_PEOPLE):
-        orgs = Organization.query.all()
+        Organization.query.all()
         locations = Location.query.all()
         return jsonify([x.serialize() for x in locations])
 

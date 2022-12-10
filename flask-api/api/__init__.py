@@ -8,8 +8,6 @@ from api.models.db import db
 from flask import abort
 
 UPLOADS = "api/uploads"
-# login_manager = LoginManager()
-
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
 security = Security()

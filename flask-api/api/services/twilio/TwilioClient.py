@@ -1,4 +1,3 @@
-import os
 from twilio.rest import Client
 import logging
 from api.models.Messages import Message

@@ -1,5 +1,3 @@
-import pytest
-import sqlite3
 from ...models.ProviderModels import Provider
 
 
