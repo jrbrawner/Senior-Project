@@ -138,7 +138,7 @@ class Role(db.Model, RoleMixin):
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
     permissions = db.relationship(
-        "Permission", secondary=roles_permissions, backref=db.backref("roles")
+        "Permission", secondary=roles_permissions, cascade="all,delete", backref=db.backref("roles")
     )
 
     def serialize(self):
@@ -189,7 +189,7 @@ class User(UserMixin, db.Model):
     current_login_ip = db.Column(db.String())
     login_count = db.Column(db.Integer)
     roles = db.relationship(
-        "Role", secondary=roles_users, backref=db.backref("users", lazy="dynamic")
+        "Role", secondary=roles_users, cascade="all,delete", backref=db.backref("users", lazy="dynamic")
     )
 
     profile_pic = db.Column(db.String(), index=False, unique=False, nullable=True)
@@ -200,6 +200,7 @@ class User(UserMixin, db.Model):
     locations = db.relationship(
         "Location",
         secondary=locations_users,
+        cascade="all,delete",
         backref=db.backref("Location", lazy="dynamic"),
     )
 
