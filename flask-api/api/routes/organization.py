@@ -168,18 +168,24 @@ def update_organization(id):
 @organization_bp.delete("/api/organization/<int:id>")
 def delete_organization(id):
 
-    if current_user.has_permission(Permissions.DELETE_ORGANIZATION):
+    if current_user.has_permission(Permissions.DELETE_ORGANIZATION) and Organization.id != 1:
 
         locations = Location.query.filter_by(organization_id=id).all()
+
+        users = User.query.filter_by(organization_id=id).all()
+        for i in users:
+            if i.organization_id == id:
+                users_locations = i.locations
+                for location in users_locations:
+                    i.remove_location(i.id, location.id)
+                i.remove_all_roles()
+
+            db.session.delete(i)
 
         for i in locations:
             db.session.delete(i)
             db.session.commit()
 
-        users = User.query.filter_by(organization_id=id).all()
-        for i in users:
-            db.session.delete(i)
-            db.session.commit()
 
         organization = Organization.query.get(id)
 
