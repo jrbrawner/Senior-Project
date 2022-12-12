@@ -9,6 +9,7 @@ from .Notifications import Notification
 import json
 from sqlalchemy import insert
 from flask import session
+from sqlalchemy.orm import relationship, backref
 
 
 class Organization(db.Model):
@@ -21,8 +22,9 @@ class Organization(db.Model):
     twilio_account_id = db.Column(db.String(64), nullable=False)
     twilio_auth_token = db.Column(db.String(64), nullable=False)
     locations = db.relationship(
-        "Location", backref="Locations", cascade="all,delete", lazy=True
-    )
+        "Location", backref=db.backref('Locations'), lazy='dynamic'
+        )
+    
 
     def serialize(self):
 
@@ -33,13 +35,13 @@ class Organization(db.Model):
             "twilio_account_id": self.twilio_account_id,
             "twilio_auth_token": self.twilio_auth_token
             #'Locations': jsonify([x.serialize() for x in self.Locations])
-        }
+        }   
 
 
 locations_users = db.Table(
     "locations_users",
-    db.Column("user_id", db.Integer(), db.ForeignKey("User.id")),
-    db.Column("location_id", db.Integer(), db.ForeignKey("Location.id")),
+    db.Column("user_id", db.Integer(), db.ForeignKey("User.id", ondelete='CASCADE')),
+    db.Column("location_id", db.Integer(), db.ForeignKey("Location.id", ondelete='CASCADE'))
 )
 
 
@@ -58,7 +60,14 @@ class Location(db.Model):
     organization_id = db.Column(
         db.Integer, db.ForeignKey("Organization.id"), nullable=False
     )
-    # physicians = db.relationship("Physician", backref="physicians", lazy=True)
+    
+    users = relationship(
+        "User",
+        secondary=locations_users,
+        back_populates="locations",
+        cascade="all, delete",
+    )
+
 
     def serialize(self):
         organization_name = Organization.query.get(self.organization_id).name
@@ -73,7 +82,7 @@ class Location(db.Model):
             "organization_name": organization_name,
             "zip_code": self.zip_code,
             "messages_no_response": self.get_messages_with_no_response()
-            #'physicians': jsonify([x.serialize() for x in self.physicians])
+
         }
 
     def serialize_name(self):
@@ -108,14 +117,14 @@ class Location(db.Model):
 
 roles_users = db.Table(
     "roles_users",
-    db.Column("user_id", db.Integer(), db.ForeignKey("User.id")),
-    db.Column("role_id", db.Integer(), db.ForeignKey("Role.id")),
+    db.Column("user_id", db.Integer(), db.ForeignKey("User.id", ondelete='CASCADE')),
+    db.Column("role_id", db.Integer(), db.ForeignKey("Role.id", ondelete='CASCADE')),
 )
 
 roles_permissions = db.Table(
     "roles_permissions",
-    db.Column("permission_id", db.Integer(), db.ForeignKey("Permission.id")),
-    db.Column("role_id", db.Integer(), db.ForeignKey("Role.id")),
+    db.Column("permission_id", db.Integer(), db.ForeignKey("Permission.id", ondelete='CASCADE')),
+    db.Column("role_id", db.Integer(), db.ForeignKey("Role.id", ondelete='CASCADE')),
 )
 
 
@@ -138,7 +147,7 @@ class Role(db.Model, RoleMixin):
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(255))
     permissions = db.relationship(
-        "Permission", secondary=roles_permissions, cascade="all,delete", backref=db.backref("roles")
+        "Permission", secondary=roles_permissions,  passive_deletes=True, backref=db.backref("roles")
     )
 
     def serialize(self):
@@ -189,22 +198,22 @@ class User(UserMixin, db.Model):
     current_login_ip = db.Column(db.String())
     login_count = db.Column(db.Integer)
     roles = db.relationship(
-        "Role", secondary=roles_users, cascade="all,delete", backref=db.backref("users", lazy="dynamic")
+        "Role", secondary=roles_users, passive_deletes=True, backref=db.backref("users", lazy="dynamic")
     )
 
     profile_pic = db.Column(db.String(), index=False, unique=False, nullable=True)
 
     # primary location
-    location_id = db.Column(db.ForeignKey("Location.id"), nullable=False)
+    location_id = db.Column(db.ForeignKey("Location.id", ondelete='CASCADE'), nullable=True)
 
     locations = db.relationship(
         "Location",
         secondary=locations_users,
-        cascade="all,delete",
-        backref=db.backref("Location", lazy="dynamic"),
+        back_populates="users",
+        passive_deletes=True,
     )
 
-    organization_id = db.Column(db.ForeignKey("Organization.id"), nullable=False)
+    organization_id = db.Column(db.ForeignKey("Organization.id", ondelete='CASCADE'), nullable=False)
     phone_number = db.Column(db.String(20), unique=True, nullable=True)
 
     messages_sent = db.relationship(
@@ -282,6 +291,14 @@ class User(UserMixin, db.Model):
             locations_users.delete()
             .where(locations_users.c.user_id == user_id)
             .where(locations_users.c.location_id == location_id)
+        )
+        db.session.execute(stmt)
+        db.session.commit()
+
+    def remove_all_roles(self):
+        stmt = (
+            roles_users.delete()
+            .where(roles_users.c.user_id == self.id)
         )
         db.session.execute(stmt)
         db.session.commit()

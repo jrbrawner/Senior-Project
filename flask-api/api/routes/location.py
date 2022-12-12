@@ -233,7 +233,7 @@ def update_Location(id):
 @location_bp.delete("/api/location/<int:id>")
 def delete_Location(id):
 
-    if current_user.has_permission(Permissions.DELETE_ALL_LOCATIONS):
+    if current_user.has_permission(Permissions.DELETE_ALL_LOCATIONS) and Location.id != 1:
         location = Location.query.get(id)
 
         if location:

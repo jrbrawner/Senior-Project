@@ -32,6 +32,7 @@ class DevConfig:
     # Flask-SQLAlchemy
     #sqlite db
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir + '/api/' 'development.db')
+    #postgres (in docker)
     #SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URL")
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
