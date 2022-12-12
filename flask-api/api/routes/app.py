@@ -5,13 +5,15 @@ from api.services.DB_Startup import seed_db
 import flask
 import flask_login
 import datetime
+from api.models.OrgModels import Organization
 
 app_bp = Blueprint("app_bp", __name__)
 
 
 @app.before_first_request
 def start_up():
-    seed_db()
+    if Organization.query.get(1) == None:
+        seed_db()
 
 
 @app.before_request
